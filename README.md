@@ -6,7 +6,7 @@ Personal configuration files for Linux/Unix development environments, managed wi
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
+git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Run the installation script
