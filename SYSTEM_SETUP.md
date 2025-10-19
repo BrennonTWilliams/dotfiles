@@ -1,6 +1,6 @@
 # System Setup Documentation
 
-**Last Updated:** 2025-10-18
+**Last Updated:** 2025-10-19
 **User:** pi
 **System:** Raspberry Pi (aarch64) - Debian GNU/Linux 13 (trixie)
 
@@ -14,8 +14,9 @@
 4. [Sway Window Manager](#sway-window-manager)
 5. [Package Managers](#package-managers)
 6. [Development Tools](#development-tools)
-7. [Key Configuration Files](#key-configuration-files)
-8. [Quick Reference](#quick-reference)
+7. [Clipboard Sharing](#clipboard-sharing)
+8. [Key Configuration Files](#key-configuration-files)
+9. [Quick Reference](#quick-reference)
 
 ---
 
@@ -483,6 +484,91 @@ This approach loads NVM only when first used, significantly improving shell star
 
 ---
 
+## Clipboard Sharing
+
+### Uniclip
+
+- **Version:** 2.3.6 (via Homebrew)
+- **Purpose:** Universal clipboard sync between Raspberry Pi and Mac Mini M4
+- **Service:** Systemd user service (auto-start on boot)
+- **Service File:** `~/.config/systemd/user/uniclip.service`
+
+#### Configuration
+
+**Raspberry Pi Setup:**
+- **Service Status:** Enabled and running
+- **Address:** `192.168.1.24:38687` (port may change on restart)
+- **Wayland Support:** Uses `wl-clipboard` (wl-copy/wl-paste)
+
+**Mac Mini M4 Setup:**
+- **Installation:** `brew install uniclip`
+- **Shell Alias:** Added to Mac's `~/.zshrc` or `~/.bashrc`
+- **Usage:** Run alias to connect to Pi's clipboard
+
+#### System Integration
+
+**Dependencies:**
+- `wl-clipboard` (2.2.1-2) - Wayland clipboard utilities for Sway
+- `uniclip` (2.3.6) - Universal clipboard sync tool
+
+**Systemd Service Configuration:**
+```
+[Unit]
+Description=Uniclip Universal Clipboard Service
+After=graphical-session.target
+
+[Service]
+Type=simple
+Environment="WAYLAND_DISPLAY=wayland-1"
+ExecStart=/home/linuxbrew/.linuxbrew/bin/uniclip
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+```
+
+#### Usage
+
+**Check Service Status:**
+```bash
+systemctl --user status uniclip
+```
+
+**View Current Connection Address:**
+```bash
+journalctl --user -u uniclip -n 5 --no-pager | grep "Run"
+```
+
+**Restart Service:**
+```bash
+systemctl --user restart uniclip
+```
+
+**View Service Logs:**
+```bash
+journalctl --user -u uniclip -f
+```
+
+#### How It Works
+
+1. **Pi:** Uniclip runs as systemd service, creates clipboard server
+2. **Mac:** Connect to Pi's address using `uniclip 192.168.1.24:38687`
+3. **Sync:** Copy on one device, paste on the other automatically
+4. **Auto-start:** Pi service starts on boot, Mac uses shell alias for manual connection
+
+#### Troubleshooting
+
+**If clipboard sync stops working:**
+1. Check Pi service: `systemctl --user status uniclip`
+2. Get current address: `journalctl --user -u uniclip -n 5 | grep "Run"`
+3. Reconnect Mac with updated address
+4. Ensure both devices are on same network (192.168.1.x)
+
+**Note:** Port number changes when uniclip service restarts. If connection fails, check logs for current address.
+
+---
+
 ## Key Configuration Files
 
 ### Shell Configuration
@@ -520,6 +606,12 @@ This approach loads NVM only when first used, significantly improving shell star
 | `~/.ssh/` | SSH keys and configuration |
 | `~/.claude.json` | Claude Code configuration |
 | `~/.claude/` | Claude Code data directory |
+
+### Clipboard Sharing
+
+| File/Directory | Purpose |
+|----------------|---------|
+| `~/.config/systemd/user/uniclip.service` | Uniclip systemd service configuration |
 
 ---
 
@@ -589,6 +681,13 @@ tmux source ~/.tmux.conf     # Reload tmux config (or Prefix + r)
 swaymsg reload               # Reload Sway config (or Mod+Shift+c)
 ```
 
+**Clipboard Sharing:**
+```bash
+systemctl --user status uniclip                  # Check uniclip service status
+systemctl --user restart uniclip                 # Restart uniclip service
+journalctl --user -u uniclip -n 5 | grep "Run"   # Get current connection address
+```
+
 ### PATH Modifications
 
 Current PATH additions (in order):
@@ -604,6 +703,7 @@ Important files to backup when migrating or updating:
 - `~/.oh-my-zsh/custom/`
 - `~/.config/sway/config`
 - `~/.config/foot/foot.ini`
+- `~/.config/systemd/user/uniclip.service`
 - `~/.ssh/`
 - `~/.claude.json`
 - Homebrew package list: `brew list --versions > ~/brew-packages.txt`
@@ -615,7 +715,9 @@ Important files to backup when migrating or updating:
 - **Theme Consistency:** Gruvbox Dark color scheme across shell, tmux, Sway, and foot terminal
 - **Performance:** NVM lazy-loading implemented for faster shell startup
 - **Safety:** Interactive prompts enabled for rm, cp, mv operations
-- **Clipboard:** Tmux configured with cross-platform clipboard support (xclip for Linux)
+- **Clipboard:**
+  - Tmux configured with cross-platform clipboard support (wl-clipboard for Wayland)
+  - Uniclip provides universal clipboard sync with Mac Mini M4
 - **History:** Extensive history (50k entries) with deduplication across sessions
 - **Wayland:** Running Sway compositor on Wayland instead of X11
 
