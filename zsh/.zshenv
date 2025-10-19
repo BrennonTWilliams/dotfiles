@@ -2,6 +2,9 @@
 # This file should contain PATH settings and environment variables
 # that need to be available to all shells and GUI applications
 
+# Local user binaries
+export PATH="$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH"
+
 # Claude Code - needs to be in PATH early for GUI apps
 export PATH="$HOME/.npm-global/bin:$PATH"
 
