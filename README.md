@@ -294,7 +294,29 @@ git push
 
 ## Troubleshooting
 
-### Stow Conflicts
+For detailed troubleshooting information, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+### Common Issues
+
+#### Claude Command Not Found After Restart
+
+If the `claude` command works but stops working after restarting your system:
+
+```bash
+# Pull latest changes
+cd ~/.dotfiles
+git pull
+
+# Reinstall dotfiles
+./install.sh --all
+
+# Restart shell
+exec zsh
+```
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#claude-command-not-found-after-restart) for detailed explanation.
+
+#### Stow Conflicts
 
 If stow reports conflicts with existing files:
 
@@ -306,7 +328,7 @@ mv ~/.zshrc ~/.zshrc.backup
 stow -R zsh
 ```
 
-### Symlinks Not Working
+#### Symlinks Not Working
 
 Verify symlinks are created correctly:
 
@@ -316,7 +338,7 @@ ls -la ~/  | grep '\->'
 
 You should see symlinks pointing to `~/.dotfiles/`.
 
-### Shell Not Loading Config
+#### Shell Not Loading Config
 
 Ensure your shell sources the configuration:
 
