@@ -190,10 +190,14 @@ backup_existing() {
         "$HOME/.bash_logout"
         "$HOME/.zshrc"
         "$HOME/.zshenv"
+        "$HOME/.zshenv.local"
+        "$HOME/.zshrc.local"
+        "$HOME/.bashrc.local"
         "$HOME/.zprofile"
         "$HOME/.tmux.conf"
         "$HOME/.vimrc"
         "$HOME/.config/sway"
+        "$HOME/.config/sway/config.local"
         "$HOME/.config/foot"
         "$HOME/.oh-my-zsh/custom/aliases.zsh"
     )
@@ -322,6 +326,7 @@ create_local_configs() {
     info "Creating machine-specific configuration files..."
 
     # Create local config files if they don't exist
+    touch "$HOME/.zshenv.local"
     touch "$HOME/.zshrc.local"
     touch "$HOME/.bashrc.local"
 
@@ -341,6 +346,7 @@ EOF
 
     success "Local configuration files ready"
     info "Edit these files for machine-specific settings:"
+    echo "  - ~/.zshenv.local"
     echo "  - ~/.zshrc.local"
     echo "  - ~/.bashrc.local"
     echo "  - ~/.config/sway/config.local"
@@ -454,6 +460,7 @@ Configuration installed successfully!
 Next Steps:
 
 1. Review and edit local configuration files:
+   - ~/.zshenv.local
    - ~/.zshrc.local
    - ~/.bashrc.local
    - ~/.config/sway/config.local

@@ -144,11 +144,8 @@ npx() {
   npx "$@"
 }
 
-# Claude Code
-export PATH="$HOME/.npm-global/bin:$PATH"
-
-# Homebrew configuration
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Claude Code PATH and Homebrew are configured in ~/.zshenv
+# This ensures they're available even for non-interactive shells and GUI apps
 
 # Tmux configuration
 # Auto-attach to tmux session or create new one (optional, commented by default)
