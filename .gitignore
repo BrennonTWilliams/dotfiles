@@ -1,0 +1,239 @@
+# ==============================================================================
+# Dotfiles Repository .gitignore
+# ==============================================================================
+# This file prevents sensitive data, large binaries, and auto-generated files
+# from being accidentally committed to version control.
+
+# ==============================================================================
+# SECRETS & AUTHENTICATION (CRITICAL - NEVER COMMIT)
+# ==============================================================================
+
+# SSH Keys
+.ssh/
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.pem
+*.key
+
+# API Credentials & Tokens
+.claude.json
+.claude.json.backup
+.claude/.credentials.json
+.config/gh/config.yml
+.config/gh/hosts.yml
+.config/op/config
+.netrc
+.npmrc
+.pypirc
+credentials*
+secrets*
+*.secret
+
+# AWS & Cloud Credentials
+.aws/credentials
+.aws/config
+.docker/config.json
+.kube/config
+
+# GPG & Password Stores
+.gnupg/
+.password-store/
+
+# System Authentication
+.config/pulse/cookie
+
+# Environment Files
+.env
+.env.local
+.env.*.local
+
+# ==============================================================================
+# MACHINE-SPECIFIC CONFIGURATION
+# ==============================================================================
+
+# Local overrides (pattern for machine-specific configs)
+*.local
+*_local
+local.*
+
+# Host-specific files
+.zcompdump-*
+.zsh_sessions/
+
+# ==============================================================================
+# HISTORY FILES
+# ==============================================================================
+
+.bash_history
+.zsh_history
+.python_history
+.node_repl_history
+.mysql_history
+.psql_history
+.lesshst
+.viminfo
+.netrwhist
+
+# ==============================================================================
+# CACHES & AUTO-GENERATED FILES
+# ==============================================================================
+
+# Zsh
+.zcompdump*
+*.zwc
+
+# General caches
+.cache/
+.npm/
+.cargo/
+.rustup/
+
+# Homebrew
+.cache/Homebrew/
+.homebrew/
+
+# Package managers
+node_modules/
+.nvm/
+.rbenv/
+.pyenv/
+
+# ==============================================================================
+# LARGE BINARIES & DOWNLOADS
+# ==============================================================================
+
+# Fonts (document download links instead)
+.local/share/fonts/
+*.ttf
+*.otf
+*.woff
+*.woff2
+
+# Browser data
+.mozilla/
+.config/google-chrome/
+.config/chromium/
+
+# Application data
+.local/share/applications/
+.local/share/Trash/
+
+# ==============================================================================
+# PLUGIN MANAGERS & FRAMEWORKS (manage via installation scripts)
+# ==============================================================================
+
+# Oh My Zsh core (manage via installation script)
+.oh-my-zsh/cache/
+.oh-my-zsh/log/
+.oh-my-zsh/.git
+.oh-my-zsh/plugins/
+.oh-my-zsh/themes/
+.oh-my-zsh/lib/
+.oh-my-zsh/tools/
+.oh-my-zsh/oh-my-zsh.sh
+.oh-my-zsh/templates/
+.oh-my-zsh/custom/plugins/*/.git
+.oh-my-zsh/custom/themes/*/.git
+
+# Tmux Plugin Manager (TPM installs these)
+.tmux/plugins/*/
+.tmux/resurrect/
+.tmux/.gitkeep
+
+# ==============================================================================
+# APPLICATION SESSION DATA
+# ==============================================================================
+
+# Claude Code session data
+.claude/debug/
+.claude/session-env/
+.claude/shell-snapshots/
+.claude/file-history/
+.claude/history.jsonl
+.claude/todos/
+.claude/projects/
+.claude/statsig/
+.claude/settings.local.json
+
+# ==============================================================================
+# LOGS & DEBUG FILES
+# ==============================================================================
+
+*.log
+.npm/_logs/
+logs/
+debug/
+
+# ==============================================================================
+# OPERATING SYSTEM FILES
+# ==============================================================================
+
+# Linux
+.sudo_as_admin_successful
+.Xauthority
+.ICEauthority
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ==============================================================================
+# EDITOR FILES
+# ==============================================================================
+
+# Vim
+*.swp
+*.swo
+*~
+.*.sw?
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+
+# ==============================================================================
+# BUILD ARTIFACTS & TEMP FILES
+# ==============================================================================
+
+*.pyc
+__pycache__/
+*.class
+*.o
+*.so
+*.dylib
+*.dll
+*.exe
+dist/
+build/
+*.egg-info/
+
+# ==============================================================================
+# EXCEPTIONS (files to track despite matching patterns above)
+# ==============================================================================
+
+# Allow README and documentation
+!README.md
+!INSTALL.md
+!CHANGELOG.md
+
+# Allow .gitkeep files
+!.gitkeep
+
+# Allow specific config templates
+!*.example
+!*.template

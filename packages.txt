@@ -1,0 +1,64 @@
+# ==============================================================================
+# System Packages Manifest
+# ==============================================================================
+# This file lists all packages that should be installed for the full
+# development environment. Use this as a reference when setting up a new system.
+#
+# Installation:
+#   - Debian/Ubuntu: xargs -a packages.txt sudo apt install -y
+#   - Fedora/RHEL:   xargs -a packages.txt sudo dnf install -y
+#   - Arch:          xargs -a packages.txt sudo pacman -S --noconfirm
+#   - macOS:         xargs -a packages.txt brew install
+# ==============================================================================
+
+# ==============================================================================
+# Core System Tools
+# ==============================================================================
+git
+curl
+wget
+stow
+htop
+tmux
+zsh
+
+# ==============================================================================
+# Sway Window Manager & Wayland
+# ==============================================================================
+sway
+swaybg
+swayidle
+swaylock
+waybar
+foot
+wmenu
+grim
+mako-notifier
+network-manager-gnome
+brightnessctl
+
+# ==============================================================================
+# Development Tools
+# ==============================================================================
+python3
+python3-pip
+build-essential
+
+# ==============================================================================
+# Utilities
+# ==============================================================================
+xclip
+ripgrep
+fd-find
+fzf
+tree
+unzip
+jq
+
+# ==============================================================================
+# Optional: Additional Tools
+# ==============================================================================
+# neovim
+# vim
+# docker.io
+# docker-compose
