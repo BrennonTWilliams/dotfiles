@@ -7,9 +7,15 @@
 # It provides safe backups, platform detection, and selective installation.
 #
 # Usage:
-#   ./install.sh              # Interactive installation
-#   ./install.sh --all        # Install all packages non-interactively
-#   ./install.sh zsh tmux     # Install only specified packages
+#   ./install.sh                    # Interactive installation (packages + setup)
+#   ./install.sh --all              # Install all packages + run all setup scripts
+#   ./install.sh --all --no-setup   # Install all packages, skip setup scripts
+#   ./install.sh zsh tmux           # Install only specified packages (interactive setup)
+#
+# Options:
+#   --all         Install all packages without prompting
+#   --no-setup    Skip running setup scripts (fonts, oh-my-zsh, nvm, tmux)
+#   --setup-only  Only run setup scripts, skip package installation
 # ==============================================================================
 
 set -e
@@ -340,9 +346,106 @@ EOF
     echo "  - ~/.config/sway/config.local"
 }
 
+# Run setup scripts
+run_setup_scripts() {
+    section "Running Setup Scripts"
+
+    local scripts_dir="$DOTFILES_DIR/scripts"
+    local run_mode="$1"  # "all", "interactive", or "skip"
+
+    # Available setup scripts
+    local setup_scripts=(
+        "setup-python.sh:Install pip and pipx (Python package managers)"
+        "setup-ohmyzsh.sh:Install Oh My Zsh with plugins"
+        "setup-nvm.sh:Install NVM (Node Version Manager)"
+        "setup-fonts.sh:Install Nerd Fonts"
+        "setup-tmux-plugins.sh:Install Tmux Plugin Manager"
+    )
+
+    local scripts_to_run=()
+
+    case "$run_mode" in
+        all)
+            info "Running all setup scripts..."
+            for script_info in "${setup_scripts[@]}"; do
+                scripts_to_run+=("${script_info%%:*}")
+            done
+            ;;
+        interactive)
+            echo -e "${CYAN}Available setup scripts:${NC}"
+            for script_info in "${setup_scripts[@]}"; do
+                local script_name="${script_info%%:*}"
+                local description="${script_info#*:}"
+                echo "  - $description"
+            done
+            echo
+
+            for script_info in "${setup_scripts[@]}"; do
+                local script_name="${script_info%%:*}"
+                local description="${script_info#*:}"
+                read -p "Run $description? (y/n) " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    scripts_to_run+=("$script_name")
+                fi
+            done
+            ;;
+        skip)
+            info "Skipping setup scripts"
+            return 0
+            ;;
+        *)
+            warn "Unknown run mode: $run_mode"
+            return 1
+            ;;
+    esac
+
+    # Run selected scripts
+    if [ ${#scripts_to_run[@]} -eq 0 ]; then
+        info "No setup scripts selected"
+        return 0
+    fi
+
+    local successful=0
+    local failed=0
+
+    for script in "${scripts_to_run[@]}"; do
+        local script_path="$scripts_dir/$script"
+
+        if [ ! -f "$script_path" ]; then
+            warn "Script not found: $script"
+            ((failed++))
+            continue
+        fi
+
+        if [ ! -x "$script_path" ]; then
+            warn "Script not executable: $script"
+            chmod +x "$script_path"
+        fi
+
+        info "Running $script..."
+        echo
+
+        if "$script_path"; then
+            ((successful++))
+            success "Completed $script"
+        else
+            ((failed++))
+            warn "Failed to run $script"
+        fi
+        echo
+    done
+
+    echo
+    success "Ran $successful setup scripts successfully"
+    [ $failed -gt 0 ] && warn "$failed setup scripts failed"
+}
+
 # Show post-installation instructions
 post_install() {
     section "Post-Installation"
+
+    local setup_ran="$1"
 
     cat << 'EOF'
 
@@ -355,20 +458,31 @@ Next Steps:
    - ~/.bashrc.local
    - ~/.config/sway/config.local
 
-2. Install additional dependencies:
+2. Reload your shell:
+   - exec $SHELL
+   or restart your terminal
+
+EOF
+
+    if [ "$setup_ran" != "true" ]; then
+        cat << 'EOF'
+3. Install additional dependencies (if not already done):
+   - Run: ./scripts/setup-python.sh      (Install pip and pipx)
    - Run: ./scripts/setup-ohmyzsh.sh     (Install Oh My Zsh)
    - Run: ./scripts/setup-nvm.sh         (Install NVM)
    - Run: ./scripts/setup-fonts.sh       (Install Nerd Fonts)
    - Run: ./scripts/setup-tmux-plugins.sh (Install Tmux plugins)
 
-3. Reload your shell:
-   - exec $SHELL
-   or restart your terminal
+   Or run: ./install.sh --setup-only
 
-4. If using tmux, install plugins:
+EOF
+    else
+        cat << 'EOF'
+3. If using tmux, install plugins:
    - Open tmux and press: Prefix + I (Ctrl-a + Shift-i)
 
 EOF
+    fi
 
     if [ "$BACKUP_CREATED" = true ]; then
         echo -e "${CYAN}Backup Location:${NC}"
@@ -399,11 +513,64 @@ EOF
 main() {
     print_banner
 
-    check_prerequisites
-    backup_existing
-    install_dotfiles "$@"
-    create_local_configs
-    post_install
+    # Parse arguments
+    local install_all=false
+    local no_setup=false
+    local setup_only=false
+    local package_args=()
+
+    for arg in "$@"; do
+        case "$arg" in
+            --all)
+                install_all=true
+                ;;
+            --no-setup)
+                no_setup=true
+                ;;
+            --setup-only)
+                setup_only=true
+                ;;
+            *)
+                package_args+=("$arg")
+                ;;
+        esac
+    done
+
+    # Determine setup mode
+    local setup_mode="interactive"
+    if [ "$no_setup" = true ]; then
+        setup_mode="skip"
+    elif [ "$install_all" = true ]; then
+        setup_mode="all"
+    fi
+
+    # Run installation steps
+    if [ "$setup_only" = false ]; then
+        check_prerequisites
+        backup_existing
+
+        if [ "$install_all" = true ]; then
+            install_dotfiles --all
+        else
+            install_dotfiles "${package_args[@]}"
+        fi
+
+        create_local_configs
+    fi
+
+    # Run setup scripts
+    local setup_ran=false
+    if [ "$setup_mode" != "skip" ]; then
+        run_setup_scripts "$setup_mode"
+        setup_ran=true
+    fi
+
+    # Show post-installation instructions (skip if setup-only)
+    if [ "$setup_only" = false ]; then
+        post_install "$setup_ran"
+    else
+        success "Setup scripts completed!"
+    fi
 }
 
 # Run main function with all arguments

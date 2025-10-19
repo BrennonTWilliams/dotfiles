@@ -2,6 +2,9 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+# Add user's local bin to PATH
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
