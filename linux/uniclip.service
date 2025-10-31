@@ -1,0 +1,23 @@
+[Unit]
+Description=Uniclip Clipboard Service
+Documentation=https://github.com/elves/uniclip
+After=graphical-session.target
+Wants=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/uniclip --debug
+Restart=always
+RestartSec=5
+StandardOutput=file:%t/uniclip/uniclip.log
+StandardError=file:%t/uniclip/uniclip.error.log
+Environment=DISPLAY=:0
+Environment=WAYLAND_DISPLAY=wayland-0
+WorkingDirectory=%h
+
+# User service configuration
+# The binary path will be dynamically determined during installation
+
+[Install]
+WantedBy=default.target

@@ -33,11 +33,8 @@
 **⏱️ Total setup time: 15-25 minutes**
 
 ```bash
-# One-command setup for macOS (Apple Silicon and Intel)
-curl -fsSL https://raw.githubusercontent.com/BrennonTWilliams/dotfiles/main/install.sh | bash -s -- --all --packages
-
-# Or manual setup (see detailed steps below)
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+# Clone and setup (requires SSH key access to GitHub)
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./install.sh --all --packages
 exec zsh
@@ -62,6 +59,7 @@ exec zsh
 - **Internet connection** for downloads
 - **Administrator access** for installations
 - **50GB+ free disk space** for development tools
+- **GitHub SSH key configured** for repository access (this is a private repository)
 
 ---
 
@@ -99,6 +97,8 @@ git --version
 
 **Troubleshooting:**
 - If installation fails, download from: [Apple Developer Downloads](https://developer.apple.com/download/all/)
+  - **Note:** Requires Apple Developer account login to access downloads
+- Alternative: Install using Xcode from App Store (includes Command Line Tools)
 - Search for "Command Line Tools for Xcode"
 
 ### 1.3 Configure System Preferences
@@ -168,7 +168,7 @@ brew doctor
 
 ```bash
 # Clone the dotfiles repository
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Install with platform-specific packages and setup
@@ -663,7 +663,7 @@ sudo chown -R $(whoami) /opt/homebrew  # ARM64
 
 ### Community
 - [macDev Subreddit](https://reddit.com/r/macdev)
-- [Homebrew Discourse](https://discourse.brew.sh/)
+- [Homebrew Discussions](https://github.com/Homebrew/discussions/discussions)
 - [Stack Overflow macOS Tag](https://stackoverflow.com/questions/tagged/macos)
 
 ### Security Best Practices

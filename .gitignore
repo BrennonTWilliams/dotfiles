@@ -167,10 +167,22 @@ logs/
 debug/
 
 # Test results and reports
-test_results/*.log
-test_results/*_report_*.md
-test_results/*_test_*.log
-test_results/latest_*.txt
+test_results/
+tests/test_results/
+tests/tests/test_results/
+
+# Temporary test files
+*_test_*.sh
+*_integration_*.sh
+function_test.sh
+quick_integration_test.sh
+
+# Generated documentation with timestamps
+*_VALIDATION_REPORT_*.md
+*_IMPLEMENTATION_REPORT_*.md
+*_[0-9]{8}.md
+
+# Keep allowed test results
 !test_results/latest_summary.txt
 
 # ==============================================================================

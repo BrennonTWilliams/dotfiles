@@ -36,7 +36,7 @@ Special optimizations for Mac Mini M4 and other Apple Silicon Macs:
 
 ```bash
 # Clone the repository
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Run the installation script
@@ -65,7 +65,7 @@ xcode-select --install
 
 ```bash
 # Clone and install
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Install everything with platform-specific packages
@@ -75,7 +75,7 @@ cd ~/.dotfiles
 exec zsh
 ```
 
-**⏱️ Total setup time: ~10-15 minutes**
+**⏱️ Total setup time: 15-25 minutes**
 
 ### Apple Silicon vs Intel Mac Differences
 
@@ -212,7 +212,7 @@ xcode-select --install
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 3. Clone and install dotfiles
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # 4. Install platform-specific packages and configurations
@@ -225,7 +225,7 @@ cd ~/.dotfiles
 exec zsh
 ```
 
-**Total setup time: ~10-15 minutes**
+**Total setup time: 15-25 minutes**
 
 ### Post-Installation
 
@@ -563,7 +563,7 @@ xargs -a packages.txt sudo dnf install -y
 xargs -a packages-macos.txt brew install
 
 # Alternative: Install macOS packages manually (filtered)
-brew install $(cat packages-macos.txt | grep -v '^#' | grep -v '^#')
+brew install $(cat packages-macos.txt | grep -v '^#' | grep -v 'sketchybar')
 ```
 
 **Note:** The macOS package list includes macOS-specific alternatives:

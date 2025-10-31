@@ -115,7 +115,7 @@ Status: ✅ PASSED
 - ✅ zsh - Z shell configuration
 
 **Platform Package Files:**
-- ✅ packages-macos.txt (19 packages)
+- ✅ packages-macos.txt (18 packages)
 - ✅ packages.txt (Linux packages)
 
 ### 8. Error Handling & Robustness ✅

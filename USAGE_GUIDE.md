@@ -31,7 +31,7 @@ brew install git stow zsh tmux
 ### 2. Clone the Repository
 
 ```bash
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ```
 
@@ -79,7 +79,7 @@ After the main installation, run these helper scripts:
 xargs -a packages.txt sudo apt install -y
 
 # macOS
-xargs -a packages.txt brew install
+xargs -a packages-macos.txt brew install
 ```
 
 ### 6. Set Zsh as Default Shell

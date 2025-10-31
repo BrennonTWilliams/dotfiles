@@ -219,6 +219,82 @@ backup_if_exists() {
 # Installation Steps
 # ==============================================================================
 
+# Enhanced cross-platform command validation
+validate_platform_commands() {
+    local missing=()
+    local optional_missing=()
+
+    # Core cross-platform commands
+    local core_commands=(
+        "git:Version control"
+        "curl:HTTP client"
+        "zsh:Shell (optional but recommended)"
+        "tmux:Terminal multiplexer (optional but recommended)"
+    )
+
+    for cmd_info in "${core_commands[@]}"; do
+        local cmd="${cmd_info%:*}"
+        local description="${cmd_info#*:}"
+
+        if ! command_exists "$cmd"; then
+            if [[ "$description" == *"optional"* ]]; then
+                optional_missing+=("$cmd ($description)")
+            else
+                missing+=("$cmd ($description)")
+            fi
+        fi
+    done
+
+    # Platform-specific commands
+    if [[ "$OS" == "macos" ]]; then
+        local macos_commands=(
+            "pbcopy:macOS clipboard (paste)"
+            "pbpaste:macOS clipboard (copy)"
+        )
+
+        for cmd_info in "${macos_commands[@]}"; do
+            local cmd="${cmd_info%:*}"
+            local description="${cmd_info#*:}"
+
+            if ! command_exists "$cmd"; then
+                optional_missing+=("$cmd ($description)")
+            fi
+        done
+
+    elif [[ "$OS" == "linux" ]]; then
+        local linux_commands=(
+            "xclip:X11 clipboard (optional, for X11 environments)"
+        )
+
+        for cmd_info in "${linux_commands[@]}"; do
+            local cmd="${cmd_info%:*}"
+            local description="${cmd_info#*:}"
+
+            if ! command_exists "$cmd"; then
+                optional_missing+=("$cmd ($description)")
+            fi
+        done
+    fi
+
+    # Display results
+    if [ ${#missing[@]} -gt 0 ]; then
+        warn "Missing required commands:"
+        for cmd in "${missing[@]}"; do
+            echo "  - $cmd"
+        done
+        return 1
+    fi
+
+    if [ ${#optional_missing[@]} -gt 0 ]; then
+        info "Missing optional commands (installation will continue):"
+        for cmd in "${optional_missing[@]}"; do
+            echo "  - $cmd"
+        done
+    fi
+
+    return 0
+}
+
 # Check prerequisites
 check_prerequisites() {
     section "Checking Prerequisites"
@@ -228,13 +304,14 @@ check_prerequisites() {
 
     local missing=()
 
-    # Check for required commands
-    if ! command_exists git; then
-        missing+=("git")
-    fi
-
+    # Check for required installation tools
     if ! command_exists stow; then
         missing+=("stow")
+    fi
+
+    # Enhanced cross-platform command validation
+    if ! validate_platform_commands; then
+        error "Cannot proceed without required commands"
     fi
 
     if [ ${#missing[@]} -gt 0 ]; then
@@ -340,6 +417,23 @@ get_platform_packages() {
     fi
 }
 
+# Linux package availability validation functions
+check_apt_package_availability() {
+    local package="$1"
+    apt-cache show "$package" &>/dev/null
+}
+
+check_dnf_package_availability() {
+    local package="$1"
+    dnf info "$package" &>/dev/null
+}
+
+check_pacman_package_availability() {
+    local package="$1"
+    # Corrected pacman validation: try -Si first, then -Ss
+    pacman -Si "$package" &>/dev/null || pacman -Ss "^${package}$" &>/dev/null
+}
+
 # Pre-validate packages and handle special requirements
 pre_validate_packages() {
     local packages=("$@")
@@ -371,12 +465,30 @@ pre_validate_packages() {
             esac
         fi
 
-        # Validate package availability for Homebrew
+        # Enhanced package availability validation
         if [[ "$PKG_MANAGER" == "brew" ]]; then
             if check_brew_package_availability "$package"; then
                 valid_packages+=("$package")
             else
-                warn "Package '$package' not available, skipping..."
+                warn "Package '$package' not available in Homebrew, skipping..."
+            fi
+        elif [[ "$PKG_MANAGER" == "apt" ]]; then
+            if check_apt_package_availability "$package"; then
+                valid_packages+=("$package")
+            else
+                warn "Package '$package' not available in apt repositories, skipping..."
+            fi
+        elif [[ "$PKG_MANAGER" == "dnf" ]]; then
+            if check_dnf_package_availability "$package"; then
+                valid_packages+=("$package")
+            else
+                warn "Package '$package' not available in dnf repositories, skipping..."
+            fi
+        elif [[ "$PKG_MANAGER" == "pacman" ]]; then
+            if check_pacman_package_availability "$package"; then
+                valid_packages+=("$package")
+            else
+                warn "Package '$package' not available in pacman repositories, skipping..."
             fi
         else
             # For other package managers, assume packages are valid
