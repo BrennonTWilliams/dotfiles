@@ -1,0 +1,285 @@
+# ==============================================================================
+# Ghostty Terminal Configuration - macOS
+# ==============================================================================
+# Comprehensive configuration for optimal macOS integration with zsh shell
+# Includes Gruvbox theme, performance optimizations, and proper keybindings
+# ==============================================================================
+
+# ============================================
+# Shell Integration
+# ============================================
+
+# Shell integration (CRITICAL: Must be zsh, not fish)
+shell-integration = zsh
+
+# ============================================
+# Theme Configuration
+# ============================================
+
+# Gruvbox dark theme for comfortable coding
+theme = gruvbox-dark
+
+# Gruvbox color palette for complete color scheme
+palette = #0d1117=#1d2021 #161b22=#282828 #0d1117=#3c3836 #58a6ff=#d65d0e #58a6ff=#d65d0e #79c0ff=#8ec07c #c9d1d9=#ebdbb2 #c9d1d9=#ebdbb2 #f0f6fc=#fbf1c7 #f0f6fc=#fbf1c7 #ff7b72=#cc241d #ffa657=#d65d0e #ffa657=#d65d0e #79c0ff=#8ec07c #a5d6ff=#d79921 #7ee787=#b8bb26 #bae67e=#8ec07c #ffa657=#d65d0e #f85149=#fb4934 #ffa657=#d65d0e #ff7b72=#cc241d #7ee787=#b8bb26
+
+# ============================================
+# Font Configuration
+# ============================================
+
+# Primary font family (SF Mono for macOS consistency)
+font-family = SF Mono
+
+# Font size optimized for Retina displays
+font-size = 14
+
+# Font rendering for crisp text on high-DPI displays
+font-render-mode = subpixel
+
+# Enable DPI awareness for external monitors
+font-dpi-aware = yes
+
+# Fallback fonts for better Unicode coverage
+font-fallback = SF Pro Text, Apple Color Emoji, Noto Color Emoji
+
+# Bold and italic font variants
+font-family-bold = SF Mono Semibold
+font-family-italic = SF Mono Italic
+
+# ============================================
+# macOS-Specific Settings
+# ============================================
+
+# Native macOS window controls
+macos-titlebar-style = auto
+
+# Option key behavior for terminal compatibility
+macos-option-as-alt = true
+
+# Window shadows for depth perception
+macos-window-shadow = true
+
+# Native keyboard shortcuts integration
+macos-native-keyboard = true
+
+# Application quit behavior (prompt for confirmation)
+macos-quit-behavior = prompt
+
+# Automatic updates for latest features
+macos-auto-update = true
+
+# System color scheme integration
+macos-color-scheme = dark
+
+# Fullscreen window animations
+macos-fullscreen-animation = true
+
+# ============================================
+# Performance Settings
+# ============================================
+
+# GPU acceleration for better performance
+renderer = gpu
+
+# Enable GPU acceleration
+gpu-acceleration = true
+
+# Fallback to CPU rendering if GPU fails
+gpu-acceleration-fallback = true
+
+# Vertical sync for smooth rendering
+vsync = true
+
+# No resize delay for responsive interface
+resize-delay = 0
+
+# ============================================
+# Window Configuration
+# ============================================
+
+# Window decoration for native macOS feel
+window-decoration = true
+
+# Window padding for better readability
+window-padding-x = 8
+window-padding-y = 8
+
+# Background opacity for modern look
+background-opacity = 0.95
+
+# Background blur for depth
+background-blur = 20
+
+# Window dimensions on startup
+window-width = 120
+window-height = 40
+
+# ============================================
+# Keybinding Configuration
+# ============================================
+
+# Copy and paste (Shift variants to avoid shell conflicts)
+keybind = shift+ctrl+c=copy_to_clipboard
+keybind = shift+ctrl+v=paste_from_clipboard
+
+# Font size adjustments
+keybind = cmd+plus=increase_font_size
+keybind = cmd+minus=decrease_font_size
+keybind = cmd+0=reset_font_size
+
+# Window management
+keybind = cmd+n=new_window
+keybind = cmd+w=close_window
+keybind = cmd+t=new_tab
+keybind = cmd+q=quit
+
+# Clear screen (Ctrl+L) - avoid Ctrl+K to prevent shell conflict
+keybind = ctrl+l=clear_screen
+
+# Search functionality
+keybind = cmd+f=find_search
+keybind = cmd+g=find_next
+keybind = cmd+shift+g=find_previous
+
+# ============================================
+# Clipboard Integration
+# ============================================
+
+# Allow reading from system clipboard
+clipboard-read-allow = true
+
+# Allow writing to system clipboard
+clipboard-write-allow = true
+
+# Bracketed paste mode for better shell integration
+paste-bracketed = true
+
+# ============================================
+# Tmux Integration
+# ============================================
+
+# Tmux session management keybindings
+keybind = cmd+shift+t=tmux_new_session
+keybind = cmd+shift+s=tmux_switch_session
+keybind = cmd+shift+d=tmux_detach_session
+
+# Tmux window management
+keybind = cmd+shift+n=tmux_new_window -s
+keybind = cmd+shift+a=tmux_attach_session
+
+# Tmux pane management
+keybind = cmd+shift+=tmux_split_horizontal
+keybind = cmd+shift+-=tmux_split_vertical
+
+# ============================================
+# Mouse Configuration
+# ============================================
+
+# Scroll wheel multiplier for comfortable scrolling
+scroll-wheel-multiplier = 3
+
+# Enable URL detection and clicking
+mouse-hide-while-typing = true
+
+# Modifier key for URL opening
+mouse-modifier = shift
+
+# ============================================
+# Bell and Notifications
+# ============================================
+
+# Visual bell instead of audible
+audible-bell = false
+
+# Visual bell flash
+visual-bell = false
+
+# Command notification (long-running commands)
+command-notifications = true
+
+# ============================================
+# Cursor Configuration
+# ============================================
+
+# Cursor shape (block for better visibility)
+cursor-style = block
+
+# Cursor blinking for better tracking
+cursor-blink = false
+
+# Cursor color override
+cursor-color = #ebdbb2
+
+# ============================================
+# Selection Configuration
+# ============================================
+
+# Auto-copy selection to clipboard
+selection-auto-copy = true
+
+# Selection word boundaries
+selection-word-boundaries = ./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}?
+
+# ============================================
+# Advanced Configuration
+# ============================================
+
+# Local configuration import (for machine-specific overrides)
+import = ~/.config/ghostty/config.local
+
+# Shell command for new terminals
+shell = /bin/zsh
+
+# Working directory inheritance
+working-directory = inherit
+
+# Terminal type
+term = xterm-256color
+
+# Confirm exit on active processes
+confirm-close-surface = true
+
+# Focus follows mouse
+focus-follows-mouse = false
+
+# ============================================
+# Development Environment
+# ============================================
+
+# Environment variables for Ghostty sessions
+env = TERM=xterm-256color
+env = COLORTERM=truecolor
+
+# Development-friendly settings
+confirm-close-surface = true
+
+# ============================================
+# Troubleshooting and Debugging
+# ============================================
+
+# Logging level (increase for debugging)
+log-level = warning
+
+# Performance monitoring
+performance-indicators = false
+
+# Render timing information
+render-timing = false
+
+# ==============================================================================
+# End of Configuration
+# ==============================================================================
+#
+# This configuration provides:
+# - Optimal macOS integration with native features
+# - Gruvbox dark theme for comfortable coding
+# - GPU-accelerated rendering for smooth performance
+# - Proper zsh shell integration without conflicts
+# - Comprehensive keybindings for productivity
+# - Font rendering optimized for Retina displays
+# - Tmux integration for terminal multiplexing
+# - Clipboard integration for seamless workflow
+# - Local config support for machine-specific settings
+#
+# Restart Ghostty after making changes to see effects.
+# For machine-specific overrides, edit ~/.config/ghostty/config.local
+# ==============================================================================

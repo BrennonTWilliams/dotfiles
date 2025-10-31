@@ -1,0 +1,83 @@
+# ==============================================================================
+# Ghostty Local Configuration Template
+# ==============================================================================
+# This file contains machine-specific overrides for Ghostty terminal
+# Copy this file to ~/.config/ghostty/config.local and customize as needed
+# ==============================================================================
+
+# ============================================
+# Machine-Specific Overrides
+# ============================================
+
+# Font size adjustments for different displays
+# font-size = 16  # Larger for high-DPI displays
+# font-size = 12  # Smaller for compact layouts
+
+# Performance settings for older Macs
+# renderer = cpu  # Fallback to CPU rendering if GPU causes issues
+# background-blur = 0  # Disable blur on older machines
+
+# Display-specific settings
+# font-dpi-aware = yes  # Enable for external monitors with different DPI
+# background-opacity = 1.0  # Full opacity for better readability
+
+# Custom keybindings
+# keybind = cmd+shift+c=copy_to_clipboard  # Alternative copy shortcut
+# keybind = cmd+shift+v=paste_from_clipboard  # Alternative paste shortcut
+
+# ============================================
+# Development Environment Overrides
+# ============================================
+
+# Custom shell for specific projects
+# shell = /bin/bash  # Use bash instead of zsh for specific compatibility
+
+# Environment variables for Ghostty sessions
+# env = DEVELOPMENT_MODE=true
+# env = PROJECT_PATH=/path/to/your/project
+
+# ============================================
+# Theme Variations
+# ============================================
+
+# Alternative themes (uncomment to use)
+# theme = gruvbox-light
+# theme = tokyonight
+# theme = catppuccin-mocha
+
+# Custom color overrides
+# foreground = #ffffff
+# background = #000000
+
+# ============================================
+# Advanced Configuration
+# ============================================
+
+# Mouse sensitivity adjustments
+# scroll-wheel-multiplier = 2  # Slower scrolling for trackpad
+# scroll-wheel-multiplier = 5  # Faster scrolling for wheel mouse
+
+# Window behavior
+# window-decoration = false  # Borderless windows
+# window-padding-x = 16      # Wider padding
+# window-padding-y = 16      # Taller padding
+
+# Performance tuning
+# resize-delay = 100  # Add small delay for better performance
+# gpu-acceleration = false  # Disable GPU acceleration if causing issues
+
+# ============================================
+# Notes
+# ============================================
+#
+# This file allows you to override settings from the main config without
+# modifying the tracked configuration file. Settings here take precedence.
+#
+# Common use cases:
+# - Different font sizes for different machines/displays
+# - Performance tuning for older hardware
+# - Machine-specific themes or color schemes
+# - Development environment customizations
+# - Temporary overrides for testing
+#
+# Remember to restart Ghostty after making changes to see the effects.

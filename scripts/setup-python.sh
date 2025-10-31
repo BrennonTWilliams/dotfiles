@@ -76,6 +76,7 @@ install_pip() {
             ;;
         *)
             error "Unknown package manager. Trying ensurepip fallback..."
+            # shellcheck disable=SC2317
             install_pip_fallback
             ;;
     esac

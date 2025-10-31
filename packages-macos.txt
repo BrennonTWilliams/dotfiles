@@ -41,7 +41,8 @@ python3
 rectangle
 
 # Terminal emulator (alternative to foot)
-iterm2
+# iTerm2
+ghostty
 
 # Status bar (alternative to Waybar)
 # sketchybar - requires special tap: FelixKratz/formulae (handled by install.sh)

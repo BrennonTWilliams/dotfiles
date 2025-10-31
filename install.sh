@@ -356,6 +356,7 @@ backup_existing() {
         "$HOME/.config/sway"
         "$HOME/.config/sway/config.local"
         "$HOME/.config/foot"
+        "$HOME/.config/ghostty"
         "$HOME/.oh-my-zsh/custom/aliases.zsh"
     )
 

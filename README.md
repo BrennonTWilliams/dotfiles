@@ -8,12 +8,12 @@ This dotfiles repository is designed to work seamlessly across multiple platform
 
 ### Supported Platforms
 
-| Platform | Architecture | Package Manager | Status |
-|----------|-------------|----------------|---------|
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | Homebrew (`/opt/homebrew`) | ✅ Fully Supported |
-| **macOS** | Intel x86_64 | Homebrew (`/usr/local`) | ✅ Fully Supported |
-| **Linux** | ARM64 (Raspberry Pi) | apt/dnf/pacman | ✅ Fully Supported |
-| **Linux** | x86_64 | apt/dnf/pacman | ✅ Fully Supported |
+| Platform | Architecture | Package Manager | Terminal | Status |
+|----------|-------------|----------------|----------|---------|
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | Homebrew (`/opt/homebrew`) | Ghostty | ✅ Fully Supported |
+| **macOS** | Intel x86_64 | Homebrew (`/usr/local`) | Ghostty | ✅ Fully Supported |
+| **Linux** | ARM64 (Raspberry Pi) | apt/dnf/pacman | Foot | ✅ Fully Supported |
+| **Linux** | x86_64 | apt/dnf/pacman | Foot | ✅ Fully Supported |
 
 ### Platform-Specific Features
 
@@ -22,6 +22,7 @@ This dotfiles repository is designed to work seamlessly across multiple platform
 - **Conditional Configuration** - Platform-specific aliases and features load automatically
 - **Cross-Platform Clipboard** - Works with pbcopy (macOS) and xclip (Linux)
 - **Unified Theme** - Gruvbox Dark theme works consistently across platforms
+- **Modern Terminal Emulators** - Ghostty on macOS, Foot on Linux with GPU acceleration
 
 ### Apple Silicon Optimization
 
@@ -31,6 +32,7 @@ Special optimizations for Mac Mini M4 and other Apple Silicon Macs:
 - **Homebrew Path Management** - Automatic detection of `/opt/homebrew` vs `/usr/local`
 - **macOS-Specific Aliases** - Dedicated shortcuts for macOS workflow
 - **Launchd Services** - Native macOS service integration (Uniclip clipboard sharing)
+- **Ghostty Integration** - Native GPU-accelerated terminal with Metal rendering
 
 ## Quick Start
 
@@ -96,7 +98,7 @@ This repository contains configuration for:
 - **Shell** - Zsh with Oh My Zsh, custom aliases, and Gruvbox theme
 - **Terminal Multiplexer** - Tmux with custom keybindings and Gruvbox theme
 - **Window Manager** - Sway (i3-compatible Wayland compositor)
-- **Terminal Emulator** - Foot with Gruvbox color scheme
+- **Terminal Emulators** - Ghostty (macOS) and Foot (Linux) with Gruvbox color scheme
 - **Development Tools** - Git, NVM, and various CLI utilities
 
 ### Package Structure
@@ -107,7 +109,8 @@ dotfiles/
 ├── bash/             # Bash shell configuration (fallback)
 ├── tmux/             # Tmux configuration
 ├── sway/             # Sway window manager
-├── foot/             # Foot terminal emulator
+├── foot/             # Foot terminal emulator (Linux)
+├── ghostty/          # Ghostty terminal emulator (macOS)
 └── scripts/          # Installation helper scripts
 ```
 
@@ -163,7 +166,8 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 ### Optional
 
 - `sway` - Wayland compositor
-- `foot` - Terminal emulator
+- `foot` - Terminal emulator (Linux)
+- `ghostty` - Terminal emulator (macOS)
 - `nvm` - Node.js version manager
 - Oh My Zsh plugins (installed via setup script)
 
@@ -568,7 +572,7 @@ brew install $(cat packages-macos.txt | grep -v '^#' | grep -v 'sketchybar')
 
 **Note:** The macOS package list includes macOS-specific alternatives:
 - Rectangle (window management) instead of Sway
-- iTerm2 (terminal) instead of Foot
+- Ghostty (terminal) instead of Foot
 - Sketchybar (status bar) instead of Waybar
 - Built-in macOS tools for screenshots and notifications
 - Works on both Apple Silicon and Intel Macs automatically

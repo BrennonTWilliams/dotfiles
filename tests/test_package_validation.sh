@@ -121,7 +121,6 @@ validate_package_syntax() {
     local syntax_errors=0
     local line_number=0
     local in_comment_block=false
-    local previous_line_empty=false
 
     while IFS= read -r line; do
         line_number=$((line_number + 1))
