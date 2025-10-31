@@ -10,12 +10,14 @@
 #   ./install.sh                    # Interactive installation (packages + setup)
 #   ./install.sh --all              # Install all packages + run all setup scripts
 #   ./install.sh --all --no-setup   # Install all packages, skip setup scripts
+#   ./install.sh --packages         # Install platform-specific packages only
 #   ./install.sh zsh tmux           # Install only specified packages (interactive setup)
 #
 # Options:
 #   --all         Install all packages without prompting
 #   --no-setup    Skip running setup scripts (fonts, oh-my-zsh, nvm, tmux)
 #   --setup-only  Only run setup scripts, skip package installation
+#   --packages    Install platform-specific system packages only
 # ==============================================================================
 
 set -e
@@ -92,9 +94,87 @@ detect_os() {
     fi
 }
 
+# Check if a Homebrew package exists before installation
+check_brew_package_availability() {
+    local package="$1"
+
+    if [[ "$PKG_MANAGER" != "brew" ]]; then
+        return 0  # Skip check for non-brew systems
+    fi
+
+    # Special handling for sketchybar - check if tap is already added
+    if [[ "$package" == "sketchybar" ]]; then
+        return 0  # We'll handle sketchybar specially
+    fi
+
+    # Check if package exists using brew search
+    if brew search "$package" 2>/dev/null | grep -q "^$package$"; then
+        return 0  # Package exists
+    else
+        return 1  # Package not found
+    fi
+}
+
+# Install required taps for specific packages
+install_required_taps() {
+    local package="$1"
+
+    if [[ "$PKG_MANAGER" != "brew" ]]; then
+        return 0  # Only applies to Homebrew
+    fi
+
+    case "$package" in
+        sketchybar)
+            # Check if tap is already added
+            if ! brew tap | grep -q "FelixKratz/formulae"; then
+                info "Adding FelixKratz/formulae tap for sketchybar..."
+                brew tap FelixKratz/formulae
+            else
+                info "FelixKratz/formulae tap already exists"
+            fi
+            ;;
+    esac
+}
+
 # Install package based on detected OS
 install_package() {
     local package="$1"
+
+    # Skip Linux-only packages on macOS
+    if [[ "$OS" == "macos" ]]; then
+        case "$package" in
+            sway|swaybg|swayidle|swaylock|waybar|foot|wmenu|mako-notifier|wlsunset)
+                warn "Skipping Linux-only package: $package"
+                return 0
+                ;;
+        esac
+    fi
+
+    # Special handling for sketchybar on macOS
+    if [[ "$OS" == "macos" && "$package" == "sketchybar" ]]; then
+        info "Installing sketchybar with special tap handling..."
+
+        # Install required tap first
+        if ! install_required_taps "$package"; then
+            error "Failed to install required tap for $package"
+            return 1
+        fi
+
+        # Now install sketchybar from the tap
+        if brew install sketchybar; then
+            success "Successfully installed sketchybar"
+            return 0
+        else
+            error "Failed to install sketchybar"
+            return 1
+        fi
+    fi
+
+    # Check package availability for Homebrew
+    if ! check_brew_package_availability "$package"; then
+        warn "Package '$package' not found in Homebrew repository. Skipping..."
+        return 1
+    fi
 
     info "Installing $package..."
 
@@ -233,6 +313,129 @@ get_available_packages() {
     done
 
     echo "${packages[@]}"
+}
+
+# Get platform-specific package list
+get_platform_packages() {
+    local packages_file=""
+
+    # Detect OS and choose appropriate package file
+    detect_os
+    case "$OS" in
+        "macos")
+            packages_file="$DOTFILES_DIR/packages-macos.txt"
+            ;;
+        *)
+            packages_file="$DOTFILES_DIR/packages.txt"
+            ;;
+    esac
+
+    if [ -f "$packages_file" ]; then
+        # Return packages from the file, filtering out comments and empty lines
+        # Extract only the package name (first word) from each non-comment line
+        grep -v '^#' "$packages_file" | grep -v '^$' | grep -v '^[[:space:]]*$' | awk '{print $1}'
+    else
+        warn "No package file found for OS: $OS"
+        return 1
+    fi
+}
+
+# Pre-validate packages and handle special requirements
+pre_validate_packages() {
+    local packages=("$@")
+    local valid_packages=()
+    local special_packages=()
+
+    detect_os
+
+    for package in "${packages[@]}"; do
+        # Skip empty lines and comments
+        if [ -z "$package" ] || [[ "$package" =~ ^# ]]; then
+            continue
+        fi
+
+        # Check for packages requiring special handling
+        if [[ "$OS" == "macos" && "$package" == "sketchybar" ]]; then
+            special_packages+=("$package")
+            valid_packages+=("$package")
+            continue
+        fi
+
+        # Skip Linux-only packages on macOS
+        if [[ "$OS" == "macos" ]]; then
+            case "$package" in
+                sway|swaybg|swayidle|swaylock|waybar|foot|wmenu|mako-notifier|wlsunset)
+                    warn "Skipping Linux-only package: $package"
+                    continue
+                    ;;
+            esac
+        fi
+
+        # Validate package availability for Homebrew
+        if [[ "$PKG_MANAGER" == "brew" ]]; then
+            if check_brew_package_availability "$package"; then
+                valid_packages+=("$package")
+            else
+                warn "Package '$package' not available, skipping..."
+            fi
+        else
+            # For other package managers, assume packages are valid
+            valid_packages+=("$package")
+        fi
+    done
+
+    # Echo results back to caller
+    printf '%s\n' "${valid_packages[@]}"
+}
+
+# Install platform-specific packages from package files
+install_platform_packages() {
+    section "Installing Platform-Specific Packages"
+
+    local packages=()
+    while IFS= read -r package; do
+        # Skip empty lines
+        if [ -n "$package" ]; then
+            packages+=("$package")
+        fi
+    done < <(get_platform_packages)
+
+    if [ ${#packages[@]} -eq 0 ]; then
+        warn "No packages found for platform: $OS"
+        return 0
+    fi
+
+    info "Found ${#packages[@]} packages for $OS: ${packages[*]}"
+
+    # Pre-validate packages and filter out invalid ones
+    local valid_packages=()
+    while IFS= read -r package; do
+        if [ -n "$package" ]; then
+            valid_packages+=("$package")
+        fi
+    done < <(pre_validate_packages "${packages[@]}")
+
+    if [ ${#valid_packages[@]} -eq 0 ]; then
+        warn "No valid packages found after validation"
+        return 0
+    fi
+
+    info "Installing ${#valid_packages[@]} validated packages for $OS: ${valid_packages[*]}"
+
+    local installed=0
+    local failed=0
+
+    for package in "${valid_packages[@]}"; do
+        if install_package "$package"; then
+            ((installed++))
+        else
+            ((failed++))
+        fi
+    done
+
+    echo
+    success "Platform package installation complete"
+    info "Installed: $installed, Failed: $failed"
 }
 
 # Install a single package using Stow
@@ -524,6 +727,7 @@ main() {
     local install_all=false
     local no_setup=false
     local setup_only=false
+    local install_packages=false
     local package_args=()
 
     for arg in "$@"; do
@@ -536,6 +740,9 @@ main() {
                 ;;
             --setup-only)
                 setup_only=true
+                ;;
+            --packages)
+                install_packages=true
                 ;;
             *)
                 package_args+=("$arg")
@@ -551,10 +758,32 @@ main() {
         setup_mode="all"
     fi
 
+    # Check if this is packages-only mode early to skip unnecessary steps
+    local packages_only_mode=false
+    if [ "$install_packages" = true ] && [ "$setup_only" = false ] && [ "$install_all" = false ] && [ ${#package_args[@]} -eq 0 ]; then
+        packages_only_mode=true
+    fi
+
     # Run installation steps
     if [ "$setup_only" = false ]; then
         check_prerequisites
-        backup_existing
+
+        # Only backup if not in packages-only mode
+        if [ "$packages_only_mode" = false ]; then
+            backup_existing
+        fi
+
+        # If only installing packages, handle that and exit
+        if [ "$packages_only_mode" = true ]; then
+            install_platform_packages
+            success "Package installation complete!"
+            exit 0
+        fi
+
+        # Install platform-specific packages if requested (as part of full installation)
+        if [ "$install_packages" = true ]; then
+            install_platform_packages
+        fi
 
         if [ "$install_all" = true ]; then
             install_dotfiles --all

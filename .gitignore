@@ -166,6 +166,13 @@ node_modules/
 logs/
 debug/
 
+# Test results and reports
+test_results/*.log
+test_results/*_report_*.md
+test_results/*_test_*.log
+test_results/latest_*.txt
+!test_results/latest_summary.txt
+
 # ==============================================================================
 # OPERATING SYSTEM FILES
 # ==============================================================================

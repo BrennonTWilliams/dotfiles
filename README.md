@@ -2,6 +2,36 @@
 
 Personal configuration files for Linux/Unix development environments, managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
+## 🖥️ Multi-Device Architecture
+
+This dotfiles repository is designed to work seamlessly across multiple platforms and devices:
+
+### Supported Platforms
+
+| Platform | Architecture | Package Manager | Status |
+|----------|-------------|----------------|---------|
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | Homebrew (`/opt/homebrew`) | ✅ Fully Supported |
+| **macOS** | Intel x86_64 | Homebrew (`/usr/local`) | ✅ Fully Supported |
+| **Linux** | ARM64 (Raspberry Pi) | apt/dnf/pacman | ✅ Fully Supported |
+| **Linux** | x86_64 | apt/dnf/pacman | ✅ Fully Supported |
+
+### Platform-Specific Features
+
+- **Automatic Platform Detection** - Scripts detect OS and adapt behavior
+- **Package Manager Integration** - Uses appropriate package manager for each platform
+- **Conditional Configuration** - Platform-specific aliases and features load automatically
+- **Cross-Platform Clipboard** - Works with pbcopy (macOS) and xclip (Linux)
+- **Unified Theme** - Gruvbox Dark theme works consistently across platforms
+
+### Apple Silicon Optimization
+
+Special optimizations for Mac Mini M4 and other Apple Silicon Macs:
+
+- **Native ARM64 Support** - All tools run natively without Rosetta 2
+- **Homebrew Path Management** - Automatic detection of `/opt/homebrew` vs `/usr/local`
+- **macOS-Specific Aliases** - Dedicated shortcuts for macOS workflow
+- **Launchd Services** - Native macOS service integration (Uniclip clipboard sharing)
+
 ## Quick Start
 
 ```bash
@@ -12,6 +42,52 @@ cd ~/.dotfiles
 # Run the installation script
 ./install.sh
 ```
+
+## 🍎 macOS First-Time Setup
+
+**For Apple Silicon (M1/M2/M3/M4) and Intel Macs**
+
+### Step 1: Install Prerequisites
+
+```bash
+# Install Xcode Command Line Tools (required for development)
+xcode-select --install
+
+# Install Homebrew (package manager)
+# Apple Silicon Macs
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Intel Macs (same command - Homebrew detects architecture automatically)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### Step 2: Install Dotfiles
+
+```bash
+# Clone and install
+git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# Install everything with platform-specific packages
+./install.sh --all --packages
+
+# Reload your shell
+exec zsh
+```
+
+**⏱️ Total setup time: ~10-15 minutes**
+
+### Apple Silicon vs Intel Mac Differences
+
+| Feature | Apple Silicon (M1/M2/M3/M4) | Intel Macs |
+|---------|----------------------------|------------|
+| **Homebrew Path** | `/opt/homebrew` | `/usr/local` |
+| **Architecture** | ARM64 native | x86_64 |
+| **Performance** | Native ARM64 speed | Intel optimization |
+| **Compatibility** | All tools ARM64-compatible | Universal binaries |
+| **Rosetta 2** | Not required for these tools | N/A |
+
+**All dotfiles work identically on both architectures - automatic detection ensures proper setup.**
 
 ## What's Inside
 
@@ -67,6 +143,23 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 - `zsh` - Shell (optional, bash configs also included)
 - `tmux` - Terminal multiplexer
 
+### macOS Requirements
+
+**macOS users must install these first:**
+
+- **Xcode Command Line Tools** - Required for development tools
+  ```bash
+  xcode-select --install
+  ```
+- **Homebrew** - Package manager for macOS
+  ```bash
+  # Apple Silicon (M1/M2/M3/M4)
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  # Intel Macs
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  ```
+
 ### Optional
 
 - `sway` - Wayland compositor
@@ -85,6 +178,18 @@ cd ~/.dotfiles
 ./install.sh
 ```
 
+### Platform-Specific Package Installation
+
+Install system packages appropriate for your platform:
+
+```bash
+# Install platform-specific packages only
+./install.sh --packages
+
+# Full installation with packages
+./install.sh --all --packages
+```
+
 ### Selective Installation
 
 Install specific components only:
@@ -93,6 +198,34 @@ Install specific components only:
 ./install.sh zsh tmux    # Install only zsh and tmux configs
 ./install.sh --all       # Install all non-interactively
 ```
+
+### macOS (All Macs) Complete Setup
+
+For Apple Silicon (M1/M2/M3/M4) and Intel Macs:
+
+```bash
+# 1. Install Xcode Command Line Tools (if not already installed)
+xcode-select --install
+
+# 2. Install Homebrew for your Mac architecture (if not already installed)
+# Apple Silicon and Intel use same command - auto-detects architecture
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 3. Clone and install dotfiles
+git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# 4. Install platform-specific packages and configurations
+./install.sh --all --packages
+
+# 5. Install macOS-specific services (optional)
+./macos/install-uniclip-service.sh
+
+# 6. Reload shell
+exec zsh
+```
+
+**Total setup time: ~10-15 minutes**
 
 ### Post-Installation
 
@@ -177,6 +310,44 @@ tls         # List tmux sessions
 ta <name>   # Attach to session
 tn <name>   # New session
 tk <name>   # Kill session
+```
+
+### macOS-Specific Aliases
+
+When running on macOS, additional aliases are automatically available:
+
+```bash
+# File operations
+show <file>          # Open file with default app
+finder                # Open current directory in Finder
+textedit <file>       # Open file in TextEdit
+
+# Homebrew management
+brew-upgrade          # Update and upgrade all Homebrew packages
+brew-clean           # Clean up and check Homebrew health
+brew-list            # List installed formulae
+brew-cask-list       # List installed casks
+
+# System information
+system-info          # Display hardware information
+battery              # Show battery status
+cpu-temp             # Show CPU temperature (requires sudo)
+wifi-scan            # Scan available WiFi networks
+ip-info              # Show local IP addresses
+
+# macOS app shortcuts
+lock                 # Lock screen
+sleep                # Put Mac to sleep
+screensaver          # Start screensaver
+ql <file>            # Quick Look file
+
+# Clipboard management
+clipboard            # Paste from clipboard to terminal
+copy <command>       # Copy command output to clipboard (pipe)
+
+# Development tools
+xcode-info           # Show Xcode path
+simulators           # List iOS simulators
 ```
 
 ### Tmux Key Bindings
@@ -292,9 +463,13 @@ git commit -m "Update zsh config"
 git push
 ```
 
-## Troubleshooting
+## 🆘 Troubleshooting
 
-For detailed troubleshooting information, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+For comprehensive troubleshooting information:
+
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - General troubleshooting guides
+- **[macos-setup.md](macos-setup.md)** - Complete macOS setup and configuration
+- **macOS-specific issues**: Apple Silicon, Homebrew paths, Rosetta 2, permissions
 
 ### Common Issues
 
@@ -364,18 +539,39 @@ Important: Your original dotfiles are automatically backed up during installatio
 
 ## Package List
 
-The `packages.txt` file contains a manifest of all system packages used in this setup. Install them with:
+Platform-specific package manifests are provided for optimal compatibility:
+
+### Package Files
+
+- `packages.txt` - Linux packages (Debian/Ubuntu/Fedora/Arch)
+- `packages-macos.txt` - macOS packages (Apple Silicon and Intel)
+
+### Installation
 
 ```bash
-# Debian/Ubuntu
+# Platform-specific installation (recommended)
+./install.sh --packages
+
+# Manual installation
+# Linux (Debian/Ubuntu)
 xargs -a packages.txt sudo apt install -y
 
-# Fedora/RHEL
+# Linux (Fedora/RHEL)
 xargs -a packages.txt sudo dnf install -y
 
-# macOS
-xargs -a packages.txt brew install
+# macOS (Apple Silicon and Intel - both use same packages)
+xargs -a packages-macos.txt brew install
+
+# Alternative: Install macOS packages manually (filtered)
+brew install $(cat packages-macos.txt | grep -v '^#' | grep -v '^#')
 ```
+
+**Note:** The macOS package list includes macOS-specific alternatives:
+- Rectangle (window management) instead of Sway
+- iTerm2 (terminal) instead of Foot
+- Sketchybar (status bar) instead of Waybar
+- Built-in macOS tools for screenshots and notifications
+- Works on both Apple Silicon and Intel Macs automatically
 
 ## Credits
 

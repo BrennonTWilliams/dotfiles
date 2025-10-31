@@ -1,0 +1,80 @@
+# ==============================================================================
+# macOS System Packages Manifest
+# ==============================================================================
+# This file lists all packages that should be installed on macOS systems.
+# It provides macOS alternatives to Linux packages where appropriate.
+#
+# IMPORTANT: sketchybar requires special tap handling:
+#   brew tap FelixKratz/formulae && brew install sketchybar
+#
+# Installation: brew install $(cat packages-macos.txt | grep -v '^#' | grep -v 'sketchybar')
+# Then manually install sketchybar with: brew tap FelixKratz/formulae && brew install sketchybar
+# ==============================================================================
+
+# ==============================================================================
+# Core System Tools (cross-platform)
+# ==============================================================================
+git
+curl
+wget
+stow
+htop
+tmux
+zsh
+
+# ==============================================================================
+# macOS Development Environment
+# ==============================================================================
+# Command line tools for Xcode (install separately with: xcode-select --install)
+# Homebrew (should already be installed)
+
+# ==============================================================================
+# Development Tools
+# ==============================================================================
+python3
+# Note: pip is automatically included with python3 on macOS, no separate package needed
+
+# ==============================================================================
+# macOS Window Management & Terminal Alternatives
+# ==============================================================================
+# Window management (alternative to Sway)
+rectangle
+
+# Terminal emulator (alternative to foot)
+iterm2
+
+# Status bar (alternative to Waybar)
+# sketchybar - requires special tap: FelixKratz/formulae (handled by install.sh)
+sketchybar
+
+# Screenshot tool (alternative to grim)
+# macOS has built-in screenshot tools: Cmd+Shift+3/4/5
+
+# Notification system (alternative to mako-notifier)
+# macOS has built-in notification system
+
+# ==============================================================================
+# Utilities
+# ==============================================================================
+# macOS has built-in pbcopy/pbpaste (alternative to xclip)
+ripgrep
+fd
+fzf
+tree
+unzip
+jq
+
+# ==============================================================================
+# macOS-Specific Development Tools
+# ==============================================================================
+# Additional macOS development tools
+mas                    # Mac App Store command line interface
+
+# ==============================================================================
+# Optional: Additional Tools
+# ==============================================================================
+# neovim
+# vim
+# docker
+# docker-compose
+# visual-studio-code

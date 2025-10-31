@@ -118,6 +118,16 @@ fi
 # NVM configuration with lazy loading for faster shell startup
 export NVM_DIR="$HOME/.nvm"
 
+# Add NVM's current Node.js version bin to PATH for global npm packages
+# This makes globally installed packages (like Claude Code) available
+if [ -d "$NVM_DIR/versions/node" ]; then
+    # Find the currently active or default node version
+    NVM_CURRENT_BIN="$NVM_DIR/versions/node/$(ls -t "$NVM_DIR/versions/node" 2>/dev/null | head -1)/bin"
+    if [ -d "$NVM_CURRENT_BIN" ]; then
+        export PATH="$NVM_CURRENT_BIN:$PATH"
+    fi
+fi
+
 # Lazy load nvm - only load when needed
 nvm() {
   unset -f nvm node npm npx
@@ -147,5 +157,11 @@ npx() {
   npx "$@"
 }
 
-# Set up Homebrew
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Set up Homebrew - check common locations for both macOS and Linux
+if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
