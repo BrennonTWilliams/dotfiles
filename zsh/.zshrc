@@ -1,153 +1,95 @@
-# PATH configuration is in ~/.zshenv to ensure it's available to all shells
+# .zshrc - This file is sourced only for interactive shells
+# Use this file for settings that should apply when you interact with the shell,
+# including prompt setup, aliases, interactive functions, and command completion.
 
-# Path to your Oh My Zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Aliases
+alias tre='eza -T'
+alias clipboard-sync='uniclip 192.168.1.24:38687'
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time Oh My Zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="gruvbox"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-zstyle ':omz:update' frequency 7
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git z zsh-autosuggestions zsh-syntax-highlighting tmux colored-man-pages command-not-found extract)
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# Enhanced history settings
-HISTSIZE=50000
-SAVEHIST=50000
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_FIND_NO_DUPS
-setopt SHARE_HISTORY
-
-# Additional useful Zsh options
-setopt EXTENDED_GLOB        # Better globbing patterns
-setopt AUTO_CD              # Type directory name to cd
-setopt CORRECT              # Correct typos in commands
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-export EDITOR='vim'
-export VISUAL='vim'
-
-# Compilation flags
-# export ARCHFLAGS="-arch $(uname -m)"
-
-# Set personal aliases, overriding those provided by Oh My Zsh libs,
-# plugins, and themes. Aliases can be placed here, though Oh My Zsh
-# users are encouraged to define aliases within a top-level file in
-# the $ZSH_CUSTOM folder, with .zsh extension. Examples:
-# - $ZSH_CUSTOM/aliases.zsh
-# - $ZSH_CUSTOM/macos.zsh
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# NVM configuration with lazy loading for faster shell startup
-export NVM_DIR="$HOME/.nvm" 
-
-# Lazy load nvm - only load when needed
-nvm() {
-  unset -f nvm node npm npx
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  nvm "$@"
-}
-
-node() {
-  unset -f nvm node npm npx
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  node "$@"
-}
-
-npm() {
-  unset -f nvm node npm npx
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  npm "$@"
-}
-
-npx() {
-  unset -f nvm node npm npx
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  npx "$@"
-}
-
-# Claude Code PATH and Homebrew are configured in ~/.zshenv
-# This ensures they're available even for non-interactive shells and GUI apps
-
-# Tmux configuration
-# Auto-attach to tmux session or create new one (optional, commented by default)
-# if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
-#   exec tmux new-session -A -s main
+# Python environment management
+# Note: Using both pyenv and conda can be useful if you use different Python
+# environments for different projects. If you primarily use one, consider removing the other.
+# Pyenv initialization
+# Note: PYENV_ROOT is already set in .zshenv
+# if command -v pyenv >/dev/null 2>&1; then
+#   eval "$(pyenv init --path)"
+#   eval "$(pyenv init -)"
+#   if pyenv commands | grep -q virtualenv-init; then
+#     eval "$(pyenv virtualenv-init -)"
+#   fi
 # fi
+
+# export PATH="$HOME/miniforge3/bin:$PATH"  # commented out by conda initialize
+
+# Docker CLI completions
+if [ -d "$HOME/.docker/completions" ]; then
+  fpath=($HOME/.docker/completions $fpath)
+fi
+
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
+# Initialize completions system (do this only once, at the end of the file)
+autoload -Uz compinit
+compinit
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/Users/brennon/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/Users/brennon/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/Users/brennon/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/Users/brennon/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/brennon/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
+
+# Add uzi directory to PATH
+export PATH="/Users/brennon/AIProjects/ai-workspaces/uzi:$PATH"
+
+# Added by microsandbox installer
+export PATH="$HOME/.local/bin:$PATH"
+export DYLD_LIBRARY_PATH="$HOME/.local/lib:$DYLD_LIBRARY_PATH"
+
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
+
+# z - jump around
+. ~/.local/share/z/z.sh
+
+alias breath='zenta now --quick'
+alias breathe='zenta now'
+alias reflect='zenta reflect'
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+
+
+
+
+# Task Master aliases added on 8/16/2025
+alias tm='task-master'
+alias taskmaster='task-master'
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="/Users/brennon/.local/bin:$PATH"
+export PATH="/opt/homebrew/bin:$PATH"
+
+# IntelliShell
+export INTELLI_HOME="/Users/brennon/Library/Application Support/org.IntelliShell.Intelli-Shell"
+# export INTELLI_SEARCH_HOTKEY='^@'
+# export INTELLI_VARIABLE_HOTKEY='^l'
+# export INTELLI_BOOKMARK_HOTKEY='^b'
+# export INTELLI_FIX_HOTKEY='^x'
+# export INTELLI_SKIP_ESC_BIND=0
+# alias is="intelli-shell"
+export PATH="$INTELLI_HOME/bin:$PATH"
+eval "$(intelli-shell init zsh)"

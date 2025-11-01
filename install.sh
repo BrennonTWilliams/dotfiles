@@ -20,7 +20,16 @@
 #   --packages    Install platform-specific system packages only
 # ==============================================================================
 
-set -e
+set -eo pipefail
+
+# Error handling and debugging
+trap 'echo "Error occurred at line $LINENO. Command: $BASH_COMMAND"' ERR
+
+# Enable debug mode if environment variable is set
+if [ "${DEBUG:-0}" = "1" ]; then
+    set -x
+    echo "Debug mode enabled"
+fi
 
 # ==============================================================================
 # Configuration
@@ -345,6 +354,7 @@ backup_existing() {
         "$HOME/.bashrc"
         "$HOME/.bash_profile"
         "$HOME/.bash_logout"
+        "$HOME/.profile"
         "$HOME/.zshrc"
         "$HOME/.zshenv"
         "$HOME/.zshenv.local"
@@ -365,7 +375,7 @@ backup_existing() {
     for file in "${files[@]}"; do
         if [ -e "$file" ] && [ ! -L "$file" ]; then
             backup_if_exists "$file"
-            ((backed_up++))
+            backed_up=$((backed_up + 1))
         fi
     done
 
@@ -540,9 +550,9 @@ install_platform_packages() {
 
     for package in "${valid_packages[@]}"; do
         if install_package "$package"; then
-            ((installed++))
+            installed=$((installed + 1))
         else
-            ((failed++))
+            failed=$((failed + 1))
         fi
     done
 
@@ -566,16 +576,56 @@ stow_package() {
     # Change to dotfiles directory
     cd "$DOTFILES_DIR"
 
-    # Use stow to create symlinks
-    # -R = restow (remove and reinstall)
-    # -v = verbose
-    # -t = target directory (home)
-    if stow -R -t "$HOME" "$package" 2>&1 | grep -v "BUG in find_stowed_path"; then
-        success "Installed $package"
-        return 0
+    # First, try a dry run to detect conflicts
+    local conflicts
+    conflicts=$(stow -n -t "$HOME" "$package" 2>&1 | grep -i "conflict\|would cause conflicts" || true)
+
+    if [ -n "$conflicts" ]; then
+        warn "Conflicts detected for $package:"
+        echo "$conflicts"
+
+        # Try to adopt existing files (move them under stow's control)
+        info "Attempting to adopt existing files..."
+        local adopt_output
+        if adopt_output=$(stow --adopt -t "$HOME" "$package" 2>&1); then
+            if [ -n "$adopt_output" ]; then
+                echo "$adopt_output" | grep -v "BUG in find_stowed_path" || true
+            fi
+            success "Installed $package (adopted existing files)"
+            return 0
+        else
+            # If adoption fails, try with --override
+            warn "Adoption failed, trying with --override..."
+            local override_output
+            if override_output=$(stow --override='.*' -t "$HOME" "$package" 2>&1); then
+                if [ -n "$override_output" ]; then
+                    echo "$override_output" | grep -v "BUG in find_stowed_path" || true
+                fi
+                success "Installed $package (overridden)"
+                return 0
+            else
+                error "Failed to install $package due to unresolved conflicts"
+                echo "Conflicts:"
+                echo "$conflicts"
+                return 1
+            fi
+        fi
     else
-        error "Failed to install $package"
-        return 1
+        # No conflicts, proceed with normal installation
+        local stow_output
+        if stow_output=$(stow -R -t "$HOME" "$package" 2>&1); then
+            # Filter out known bug messages and show success
+            if [ -n "$stow_output" ]; then
+                echo "$stow_output" | grep -v "BUG in find_stowed_path" || true
+            fi
+            success "Installed $package"
+            return 0
+        else
+            error "Failed to install $package"
+            echo "Stow error:"
+            echo "$stow_output"
+            return 1
+        fi
     fi
 }
 
@@ -624,9 +674,9 @@ install_dotfiles() {
 
     for pkg in "${packages[@]}"; do
         if stow_package "$pkg"; then
-            ((installed++))
+            installed=$((installed + 1))
         else
-            ((failed++))
+            failed=$((failed + 1))
         fi
     done
 
@@ -736,7 +786,7 @@ run_setup_scripts() {
 
         if [ ! -f "$script_path" ]; then
             warn "Script not found: $script"
-            ((failed++))
+            failed=$((failed + 1))
             continue
         fi
 
@@ -749,10 +799,10 @@ run_setup_scripts() {
         echo
 
         if "$script_path"; then
-            ((successful++))
+            successful=$((successful + 1))
             success "Completed $script"
         else
-            ((failed++))
+            failed=$((failed + 1))
             warn "Failed to run $script"
         fi
         echo
