@@ -83,13 +83,13 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="/Users/brennon/.local/bin:$PATH"
 export PATH="/opt/homebrew/bin:$PATH"
 
-# IntelliShell
-export INTELLI_HOME="/Users/brennon/Library/Application Support/org.IntelliShell.Intelli-Shell"
+# IntelliShell - DISABLED for Mac reference system to prevent hotkey conflicts
+# export INTELLI_HOME="/Users/brennon/Library/Application Support/org.IntelliShell.Intelli-Shell"
 # export INTELLI_SEARCH_HOTKEY='^@'
 # export INTELLI_VARIABLE_HOTKEY='^l'
 # export INTELLI_BOOKMARK_HOTKEY='^b'
 # export INTELLI_FIX_HOTKEY='^x'
 # export INTELLI_SKIP_ESC_BIND=0
 # alias is="intelli-shell"
-export PATH="$INTELLI_HOME/bin:$PATH"
-eval "$(intelli-shell init zsh)"
+# export PATH="$INTELLI_HOME/bin:$PATH"
+# eval "$(intelli-shell init zsh)"

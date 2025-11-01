@@ -72,11 +72,12 @@ window-height = 40
 # Keybinding Configuration
 # ============================================
 
-# Essential keybinds with proven syntax
-keybind = ctrl+shift+c=copy_to_clipboard
-keybind = ctrl+shift+v=paste_from_clipboard
-keybind = ctrl+shift+n=new_window
-keybind = ctrl+shift+t=new_tab
+# Custom keybinds disabled for Mac reference system
+# Using standard macOS keybindings instead
+# keybind = ctrl+shift+c=copy_to_clipboard
+# keybind = ctrl+shift+v=paste_from_clipboard
+# keybind = ctrl+shift+n=new_window
+# keybind = ctrl+shift+t=new_tab
 
 # ============================================
 # Clipboard Integration

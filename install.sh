@@ -12,12 +12,14 @@
 #   ./install.sh --all --no-setup   # Install all packages, skip setup scripts
 #   ./install.sh --packages         # Install platform-specific packages only
 #   ./install.sh zsh tmux           # Install only specified packages (interactive setup)
+#   ./install.sh --all --reference-mac  # Install all packages safe for Mac reference systems
 #
 # Options:
 #   --all         Install all packages without prompting
 #   --no-setup    Skip running setup scripts (fonts, oh-my-zsh, nvm, tmux)
 #   --setup-only  Only run setup scripts, skip package installation
 #   --packages    Install platform-specific system packages only
+#   --reference-mac Skip packages that modify hotkeys (for Mac reference systems)
 # ==============================================================================
 
 set -eo pipefail
@@ -38,6 +40,7 @@ fi
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 BACKUP_CREATED=false
+REFERENCE_MAC=false
 
 # Colors for output
 RED='\033[0;31m'
@@ -411,7 +414,12 @@ get_platform_packages() {
     detect_os
     case "$OS" in
         "macos")
-            packages_file="$DOTFILES_DIR/packages-macos.txt"
+            if [ "$REFERENCE_MAC" = true ]; then
+                packages_file="$DOTFILES_DIR/packages-macos-reference.txt"
+                info "Using reference Mac package list (hotkey-safe)"
+            else
+                packages_file="$DOTFILES_DIR/packages-macos.txt"
+            fi
             ;;
         *)
             packages_file="$DOTFILES_DIR/packages.txt"
@@ -445,6 +453,41 @@ check_pacman_package_availability() {
     pacman -Si "$package" &>/dev/null || pacman -Ss "^${package}$" &>/dev/null
 }
 
+# Filter packages for Mac reference systems (exclude hotkey-affecting packages)
+filter_reference_mac_packages() {
+    local packages=("$@")
+    local filtered_packages=()
+
+    # Packages that modify hotkeys and should be excluded on Mac reference systems
+    local hotkey_packages=(
+        "rectangle"      # Window manager with system-wide hotkeys
+        "sketchybar"     # Status bar that may register hotkeys
+    )
+
+    for package in "${packages[@]}"; do
+        # Skip empty lines and comments
+        if [ -z "$package" ] || [[ "$package" =~ ^# ]]; then
+            continue
+        fi
+
+        # Check if package should be excluded for Mac reference systems
+        local should_exclude=false
+        for hotkey_pkg in "${hotkey_packages[@]}"; do
+            if [[ "$package" == "$hotkey_pkg" ]]; then
+                warn "Reference Mac mode: Skipping hotkey-affecting package: $package"
+                should_exclude=true
+                break
+            fi
+        done
+
+        if [ "$should_exclude" = false ]; then
+            filtered_packages+=("$package")
+        fi
+    done
+
+    printf '%s\n' "${filtered_packages[@]}"
+}
+
 # Pre-validate packages and handle special requirements
 pre_validate_packages() {
     local packages=("$@")
@@ -452,6 +495,12 @@ pre_validate_packages() {
     local special_packages=()
 
     detect_os
+
+    # Apply reference Mac filtering if enabled
+    if [ "$REFERENCE_MAC" = true ] && [[ "$OS" == "macos" ]]; then
+        info "Reference Mac mode: Filtering out hotkey-affecting packages..."
+        packages=($(filter_reference_mac_packages "${packages[@]}"))
+    fi
 
     for package in "${packages[@]}"; do
         # Skip empty lines and comments
@@ -891,6 +940,7 @@ main() {
     local no_setup=false
     local setup_only=false
     local install_packages=false
+    local reference_mac=false
     local package_args=()
 
     for arg in "$@"; do
@@ -906,6 +956,10 @@ main() {
                 ;;
             --packages)
                 install_packages=true
+                ;;
+            --reference-mac)
+                reference_mac=true
+                REFERENCE_MAC=true
                 ;;
             *)
                 package_args+=("$arg")

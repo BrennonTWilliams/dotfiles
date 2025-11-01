@@ -1,0 +1,60 @@
+# ==============================================================================
+# macOS Reference System Packages - Hotkey-Safe Configuration
+# ==============================================================================
+# This file contains packages that are safe for Mac reference systems
+# and do NOT modify system hotkeys or keyboard behavior.
+#
+# Use this with: ./install.sh --all --reference-mac
+# ==============================================================================
+
+# ==============================================================================
+# Core System Tools (cross-platform) - SAFE
+# ==============================================================================
+git
+curl
+wget
+stow
+htop
+tmux
+zsh
+
+# ==============================================================================
+# Development Tools - SAFE
+# ==============================================================================
+python3
+
+# ==============================================================================
+# Terminal Emulator - SAFE with modified configuration
+# ==============================================================================
+# Ghostty with custom keybindings disabled in config
+ghostty
+
+# ==============================================================================
+# Utilities - SAFE (no hotkey modifications)
+# ==============================================================================
+ripgrep
+fd
+fzf
+tree
+unzip
+jq
+
+# ==============================================================================
+# macOS Development Tools - SAFE
+# ==============================================================================
+mas                    # Mac App Store command line interface
+
+# ==============================================================================
+# EXCLUDED Packages (modify hotkeys - NOT safe for reference systems)
+# ==============================================================================
+# rectangle      - Window manager with system-wide hotkeys
+# sketchybar     - Status bar that registers hotkeys
+# iTerm2         - May have custom keybindings
+# neovim/vim     - May have custom keybindings
+# docker/docker-compose - May register system shortcuts
+
+# ==============================================================================
+# Optional Additional Tools (verify hotkey safety before enabling)
+# ==============================================================================
+# visual-studio-code    # May have custom hotkeys, verify first
+# micro                # Terminal editor, generally safe
