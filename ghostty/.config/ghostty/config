@@ -17,10 +17,7 @@ shell-integration = zsh
 # ============================================
 
 # Gruvbox dark theme for comfortable coding
-theme = gruvbox-dark
-
-# Gruvbox color palette for complete color scheme
-palette = #0d1117=#1d2021 #161b22=#282828 #0d1117=#3c3836 #58a6ff=#d65d0e #58a6ff=#d65d0e #79c0ff=#8ec07c #c9d1d9=#ebdbb2 #c9d1d9=#ebdbb2 #f0f6fc=#fbf1c7 #f0f6fc=#fbf1c7 #ff7b72=#cc241d #ffa657=#d65d0e #ffa657=#d65d0e #79c0ff=#8ec07c #a5d6ff=#d79921 #7ee787=#b8bb26 #bae67e=#8ec07c #ffa657=#d65d0e #f85149=#fb4934 #ffa657=#d65d0e #ff7b72=#cc241d #7ee787=#b8bb26
+theme = Gruvbox Dark
 
 # ============================================
 # Font Configuration
@@ -32,14 +29,7 @@ font-family = SF Mono
 # Font size optimized for Retina displays
 font-size = 14
 
-# Font rendering for crisp text on high-DPI displays
-font-render-mode = subpixel
-
-# Enable DPI awareness for external monitors
-font-dpi-aware = yes
-
-# Fallback fonts for better Unicode coverage
-font-fallback = SF Pro Text, Apple Color Emoji, Noto Color Emoji
+# Font rendering is handled automatically by Ghostty
 
 # Bold and italic font variants
 font-family-bold = SF Mono Semibold
@@ -50,47 +40,12 @@ font-family-italic = SF Mono Italic
 # ============================================
 
 # Native macOS window controls
-macos-titlebar-style = auto
+macos-titlebar-style = transparent
 
 # Option key behavior for terminal compatibility
 macos-option-as-alt = true
 
-# Window shadows for depth perception
-macos-window-shadow = true
-
-# Native keyboard shortcuts integration
-macos-native-keyboard = true
-
-# Application quit behavior (prompt for confirmation)
-macos-quit-behavior = prompt
-
-# Automatic updates for latest features
-macos-auto-update = true
-
-# System color scheme integration
-macos-color-scheme = dark
-
-# Fullscreen window animations
-macos-fullscreen-animation = true
-
-# ============================================
-# Performance Settings
-# ============================================
-
-# GPU acceleration for better performance
-renderer = gpu
-
-# Enable GPU acceleration
-gpu-acceleration = true
-
-# Fallback to CPU rendering if GPU fails
-gpu-acceleration-fallback = true
-
-# Vertical sync for smooth rendering
-vsync = true
-
-# No resize delay for responsive interface
-resize-delay = 0
+# Validated macOS settings for Ghostty
 
 # ============================================
 # Window Configuration
@@ -117,84 +72,40 @@ window-height = 40
 # Keybinding Configuration
 # ============================================
 
-# Copy and paste (Shift variants to avoid shell conflicts)
-keybind = shift+ctrl+c=copy_to_clipboard
-keybind = shift+ctrl+v=paste_from_clipboard
-
-# Font size adjustments
-keybind = cmd+plus=increase_font_size
-keybind = cmd+minus=decrease_font_size
-keybind = cmd+0=reset_font_size
-
-# Window management
-keybind = cmd+n=new_window
-keybind = cmd+w=close_window
-keybind = cmd+t=new_tab
-keybind = cmd+q=quit
-
-# Clear screen (Ctrl+L) - avoid Ctrl+K to prevent shell conflict
-keybind = ctrl+l=clear_screen
-
-# Search functionality
-keybind = cmd+f=find_search
-keybind = cmd+g=find_next
-keybind = cmd+shift+g=find_previous
+# Essential keybinds with proven syntax
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+keybind = ctrl+shift+n=new_window
+keybind = ctrl+shift+t=new_tab
 
 # ============================================
 # Clipboard Integration
 # ============================================
 
 # Allow reading from system clipboard
-clipboard-read-allow = true
+clipboard-read = allow
 
 # Allow writing to system clipboard
-clipboard-write-allow = true
-
-# Bracketed paste mode for better shell integration
-paste-bracketed = true
+clipboard-write = allow
 
 # ============================================
 # Tmux Integration
 # ============================================
 
-# Tmux session management keybindings
-keybind = cmd+shift+t=tmux_new_session
-keybind = cmd+shift+s=tmux_switch_session
-keybind = cmd+shift+d=tmux_detach_session
-
-# Tmux window management
-keybind = cmd+shift+n=tmux_new_window -s
-keybind = cmd+shift+a=tmux_attach_session
-
-# Tmux pane management
-keybind = cmd+shift+=tmux_split_horizontal
-keybind = cmd+shift+-=tmux_split_vertical
+# Tmux integration (use tmux keybindings within tmux sessions)
+# Keybindings for tmux are handled by tmux itself
 
 # ============================================
 # Mouse Configuration
 # ============================================
 
-# Scroll wheel multiplier for comfortable scrolling
-scroll-wheel-multiplier = 3
-
-# Enable URL detection and clicking
-mouse-hide-while-typing = true
-
-# Modifier key for URL opening
-mouse-modifier = shift
+# Mouse settings are handled automatically by Ghostty
 
 # ============================================
 # Bell and Notifications
 # ============================================
 
-# Visual bell instead of audible
-audible-bell = false
-
-# Visual bell flash
-visual-bell = false
-
-# Command notification (long-running commands)
-command-notifications = true
+# Bell settings are handled automatically by Ghostty
 
 # ============================================
 # Cursor Configuration
@@ -204,7 +115,7 @@ command-notifications = true
 cursor-style = block
 
 # Cursor blinking for better tracking
-cursor-blink = false
+cursor-style-blink = false
 
 # Cursor color override
 cursor-color = #ebdbb2
@@ -214,20 +125,14 @@ cursor-color = #ebdbb2
 # ============================================
 
 # Auto-copy selection to clipboard
-selection-auto-copy = true
-
-# Selection word boundaries
-selection-word-boundaries = ./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}?
+copy-on-select = true
 
 # ============================================
 # Advanced Configuration
 # ============================================
 
-# Local configuration import (for machine-specific overrides)
-import = ~/.config/ghostty/config.local
-
 # Shell command for new terminals
-shell = /bin/zsh
+command = /bin/zsh
 
 # Working directory inheritance
 working-directory = inherit
@@ -256,14 +161,7 @@ confirm-close-surface = true
 # Troubleshooting and Debugging
 # ============================================
 
-# Logging level (increase for debugging)
-log-level = warning
-
-# Performance monitoring
-performance-indicators = false
-
-# Render timing information
-render-timing = false
+# Debug settings are handled automatically by Ghostty
 
 # ==============================================================================
 # End of Configuration

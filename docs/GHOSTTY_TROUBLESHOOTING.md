@@ -110,9 +110,10 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
 **Problem**: `config.local` overrides are ignored
 
 **Solutions**:
-1. **Enable Local Config Import**:
+1. **Local Config Support**:
    ```bash
-   grep "^import = ~/.config/ghostty/config.local" ~/.config/ghostty/config
+   # Ghostty automatically loads config.local if it exists
+   ls ~/.config/ghostty/config.local
    ```
 
 2. **Create Local Config**:
@@ -135,24 +136,24 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
 **Problem**: Ghostty feels sluggish, especially with large output
 
 **Solutions**:
-1. **Check GPU Acceleration**:
+1. **Check Performance Settings**:
    ```bash
-   grep -E "^renderer|^gpu-acceleration" ~/.config/ghostty/config
+   # Ghostty automatically handles GPU acceleration
+   grep -E "^background-opacity|^background-blur" ~/.config/ghostty/config
    ```
 
-2. **Enable CPU Fallback**:
+2. **Optimize for Older Macs**:
    ```bash
    # Add to config.local
-   echo "renderer = cpu" >> ~/.config/ghostty/config.local
+   echo "background-blur = 0" >> ~/.config/ghostty/config.local
    ```
 
-3. **Adjust Performance Settings**:
+3. **Reduce Visual Effects**:
    ```bash
    # Add to config.local for older Macs
    cat >> ~/.config/ghostty/config.local << EOF
    background-blur = 0
-   resize-delay = 100
-   gpu-acceleration = false
+   background-opacity = 1.0
    EOF
    ```
 
@@ -203,23 +204,24 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
    brew install font-iosevka-nerd-font
    ```
 
-2. **Adjust Font Settings**:
+2. **Test Font Settings**:
    ```bash
-   # Test different render modes
-   sed -i.bak 's/font-render-mode = .*/font-render-mode = lcd/' ~/.config/ghostty/config
-   # or try: font-render-mode = light
+   # Ghostty automatically handles font rendering
+   # Test different font sizes in config.local
+   echo "font-size = 16" >> ~/.config/ghostty/config.local
    ```
 
-3. **Configure DPI Awareness**:
+3. **Verify Font Configuration**:
    ```bash
-   grep "font-dpi-aware" ~/.config/ghostty/config
-   # Should be: font-dpi-aware = yes
+   grep "font-family" ~/.config/ghostty/config
+   # Should use SF Mono for macOS
    ```
 
-4. **Add Font Fallbacks**:
+4. **Restart Ghostty After Font Changes**:
    ```bash
-   # Add to config.local
-   echo "font-fallback = SF Mono,Monaco,Courier New" >> ~/.config/ghostty/config.local
+   # Font changes require restart
+   killall Ghostty 2>/dev/null || true
+   open -a Ghostty
    ```
 
 ### Color Scheme Issues
@@ -230,12 +232,15 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
 1. **Verify Theme Configuration**:
    ```bash
    grep "^theme = " ~/.config/ghostty/config
-   # Should be: theme = gruvbox-dark
+   # Should be: theme = Gruvbox Dark
    ```
 
-2. **Check Color Palette**:
+2. **Test Theme Loading**:
    ```bash
-   grep "palette = " ~/.config/ghostty/config | head -16
+   # Ghostty automatically loads theme colors
+   # Restart to see theme changes
+   killall Ghostty 2>/dev/null || true
+   open -a Ghostty
    ```
 
 3. **Test Custom Colors**:
@@ -252,17 +257,18 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
 **Problem**: Ghostty windows move or resize incorrectly between monitors
 
 **Solutions**:
-1. **Enable DPI Awareness**:
+1. **Check Window Settings**:
    ```bash
-   grep "font-dpi-aware" ~/.config/ghostty/config
+   # Ghostty automatically handles multi-monitor DPI
+   grep "window-decoration" ~/.config/ghostty/config
    ```
 
 2. **Adjust Window Settings**:
    ```bash
    # Add to config.local
    cat >> ~/.config/ghostty/config.local << EOF
-   window-inherit-working-directory = true
-   resize-delay = 0
+   window-decoration = true
+   background-opacity = 0.95
    EOF
    ```
 
@@ -356,8 +362,8 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
 
 2. **Verify Clipboard Settings**:
    ```bash
-   grep -E "clipboard-.*allow" ~/.config/ghostty/config
-   # Should be true for both read and write
+   grep -E "clipboard-(read|write)" ~/.config/ghostty/config
+   # Should be "allow" for both read and write
    ```
 
 3. **Test with Different Keybindings**:
@@ -425,7 +431,7 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
    cat >> ~/.config/ghostty/config.local << EOF
    # For 4K/Retina displays
    font-size = 16
-   font-dpi-aware = yes
+   background-opacity = 0.9
    EOF
    ```
 
@@ -508,8 +514,7 @@ ghostty <Tab><Tab>  # Should show available options
 
 # 4. Test keybindings
 # Ctrl+Shift+C/V for copy/paste
-# Ctrl+Plus/Minus for font size
-# Ctrl+L for clear screen
+# Ctrl+Shift+N/T for new windows/tabs
 ```
 
 **Advanced Features**:
@@ -532,13 +537,9 @@ echo "test" | pbcopy && ghostty -e "pbpaste"
 
 **Enable Debug Logging**:
 ```bash
-# Add to config.local
-cat >> ~/.config/ghostty/config.local << EOF
-# Debug settings
-debug = true
-log-level = debug
-log-file = ~/ghostty-debug.log
-EOF
+# Ghostty automatically handles debugging
+# Use built-in validation instead
+ghostty +validate-config
 ```
 
 ### Performance Profiling
@@ -624,11 +625,10 @@ fc-cache -fv
 
 ### Default Keybindings
 - `Ctrl+Shift+C/V` - Copy/Paste
-- `Ctrl+Plus/Minus/0` - Font size
-- `Ctrl+L` - Clear screen
-- `Ctrl+Shift+T` - New tmux session
-- `Ctrl+Shift+A` - Attach to tmux
-- `Cmd+Enter` - Toggle fullscreen
+- `Ctrl+Shift+N/T` - New window/tab
+- System gestures for font size
+- Standard tmux keybindings (Ctrl+A) within sessions
+- Cmd+Enter for fullscreen (system-level)
 
 ### Important Config Locations
 - Main config: `~/.config/ghostty/config`

@@ -23,10 +23,10 @@ This directory contains Ghostty terminal emulator configuration optimized for ma
 - Proper handling of macOS-specific features
 
 ### ⌨️ Keybinding Strategy
-- **Ghostty-native keybindings** with tmux integration
-- **Ctrl+C/V** for copy/paste (macOS style)
-- **Ctrl+Shift+T/A/S** for tmux session management
-- **Ctrl+T** for new tabs, **Ctrl+W** for close operations
+- **Ghostty-native keybindings** with proven syntax
+- **Ctrl+Shift+C/V** for copy/paste (avoid shell conflicts)
+- **Ctrl+Shift+N/T** for window/tab management
+- **Standard tmux keybindings** (Ctrl+A) for session management
 
 ### 🔧 Development Features
 - IosevkaTerm Nerd Font configuration
@@ -70,7 +70,7 @@ brew install --cask ghostty
 - **Rendering**: LCD mode optimized for macOS
 
 ### Theme Customization
-- Base theme: `gruvbox-dark`
+- Base theme: `Gruvbox Dark`
 - Custom color palette for consistency
 - Optimized contrast for macOS displays
 
@@ -88,29 +88,19 @@ brew install --cask ghostty
 ## Keybindings Reference
 
 ### Essential Operations
-- `Ctrl+C` - Copy to clipboard
-- `Ctrl+V` - Paste from clipboard
-- `Ctrl+T` - New tab
-- `Ctrl+W` - Close window/tab
-- `Ctrl+N` - New window
-- `Cmd+Enter` - Toggle fullscreen
-
-### Tmux Integration
-- `Ctrl+Shift+T` - New tmux session
-- `Ctrl+Shift+A` - Attach to main tmux session
-- `Ctrl+Shift+S` - Attach to any tmux session
-- `Ctrl+Shift+L` - List tmux sessions
-- `Ctrl+Shift+K` - Kill main tmux session
+- `Ctrl+Shift+C` - Copy to clipboard
+- `Ctrl+Shift+V` - Paste from clipboard
+- `Ctrl+Shift+N` - New window
+- `Ctrl+Shift+T` - New tab
 
 ### Font & Display
-- `Ctrl+Plus` - Increase font size
-- `Ctrl+Minus` - Decrease font size
-- `Ctrl+0` - Reset font size
+- Font size adjustments handled by system gestures
+- Use Cmd+Plus/Minus for system-level font scaling
 
-### Search & Navigation
-- `Ctrl+F` - Find
-- `Ctrl+G` - Find next
-- `Ctrl+Shift+G` - Find previous
+### Additional Features
+- **Search**: Use Cmd+F (built-in search)
+- **Fullscreen**: Use system fullscreen or Cmd+Enter
+- **Tmux**: Use standard tmux keybindings (Ctrl+A) within sessions
 
 ## Customization
 
@@ -126,7 +116,7 @@ background-opacity = 0.98
 ### Theme Variants
 The configuration uses Gruvbox Dark as base. For light themes, change:
 ```bash
-theme = gruvbox-light
+theme = Gruvbox Light
 ```
 
 ### Shell Integration
@@ -163,11 +153,9 @@ brew install font-iosevka-nerd-font
 ### Performance Issues
 For better performance on older Macs:
 ```bash
-# Disable GPU acceleration
-renderer = cpu
-
-# Reduce font rendering quality
-font-render-mode = ascii
+# Ghostty automatically handles performance optimization
+# Use minimal configuration in config.local
+echo "background-blur = 0" >> ~/.config/ghostty/config.local
 ```
 
 ### Clipboard Issues
