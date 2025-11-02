@@ -16,8 +16,8 @@ shell-integration = zsh
 # Theme Configuration
 # ============================================
 
-# Gruvbox dark theme for comfortable coding
-theme = Gruvbox Dark
+# Gruvbox themes that automatically switch based on system appearance
+theme = light:Gruvbox Light,dark:Gruvbox Dark
 
 # ============================================
 # Font Configuration
