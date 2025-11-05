@@ -6,6 +6,78 @@
 alias tre='eza -T'
 alias clipboard-sync='uniclip 192.168.1.24:38687'
 
+# ==============================================================================
+# Enhanced Statusline Configuration for Ghostty
+# ==============================================================================
+
+# Function to get git branch and status
+git_status() {
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        local branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "detached")
+        local status=$(git status --porcelain 2>/dev/null | wc -l)
+        if [ $status -eq 0 ]; then
+            echo "%F{010}± $branch%f"  # Green for clean
+        else
+            echo "%F{009}± $branch*$status%f"  # Red for dirty with file count
+        fi
+    fi
+}
+
+# Function to get current working directory (shortened)
+short_path() {
+    echo "%F{012}%3~%f"  # Blue, max 3 directories deep
+}
+
+# Function to get virtual environment info
+venv_info() {
+    if [[ -n $VIRTUAL_ENV ]]; then
+        local venv_name=$(basename $VIRTUAL_ENV)
+        echo "%F{014}($venv_name)%f "  # Cyan
+    elif [[ -n $CONDA_DEFAULT_ENV ]]; then
+        echo "%F{014}($CONDA_DEFAULT_ENV)%f "  # Cyan
+    fi
+}
+
+# Function to get command execution time and handle terminal titles
+preexec() {
+    __timer_start=$(date +%s.%N)
+    # Set terminal title to "directory: command"
+    print -Pn "\e]0;%~: $1\a"
+}
+
+precmd() {
+    if [[ -n $__timer_start ]]; then
+        local __timer_end=$(date +%s.%N)
+        local __elapsed=$(echo "$__timer_end - $__timer_start" | bc -l 2>/dev/null || echo "0")
+        local __elapsed_int=$(echo "$__elapsed" | cut -d. -f1)
+        if [[ $__elapsed_int -ge 1 ]]; then
+            __timer_info=" %F{011}${__elapsed}s%f"  # Yellow timing info
+        else
+            __timer_info=""
+        fi
+        unset __timer_start
+    else
+        __timer_info=""
+    fi
+
+    # Set title to current directory when command finishes
+    print -Pn "\e]0;%~\a"
+
+    # Update prompt with all status information
+    zle && zle reset-prompt
+}
+
+# Enhanced prompt with rich status information
+setopt PROMPT_SUBST
+PROMPT='
+%F{013}┌─[%f$(venv_info)$(short_path)%F{013}]─[%f$(git_status)%F{013}]%f$__timer_info
+%F{013}└─❯%f '
+
+# Right-side prompt with timestamp and job count
+RPROMPT='%F{008}%D{%H:%M:%S}%f%(1j.%F{009}+ %j%f.)'  # Gray timestamp, red job count
+
+# Ghostty Terminal Title Integration is now handled in the enhanced statusline above
+
 # Python environment management
 # Note: Using both pyenv and conda can be useful if you use different Python
 # environments for different projects. If you primarily use one, consider removing the other.
@@ -93,3 +165,33 @@ export PATH="/opt/homebrew/bin:$PATH"
 # alias is="intelli-shell"
 # export PATH="$INTELLI_HOME/bin:$PATH"
 # eval "$(intelli-shell init zsh)"
+
+# Video Analysis CLI
+alias video-analysis='/Users/brennon/AIProjects/ai-workspaces/sdd-workshops/video-analysis-cli'
+export PATH="$PATH:/Users/brennon/AIProjects/ai-workspaces/sdd-workshops"
+
+# ==============================================================================
+# Starship Prompt Integration
+# ==============================================================================
+
+# Toggle between custom prompt and Starship
+# Use 'starship-enable' to switch to Starship, 'starship-disable' to return to custom
+starship-enable() {
+    if command -v starship >/dev/null 2>&1; then
+        eval "$(starship init zsh)"
+        echo "✨ Starship prompt enabled. Use 'starship-disable' to return to custom prompt."
+    else
+        echo "❌ Starship not found. Install with: brew install starship"
+    fi
+}
+
+starship-disable() {
+    # Reset to custom prompt by re-sourcing this file without Starship
+    unset -f precmd 2>/dev/null
+    unset -f preexec 2>/dev/null
+    source ~/.zshrc
+    echo "🔧 Custom prompt restored. Use 'starship-enable' to switch back to Starship."
+}
+
+# Uncomment the line below to enable Starship by default
+# eval "$(starship init zsh)"

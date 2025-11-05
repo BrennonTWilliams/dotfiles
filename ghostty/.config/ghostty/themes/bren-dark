@@ -1,0 +1,87 @@
+# ==============================================================================
+# Bren Dark Theme for Ghostty
+# ==============================================================================
+# High contrast dark theme with Gruvbox color palette and enhanced readability
+# Features deep background with bright text and vibrant syntax highlighting
+# ==============================================================================
+
+# ============================================
+# Core Colors
+# ============================================
+
+# Primary colors - Enhanced Gruvbox dark with bren theme aesthetic
+# Gruvbox dark0-hard, deeper than pure black
+background = #1d2021
+# Gruvbox light1
+foreground = #ebdbb2
+
+# Selection colors - Enhanced bren theme contrast
+# Gruvbox dark1 with bren theme enhancement
+selection-background = #3c3836
+# Gruvbox light1
+selection-foreground = #ebdbb2
+
+# Cursor colors - Gruvbox-appropriate accent
+# Gruvbox orange cursor - better palette integration
+cursor-color = #d65d0e
+# Gruvbox dark background
+cursor-text = #1d2021
+
+# 16-color palette - Full Gruvbox integration with bren theme enhancement
+# Standard colors (0-7) - Gruvbox dark palette
+# dark0-hard - deep background
+palette = 0=#1d2021
+# red - Gruvbox dark red
+palette = 1=#cc241d
+# green - Gruvbox dark green
+palette = 2=#98971a
+# yellow - Gruvbox dark yellow
+palette = 3=#d79921
+# blue - Gruvbox dark blue
+palette = 4=#458588
+# magenta - Gruvbox dark magenta
+palette = 5=#b16286
+# cyan - Gruvbox dark cyan
+palette = 6=#689d6a
+# light4 - Gruvbox dark white
+palette = 7=#a89984
+
+# Bright colors (8-15) - Enhanced Gruvbox bright palette with bren theme vibrance
+# dark2 - bright black
+palette = 8=#928374
+# bright-red - enhanced bren theme red
+palette = 9=#fb4934
+# bright-green - vibrant green
+palette = 10=#b8bb26
+# bright-yellow - electric yellow
+palette = 11=#fabd2f
+# bright-blue - enhanced bren theme blue
+palette = 12=#83a598
+# bright-magenta - bren theme magenta
+palette = 13=#d3869b
+# bright-cyan - vibrant cyan
+palette = 14=#8ec07c
+# light1 - bright white
+palette = 15=#ebdbb2
+
+# Enhanced visual settings for depth and readability
+# For subtle transparency effect, change background-opacity = 0.95
+background-opacity = 1.0
+background-blur = 0
+
+# Statusline-optimized colors for enhanced shell integration
+# These colors complement the zsh statusline configuration
+# Enhanced contrast for better readability with custom prompts
+bold-color = #ebdbb2
+
+# ==============================================================================
+# Theme Characteristics:
+# - Enhanced bren theme with full Gruvbox dark color palette integration
+# - Deep Gruvbox background (#1d2021) for reduced eye strain while maintaining bren theme aesthetic
+# - Complete 16-color Gruvbox palette with bren theme vibrance enhancement
+# - Gruvbox orange cursor accent - palette-consistent and readable
+# - Authentic color harmony: Gruvbox foundation with bren theme accents
+# - Solid background (100% opacity) for maximum readability
+# - High contrast optimized for development workflow with syntax highlighting
+# - Combines Gruvbox's proven comfort with bren theme's visual appeal
+# ==============================================================================
