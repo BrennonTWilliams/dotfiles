@@ -96,6 +96,7 @@ exec zsh
 This repository contains configuration for:
 
 - **Shell** - Zsh with Oh My Zsh, custom aliases, and Gruvbox theme
+- **Prompt** - Starship cross-shell prompt with git and language support
 - **Terminal Multiplexer** - Tmux with custom keybindings and Gruvbox theme
 - **Window Manager** - Sway (i3-compatible Wayland compositor)
 - **Terminal Emulators** - Ghostty (macOS) and Foot (Linux) with Gruvbox color scheme
@@ -107,6 +108,7 @@ This repository contains configuration for:
 dotfiles/
 ├── zsh/              # Zsh shell configuration
 ├── bash/             # Bash shell configuration (fallback)
+├── starship/         # Starship prompt configuration
 ├── tmux/             # Tmux configuration
 ├── sway/             # Sway window manager
 ├── foot/             # Foot terminal emulator (Linux)
@@ -119,7 +121,8 @@ dotfiles/
 ### Unified Gruvbox Theme
 
 All components use the Gruvbox Dark color scheme for a consistent visual experience:
-- Shell prompt
+- Shell prompt (Zsh)
+- Starship prompt
 - Tmux status bar
 - Terminal emulator
 - Window manager
@@ -130,6 +133,7 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 - **NVM lazy-loading** - Fast shell startup with on-demand Node.js loading
 - **Cross-platform clipboard** - Works with both X11 (xclip) and macOS (pbcopy)
 - **Vi-mode keybindings** - Consistent navigation across tmux and shell
+- **Starship integration** - Optimized prompt with git and language version display
 
 ### Security
 
@@ -253,6 +257,96 @@ After running the install script, set up additional dependencies:
 
 ```bash
 chsh -s $(which zsh)
+```
+
+## Starship Prompt Configuration
+
+Custom starship prompt optimized for tmux and development workflows:
+
+### Features
+
+- **Compact Format**: Optimized for tmux panes with minimal width usage
+- **Smart Detection**: SSH/Tmux-aware username and hostname display
+- **Git Integration**: Comprehensive branch, status, and commit hash indicators
+- **Language Support**: Python, Node.js, Rust, Go, Java version display
+- **Performance**: Command execution time monitoring
+- **Security**: Sudo privilege indicator with crown emoji
+- **Context Awareness**: Shows Docker context when active
+
+### Configuration Files
+
+- **Main Config**: `starship/starship.toml` → `~/.config/starship.toml`
+- **Local Overrides**: Create `~/.config/starship.toml.local` for machine-specific settings
+- **Symlinked**: Automatically managed via GNU Stow during dotfile installation
+
+### Key Modules
+
+```toml
+# Compact format optimized for tmux panes
+format = "$sudo$username$hostname$directory$git_branch$git_status$python$nodejs$rust$golang$java$docker_context$character"
+
+# Show sudo when enabled
+[sudo]
+disabled = false
+symbol = "👑 "
+style = "bold red"
+
+# Git status with intuitive icons
+[git_status]
+stashed = "📦"
+modified = "📝"
+deleted = "🗑️"
+ahead = "⇡$count"
+behind = "⇣$count"
+
+# Language versions (minimal display)
+[python]
+symbol = "🐍 "
+[nodejs]
+symbol = " "
+[rust]
+symbol = "🦀 "
+[golang]
+symbol = "🐹 "
+[java]
+symbol = "☕ "
+```
+
+### Customization Examples
+
+Create `~/.config/starship.toml.local` for personalized settings:
+
+```toml
+# Custom time display
+[time]
+disabled = false
+format = "[🕐 $time]($style) "
+
+# Memory usage monitoring
+[memory_usage]
+disabled = false
+threshold = 75
+format = "[🧠 ${ram_pct}]($style) "
+
+# Kubernetes context (if you use k8s)
+[kubernetes]
+symbol = "☸ "
+disabled = false
+```
+
+### Verification
+
+Test starship configuration after installation:
+
+```bash
+# Check starship version
+starship --version
+
+# Debug prompt rendering
+starship explain
+
+# Test configuration parsing
+starship print-config
 ```
 
 ## Machine-Specific Configuration
@@ -494,6 +588,34 @@ exec zsh
 ```
 
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#claude-command-not-found-after-restart) for detailed explanation.
+
+#### Starship Not Loading
+
+If starship prompt doesn't appear after installation:
+
+```bash
+# Verify starship is installed
+starship --version
+
+# Check if starship is initialized in shell
+echo $STARSHIP_SHELL
+
+# Test starship configuration
+starship explain
+
+# Re-stow starship configuration
+cd ~/.dotfiles
+stow -R starship
+
+# Restart shell
+exec zsh
+```
+
+**Common issues:**
+- Starship not installed: Install via package manager (`brew install starship` or `sudo apt install starship`)
+- Shell not initialized: Starship needs to be initialized in `~/.zshrc` or `~/.bashrc`
+- Configuration error: Run `starship print-config` to validate configuration
+- Symlink broken: Re-stow the starship package from dotfiles directory
 
 #### Stow Conflicts
 

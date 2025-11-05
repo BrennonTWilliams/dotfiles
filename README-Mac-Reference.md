@@ -49,6 +49,7 @@ Install system packages without dotfiles.
 - `ghostty` (with custom keybindings disabled in config)
 
 ### Development Tools
+- `starship` (Cross-shell prompt, hotkey-safe)
 - `mas` (Mac App Store CLI)
 
 ### Packages to Avoid
@@ -95,6 +96,12 @@ After installation, verify standard macOS hotkeys work:
    ```bash
    echo "test" | pbcopy  # Should work
    pbpaste              # Should return "test"
+   ```
+
+4. **Starship Prompt**
+   ```bash
+   starship --version   # Should show version
+   starship explain     # Should explain prompt components
    ```
 
 ## If You Need Hotkey-Enhancing Tools

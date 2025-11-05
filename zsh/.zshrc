@@ -38,6 +38,40 @@ venv_info() {
     fi
 }
 
+# Function to get memory usage for current shell
+memory_info() {
+    local mem_usage=$(ps -o rss= -p $$ | awk '{printf "%.1f", $1/1024}')
+    echo "%F{014}💾 ${mem_usage}MB%f"  # Cyan memory info
+}
+
+# Function to get CPU usage for current shell
+cpu_info() {
+    local cpu_usage=$(ps -o %cpu= -p $$ | awk '{printf "%.1f", $1}')
+    echo "%F{011}⚡ ${cpu_usage}%%f"  # Yellow CPU info
+}
+
+# Function to get workspace/project context
+workspace_info() {
+    # Check for Git repo name
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        local repo_name=$(basename $(git rev-parse --show-toplevel))
+        echo "%F{013}📁 $repo_name%f"  # Magenta workspace
+    # Check for package.json, Cargo.toml, etc.
+    elif [[ -f "package.json" ]]; then
+        local project_name=$(jq -r .name package.json 2>/dev/null || echo "Node")
+        echo "%F{013}📦 $project_name%f"  # Magenta project
+    elif [[ -f "Cargo.toml" ]]; then
+        local project_name=$(grep '^name = ' Cargo.toml | cut -d'"' -f2 || echo "Rust")
+        echo "%F{013}🦀 $project_name%f"  # Magenta project
+    elif [[ -f "pyproject.toml" ]]; then
+        local project_name=$(grep '^name = ' pyproject.toml | cut -d'"' -f2 || echo "Python")
+        echo "%F{013}🐍 $project_name%f"  # Magenta project
+    else
+        local dir_name=$(basename $(pwd))
+        echo "%F{013}📂 $dir_name%f"  # Magenta directory
+    fi
+}
+
 # Function to get command execution time and handle terminal titles
 preexec() {
     __timer_start=$(date +%s.%N)
@@ -75,6 +109,45 @@ PROMPT='
 
 # Right-side prompt with timestamp and job count
 RPROMPT='%F{008}%D{%H:%M:%S}%f%(1j.%F{009}+ %j%f.)'  # Gray timestamp, red job count
+
+# ==============================================================================
+# Tab Block Enhanced Prompt System
+# ==============================================================================
+
+# Store original prompt for toggling
+ORIGINAL_PROMPT="$PROMPT"
+ORIGINAL_RPROMPT="$RPROMPT"
+
+# Enhanced tab prompt with rich visualization
+tab_prompt() {
+    PROMPT='
+%F{013}┌─[%f$(workspace_info)%F{013}]─[%f$(venv_info)$(short_path)%F{013}]─[%f$(git_status)%F{013}]
+%F{013}├─[%f$(memory_info)%F{013}]─[%f$(cpu_info)%F{013}]%f$__timer_info
+%F{013}└─❯%f '
+    RPROMPT='%F{008}%D{%H:%M}%f%(1j.%F{009}+ %j%f.)'  # Shorter time format for tab mode
+    echo "🔥 Tab-enhanced prompt activated. Use 'standard_prompt' to return to normal."
+}
+
+# Return to standard prompt
+standard_prompt() {
+    PROMPT="$ORIGINAL_PROMPT"
+    RPROMPT="$ORIGINAL_RPROMPT"
+    echo "🔧 Standard prompt restored. Use 'tab_prompt' for tab-enhanced view."
+}
+
+# Compact tab prompt (minimal)
+compact_prompt() {
+    PROMPT='$(workspace_info) $(git_status) ❯ '
+    RPROMPT=''
+    echo "📱 Compact mode activated. Use 'standard_prompt' to return to normal."
+}
+
+# Minimal information prompt
+minimal_prompt() {
+    PROMPT='%F{012}%2~%f ❯ '  # Just directory, no git or extras
+    RPROMPT=''
+    echo "⚡ Minimal mode activated. Use 'standard_prompt' to return to normal."
+}
 
 # Ghostty Terminal Title Integration is now handled in the enhanced statusline above
 
@@ -170,6 +243,18 @@ export PATH="/opt/homebrew/bin:$PATH"
 alias video-analysis='/Users/brennon/AIProjects/ai-workspaces/sdd-workshops/video-analysis-cli'
 export PATH="$PATH:/Users/brennon/AIProjects/ai-workspaces/sdd-workshops"
 
+# ==============================================================================
+# Quick Prompt Reference
+# ==============================================================================
+#
+# Available prompt modes:
+# - tab_prompt     : Enhanced tab blocks with workspace, memory, CPU info
+# - standard_prompt: Return to original custom prompt
+# - compact_prompt : Minimal workspace + git status
+# - minimal_prompt : Just directory path
+# - starship-enable: Switch to Starship prompt system
+# - starship-disable: Return to custom prompt
+#
 # ==============================================================================
 # Starship Prompt Integration
 # ==============================================================================

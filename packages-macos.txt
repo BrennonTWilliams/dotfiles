@@ -21,6 +21,7 @@ stow
 htop
 tmux
 zsh
+starship
 
 # ==============================================================================
 # macOS Development Environment
