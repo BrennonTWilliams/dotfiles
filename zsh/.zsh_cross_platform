@@ -68,6 +68,149 @@ detect_terminal() {
 }
 
 # ==============================================================================
+# Dynamic Path Resolution System
+# ==============================================================================
+
+# Get user's home directory in a cross-platform way
+get_user_home() {
+    echo "$HOME"
+}
+
+# Get user's username in a cross-platform way
+get_username() {
+    # Try multiple methods to get username
+    whoami 2>/dev/null || \
+    logname 2>/dev/null || \
+    id -un 2>/dev/null || \
+    echo "$USER"
+}
+
+# Resolve platform-specific paths dynamically
+resolve_platform_path() {
+    local path_type="$1"
+    local username="$(get_username)"
+    local user_home="$(get_user_home)"
+    local os="$(detect_os)"
+
+    case "$path_type" in
+        "ai_projects")
+            case "$os" in
+                "macos") echo "/Users/$username/AIProjects" ;;
+                "linux") echo "$user_home/AIProjects" ;;
+                *) echo "$user_home/AIProjects" ;;
+            esac
+            ;;
+        "ai_workspaces")
+            echo "$(resolve_platform_path "ai_projects")/ai-workspaces"
+            ;;
+        "dotfiles")
+            echo "$(resolve_platform_path "ai_workspaces")/dotfiles"
+            ;;
+        "conda_root")
+            case "$os" in
+                "macos") echo "$user_home/miniforge3" ;;
+                "linux") echo "$user_home/miniforge3" ;;
+                *) echo "$user_home/miniforge3" ;;
+            esac
+            ;;
+        "conda_bin")
+            local conda_root="$(resolve_platform_path "conda_root")"
+            echo "$conda_root/bin"
+            ;;
+        "conda_profile")
+            local conda_root="$(resolve_platform_path "conda_root")"
+            echo "$conda_root/etc/profile.d/conda.sh"
+            ;;
+        "docker_completions")
+            case "$os" in
+                "macos") echo "/Users/$username/.docker/completions" ;;
+                "linux") echo "$user_home/.docker/completions" ;;
+                *) echo "$user_home/.docker/completions" ;;
+            esac
+            ;;
+        "uzi")
+            echo "$(resolve_platform_path "ai_workspaces")/uzi"
+            ;;
+        "sdd_workshops")
+            echo "$(resolve_platform_path "ai_workspaces")/sdd-workshops"
+            ;;
+        "video_analysis_cli")
+            echo "$(resolve_platform_path "sdd_workshops")/video-analysis-cli"
+            ;;
+        "npm_global")
+            echo "$user_home/.npm-global"
+            ;;
+        "npm_global_bin")
+            echo "$(resolve_platform_path "npm_global")/bin"
+            ;;
+        "local_lib")
+            case "$os" in
+                "macos") echo "$user_home/.local/lib" ;;
+                "linux") echo "$user_home/.local/lib" ;;
+                *) echo "$user_home/.local/lib" ;;
+            esac
+            ;;
+        "starship_config")
+            echo "$user_home/.config/starship"
+            ;;
+        "vscode_config")
+            case "$os" in
+                "macos") echo "$user_home/Library/Application Support/Code/User" ;;
+                "linux") echo "$user_home/.config/Code/User" ;;
+                *) echo "$user_home/.config/Code/User" ;;
+            esac
+            ;;
+        "gitconfig")
+            echo "$user_home/.gitconfig"
+            ;;
+        "npmrc")
+            echo "$user_home/.npmrc"
+            ;;
+        "ssh_dir")
+            echo "$user_home/.ssh"
+            ;;
+        "tmux_local")
+            echo "$user_home/.tmux.local"
+            ;;
+        "zshrc_local")
+            echo "$user_home/.zshrc.local"
+            ;;
+        "zshenv_local")
+            echo "$user_home/.zshenv.local"
+            ;;
+        "zprofile_local")
+            echo "$user_home/.zprofile.local"
+            ;;
+        "bashrc_local")
+            echo "$user_home/.bashrc.local"
+            ;;
+        "bash_profile_local")
+            echo "$user_home/.bash_profile.local"
+            ;;
+        "gitconfig_local")
+            echo "$user_home/.gitconfig.local"
+            ;;
+        "npmrc_local")
+            echo "$user_home/.npmrc.local"
+            ;;
+        *)
+            echo "❌ Unknown path type: $path_type" >&2
+            return 1
+            ;;
+    esac
+}
+
+# Export path resolution functions for use in other scripts
+export -f resolve_platform_path get_username get_user_home
+
+# Set commonly used environment variables
+export AI_PROJECTS_DIR="$(resolve_platform_path "ai_projects")"
+export AI_WORKSPACES_DIR="$(resolve_platform_path "ai_workspaces")"
+export DOTFILES_DIR="$(resolve_platform_path "dotfiles")"
+export CONDA_ROOT="$(resolve_platform_path "conda_root")"
+export CONDA_BIN="$(resolve_platform_path "conda_bin")"
+
+# ==============================================================================
 # Cross-Platform Command Abstractions
 # ==============================================================================
 
@@ -497,6 +640,56 @@ alias dev-install='setup_dev_env --update all'
 alias dev-minimal='setup_dev_env --minimal core shell dev-tools'
 alias dev-update='setup_dev_env --update'
 alias dev-dryrun='setup_dev_env --dry-run all'
+
+# ==============================================================================
+# Health Check Integration
+# ==============================================================================
+
+# Cross-platform health check execution
+dotfiles_health_check() {
+    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local health_check_script="$script_dir/../scripts/health-check.sh"
+
+    if [[ -f "$health_check_script" ]]; then
+        "$health_check_script"
+    else
+        echo "❌ Health check script not found at: $health_check_script"
+        echo "Attempting basic health checks..."
+
+        # Fallback basic checks
+        echo "🔍 Basic Dotfiles Health Check"
+        echo "=============================="
+
+        # Check shell configuration
+        if [[ -f "$HOME/.zshrc" ]]; then
+            echo "✅ .zshrc exists"
+        else
+            echo "❌ .zshrc not found"
+        fi
+
+        # Check Starship
+        if command -v starship >/dev/null 2>&1; then
+            echo "✅ Starship is installed"
+        else
+            echo "❌ Starship not found"
+        fi
+
+        # Check core tools
+        local core_tools=("git" "curl" "tmux")
+        for tool in "${core_tools[@]}"; do
+            if command -v "$tool" >/dev/null 2>&1; then
+                echo "✅ $tool is available"
+            else
+                echo "❌ $tool not found"
+            fi
+        done
+    fi
+}
+
+# Convenience aliases for health checks
+alias health-check='dotfiles_health_check'
+alias dotfiles-check='dotfiles_health_check'
+alias system-health='dotfiles_health_check'
 
 # Development environment status check
 dev_status() {

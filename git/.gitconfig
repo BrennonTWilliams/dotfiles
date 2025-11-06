@@ -1,0 +1,43 @@
+[user]
+	# TODO: Replace with your actual name and email
+	# name = Your Name
+	# email = your.email@example.com
+	name = Brennon Williams
+	email = brennonw@gmail.com
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[core]
+	# Use VS Code as default editor (uncomment and modify as needed)
+	# editor = code --wait
+	editor = nano
+	autocrlf = input
+	safecrlf = warn
+
+[init]
+	defaultBranch = main
+
+[push]
+	default = simple
+
+[pull]
+	rebase = false
+
+[alias]
+	# Common aliases
+	st = status
+	co = checkout
+	br = branch
+	ci = commit
+	last = log -1 HEAD
+	unstage = reset HEAD --
+	graph = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+# Platform-specific configurations can be added in ~/.gitconfig.local
+# Example:
+# [include]
+#   path = ~/.gitconfig.local

@@ -1,0 +1,67 @@
+# ===================================
+# Platform-Specific Modules Configuration
+# ===================================
+# Custom modules for platform detection and development environment
+
+# Custom terminal detection
+[custom.terminal]
+command = "echo $TERM"
+when = "true"
+format = "[$output]($style) "
+style = "bold yellow"
+
+# macOS-specific modules (only show on macOS)
+[custom.macos]
+command = "uname"
+when = "[[ $(uname) == 'Darwin' ]]"
+format = "[$output]($style) "
+style = "bold dimmed white"
+
+# Linux-specific modules (only show on Linux)
+[custom.linux]
+command = "uname -o"
+when = "[[ $(uname) == 'Linux' ]]"
+format = "[$output]($style) "
+style = "bold dimmed white"
+
+# Sway-specific indicator (only show in Sway)
+[custom.sway]
+command = "echo $SWAYSOCK"
+when = "[[ -n $SWAYSOCK ]]"
+format = "[🪟 Sway]($style) "
+style = "bold magenta"
+
+# Show if in a tmux session
+[custom.tmux]
+command = "echo $TMUX"
+when = "[[ -n $TMUX ]]"
+format = "[📺 tmux]($style) "
+style = "bold blue"
+
+# Show if running in Ghostty (macOS)
+[custom.ghostty]
+command = "echo $GHOSTTY_RESOURCES"
+when = "[[ -n $GHOSTTY_RESOURCES ]]"
+format = "[👻 Ghostty]($style) "
+style = "bold green"
+
+# Show if running in Foot (Linux Wayland)
+[custom.foot]
+command = "echo $FOOT_TERMINAL_ID"
+when = "[[ -n $FOOT_TERMINAL_ID ]]"
+format = "[🦶 Foot]($style) "
+style = "bold green"
+
+# Show current git commit hash
+[custom.git_commit]
+command = "git rev-parse --short HEAD 2>/dev/null"
+when = "git rev-parse --git-dir > /dev/null 2>&1"
+format = "[($hash)]($style) "
+style = "bold dimmed white"
+
+# Show AWS profile if active
+[custom.aws_profile]
+command = "echo $AWS_PROFILE"
+when = "[[ -n $AWS_PROFILE ]]"
+format = "[🔐 AWS: $output]($style) "
+style = "bold yellow"

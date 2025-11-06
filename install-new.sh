@@ -74,8 +74,12 @@ create_local_configs() {
     # Create local configuration files if they don't exist
     local local_configs=(
         "$HOME/.zshrc.local"
+        "$HOME/.zshenv.local"
+        "$HOME/.bashrc.local"
+        "$HOME/.bash_profile.local"
         "$HOME/.tmux.local"
         "$HOME/.gitconfig.local"
+        "$HOME/.npmrc.local"
     )
 
     for config in "${local_configs[@]}"; do
@@ -114,6 +118,13 @@ install_all() {
     # Create local configs
     create_local_configs
 
+    # Setup new configurations (git, vscode, npm)
+    if [ -f "$SCRIPT_DIR/scripts/setup-new-configs.sh" ]; then
+        "$SCRIPT_DIR/scripts/setup-new-configs.sh"
+    else
+        warn "New configuration setup script not found"
+    fi
+
     # Setup terminal
     setup_terminal_only
 
@@ -123,6 +134,14 @@ install_all() {
 
 post_install() {
     section "Post-Installation Steps"
+
+    # Run health check
+    if [ -f "$SCRIPT_DIR/scripts/health-check.sh" ]; then
+        echo
+        info "Running post-installation health check..."
+        "$SCRIPT_DIR/scripts/health-check.sh"
+        echo
+    fi
 
     echo
     success "Installation completed successfully!"

@@ -162,8 +162,10 @@ copy-on-select = true
 # Shell command for new terminals
 command = /bin/zsh
 
-# Working directory - always start in home directory
-working-directory = /Users/brennon
+# Working directory - always start in home directory (cross-platform)
+# Note: Ghostty doesn't support environment variables in working-directory
+# This will need to be updated manually on different systems or via setup script
+working-directory = ~
 
 # Terminal type
 term = xterm-256color

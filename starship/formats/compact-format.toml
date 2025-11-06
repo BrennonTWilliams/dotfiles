@@ -1,0 +1,13 @@
+# ===================================
+# Compact Format Configuration
+# ===================================
+# Minimal single-line layout for focused work
+
+# Compact format string - single line with essential info only
+format = """[$path]($style)[$read_only]($read_only_style)[$git_branch]($style)[$git_status]($style)$character"""
+
+# Blank line between prompts
+add_newline = false
+
+# Command timeout
+command_timeout = 1000

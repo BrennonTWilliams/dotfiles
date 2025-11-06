@@ -58,21 +58,92 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Detect operating system
+# Detect operating system and Linux distribution with enhanced support
 detect_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        if [ -f /etc/debian_version ]; then
-            OS="debian"
-            PKG_MANAGER="apt"
-        elif [ -f /etc/redhat-release ]; then
-            OS="redhat"
-            PKG_MANAGER="dnf"
-        elif [ -f /etc/arch-release ]; then
-            OS="arch"
-            PKG_MANAGER="pacman"
+        # Enhanced Linux distribution detection
+        if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            OS="$ID"
+            case "$ID" in
+                ubuntu|debian|linuxmint|pop)
+                    PKG_MANAGER="apt"
+                    ;;
+                fedora|rhel|centos|rocky|almalinux)
+                    PKG_MANAGER="dnf"
+                    # Older systems might use yum
+                    if command -v yum >/dev/null 2>&1 && ! command -v dnf >/dev/null 2>&1; then
+                        PKG_MANAGER="yum"
+                    fi
+                    ;;
+                arch|manjaro|endeavouros|garuda)
+                    PKG_MANAGER="pacman"
+                    ;;
+                opensuse-leap|opensuse-tumbleweed)
+                    PKG_MANAGER="zypper"
+                    ;;
+                void|void-musl)
+                    PKG_MANAGER="xbps"
+                    ;;
+                alpine)
+                    PKG_MANAGER="apk"
+                    ;;
+                gentoo)
+                    PKG_MANAGER="emerge"
+                    ;;
+                solus)
+                    PKG_MANAGER="eopkg"
+                    ;;
+                clear-linux-os)
+                    PKG_MANAGER="swupd"
+                    ;;
+                *)
+                    # Fallback detection methods
+                    if [ -f /etc/debian_version ]; then
+                        OS="debian"
+                        PKG_MANAGER="apt"
+                    elif [ -f /etc/redhat-release ]; then
+                        OS="redhat"
+                        PKG_MANAGER="dnf"
+                        if command -v yum >/dev/null 2>&1 && ! command -v dnf >/dev/null 2>&1; then
+                            PKG_MANAGER="yum"
+                        fi
+                    elif [ -f /etc/arch-release ]; then
+                        OS="arch"
+                        PKG_MANAGER="pacman"
+                    elif command -v apt >/dev/null 2>&1; then
+                        OS="debian"
+                        PKG_MANAGER="apt"
+                    elif command -v dnf >/dev/null 2>&1; then
+                        OS="redhat"
+                        PKG_MANAGER="dnf"
+                    elif command -v pacman >/dev/null 2>&1; then
+                        OS="arch"
+                        PKG_MANAGER="pacman"
+                    else
+                        OS="linux"
+                        PKG_MANAGER="unknown"
+                    fi
+                    ;;
+            esac
         else
-            OS="linux"
-            PKG_MANAGER="unknown"
+            # Legacy detection methods for older systems
+            if [ -f /etc/debian_version ]; then
+                OS="debian"
+                PKG_MANAGER="apt"
+            elif [ -f /etc/redhat-release ]; then
+                OS="redhat"
+                PKG_MANAGER="dnf"
+                if command -v yum >/dev/null 2>&1 && ! command -v dnf >/dev/null 2>&1; then
+                    PKG_MANAGER="yum"
+                fi
+            elif [ -f /etc/arch-release ]; then
+                OS="arch"
+                PKG_MANAGER="pacman"
+            else
+                OS="linux"
+                PKG_MANAGER="unknown"
+            fi
         fi
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         OS="macos"
@@ -80,6 +151,28 @@ detect_os() {
     else
         OS="unknown"
         PKG_MANAGER="unknown"
+    fi
+}
+
+# Get detailed system information for debugging
+get_system_info() {
+    detect_os
+    echo "OS: $OS"
+    echo "Package Manager: $PKG_MANAGER"
+    echo "OSTYPE: $OSTYPE"
+
+    if [[ "$OS" != "macos" ]]; then
+        if command -v lsb_release >/dev/null 2>&1; then
+            echo "Distribution: $(lsb_release -d -s)"
+            echo "Release: $(lsb_release -r -s)"
+            echo "Codename: $(lsb_release -c -s)"
+        fi
+
+        if [ -f /etc/os-release ]; then
+            echo "Pretty Name: $PRETTY_NAME"
+            echo "Version: $VERSION"
+            echo "Version ID: $VERSION_ID"
+        fi
     fi
 }
 
@@ -146,6 +239,121 @@ check_pacman_package_availability() {
         warn "Package '$pkg' not found in pacman repositories"
         return 1
     fi
+}
+
+# Check if package is available in zypper (openSUSE)
+check_zypper_package_availability() {
+    local pkg="$1"
+    if zypper search -i "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in zypper repositories"
+        return 1
+    fi
+}
+
+# Check if package is available in xbps (Void Linux)
+check_xbps_package_availability() {
+    local pkg="$1"
+    if xbps-query -R "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in xbps repositories"
+        return 1
+    fi
+}
+
+# Check if package is available in apk (Alpine Linux)
+check_apk_package_availability() {
+    local pkg="$1"
+    if apk info "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in apk repositories"
+        return 1
+    fi
+}
+
+# Check if package is available in emerge (Gentoo)
+check_emerge_package_availability() {
+    local pkg="$1"
+    if emerge --search "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in Gentoo repositories"
+        return 1
+    fi
+}
+
+# Check if package is available in eopkg (Solus)
+check_eopkg_package_availability() {
+    local pkg="$1"
+    if eopkg info "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in Solus repositories"
+        return 1
+    fi
+}
+
+# Check if package is available in swupd (Clear Linux)
+check_swupd_package_availability() {
+    local pkg="$1"
+    if swupd bundle-info "$pkg" &> /dev/null; then
+        return 0
+    else
+        warn "Package '$pkg' not found in Clear Linux bundles"
+        return 1
+    fi
+}
+
+# Generic package availability check that works with detected package manager
+check_package_availability() {
+    local pkg="$1"
+    local manager="${PKG_MANAGER:-unknown}"
+
+    case "$manager" in
+        apt)
+            check_apt_package_availability "$pkg"
+            ;;
+        dnf|yum)
+            check_dnf_package_availability "$pkg"
+            ;;
+        pacman)
+            check_pacman_package_availability "$pkg"
+            ;;
+        zypper)
+            check_zypper_package_availability "$pkg"
+            ;;
+        xbps)
+            check_xbps_package_availability "$pkg"
+            ;;
+        apk)
+            check_apk_package_availability "$pkg"
+            ;;
+        emerge)
+            check_emerge_package_availability "$pkg"
+            ;;
+        eopkg)
+            check_eopkg_package_availability "$pkg"
+            ;;
+        swupd)
+            check_swupd_package_availability "$pkg"
+            ;;
+        brew)
+            # Homebrew packages are typically available if brew search finds them
+            if brew search "$pkg" | grep -q "^$pkg\$"; then
+                return 0
+            else
+                warn "Package '$pkg' not found in Homebrew"
+                return 1
+            fi
+            ;;
+        *)
+            warn "Unknown package manager: $manager. Cannot check availability of '$pkg'"
+            return 1
+            ;;
+    esac
 }
 
 # ==============================================================================

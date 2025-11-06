@@ -1,0 +1,19 @@
+# ===================================
+# Verbose Mode Overrides
+# ===================================
+# Overrides for verbose mode - maximum information display
+
+# Username - always show in verbose mode
+[username]
+show_always = true
+
+# Hostname - always show in verbose mode
+[hostname]
+format = "[$hostname]($style) "
+
+# Local IP - enable in verbose mode
+[localip]
+disabled = false
+
+# All other modules use default settings from shared modules
+# This file can be expanded for any verbose-mode specific customizations

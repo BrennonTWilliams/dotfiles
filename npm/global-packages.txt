@@ -1,0 +1,94 @@
+# Essential Global NPM Packages for Development
+# Install with: npm install -g <package-name>
+# Or run: xargs -a global-packages.txt npm install -g
+
+# Development Tools
+npm                         # Node Package Manager (latest version)
+nodemon                     # Auto-restart Node.js apps on file changes
+pm2                         # Process manager for Node.js applications
+typescript                  # TypeScript compiler
+ts-node                     # TypeScript execution environment
+@types/node                 # TypeScript definitions for Node.js
+
+# Build Tools
+webpack                     # Module bundler
+webpack-cli                 # Webpack command line interface
+rollup                      # Module bundler for libraries
+vite                        # Next generation frontend tooling
+parcel                      # Zero-configuration web application bundler
+
+# Testing
+jest                        # JavaScript testing framework
+mocha                       # Testing framework
+chai                        # Assertion library
+cypress                     # End-to-end testing framework
+playwright                  # Browser automation and testing
+
+# Code Quality
+eslint                      # JavaScript linter
+prettier                    # Code formatter
+prettier-plugin-tailwindcss # Prettier plugin for Tailwind CSS
+@typescript-eslint/parser   # TypeScript parser for ESLint
+@typescript-eslint/eslint-plugin # ESLint rules for TypeScript
+
+# Documentation
+jsdoc                       # Documentation generator
+typedoc                     # Documentation generator for TypeScript
+swagger-jsdoc               # Generate OpenAPI/Swagger documentation
+
+# Utilities
+http-server                 # Simple static HTTP server
+serve                       # Static file serving and directory listing
+concurrently                # Run multiple commands concurrently
+rimraf                      # rm -rf command for Node.js
+cross-env                   # Set environment variables cross-platform
+dotenv                      # Load environment variables from .env file
+
+# Security and Audit
+audit-ci                    # CI-friendly npm audit
+snyk                        # Find and fix vulnerabilities
+
+# Deployment and CI
+vercel                      # Vercel CLI for deployment
+netlify-cli                 # Netlify CLI for deployment
+surge                       # Simple deployment to surge.sh
+now                         # Vercel (formerly Now) deployment
+
+# AI and Development Tools
+@anthropic-ai/claude-code   # Claude Code AI assistant
+@mermaid-js/mermaid-cli     # Mermaid diagram generator
+
+# Package Management
+pnpm                        # Fast, disk space efficient package manager
+yarn                        # Alternative package manager
+
+# Database Tools
+prisma                      # Modern database toolkit
+mongodb-compass-cli         # MongoDB CLI tools
+redis-cli                   # Redis CLI (usually installed separately)
+
+# Containerization
+@nestjs/cli                 # NestJS framework CLI
+express-generator           # Express application generator
+create-react-app            # React application generator
+@vue/cli                    # Vue.js CLI
+angular-cli                 # Angular CLI
+
+# Performance and Profiling
+clinic                      # Node.js performance profiling
+0x                          # Node.js flame graph profiling
+node-gyp                    # Node.js native addon build tool
+
+# Development Servers
+live-server                 # Development server with live reload
+browser-sync                # Live CSS reload & browser syncing
+
+# Git Integration
+git-cz                      # Conventional commit CLI
+commitizen                  # Git commit conventions
+husky                       # Git hooks made easy
+lint-staged                 # Lint files staged by git
+
+# Monitoring and Debugging
+nodemon                     # Auto-restart for Node.js (duplicate - remove above)
+debug                       # Node.js debugging utility

@@ -1,0 +1,7 @@
+# Ignore local configuration files
+.gitconfig.local
+.gitconfig.local.*
+
+# Ignore potential credential files
+credentials
+credentials.*

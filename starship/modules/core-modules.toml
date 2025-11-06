@@ -1,0 +1,70 @@
+# ===================================
+# Core Modules Configuration
+# ===================================
+# These modules are used across all Starship modes
+
+# Character that appears after the last command prompt
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+vimcmd_replace_one_symbol = "[❮](bold purple)"
+vimcmd_replace_symbol = "[❮](bold purple)"
+vimcmd_visual_symbol = "[❮](bold yellow)"
+
+# Username and hostname
+[username]
+format = "[$user]($style)@"
+style_user = "bold blue"
+show_always = false
+
+[hostname]
+format = "[$hostname]($style) in "
+style = "bold dimmed green"
+ssh_only = false
+detect_env_vars = ["SSH_CONNECTION", "SSH_CLIENT", "SSH_TTY"]
+trim_at = "."
+
+# Shell level indicator
+[shlvl]
+disabled = false
+format = "[$symbol]($style) "
+symbol = "↕️ "
+threshold = 2
+repeat = true
+style = "bold yellow"
+
+# Directory module
+[directory]
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold cyan"
+read_only = " 🔒"
+read_only_style = "red"
+home_symbol = "🏠 "
+
+# Git branch module
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = "🌱 "
+style = "bold purple"
+truncation_length = 20
+truncation_symbol = "…"
+
+# Git Status module
+[git_status]
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+style = "bold red"
+conflicted = "!"
+ahead = "↑"
+behind = "↓"
+diverged = "⚡"
+up_to_date = "✓"
+untracked = "?"
+stashed = "⚑"
+modified = "•"
+staged = "[++($count)](green)"
+renamed = "→"
+deleted = "×"

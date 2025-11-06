@@ -1,0 +1,51 @@
+# ===================================
+# System Information Modules Configuration
+# ===================================
+# System monitoring and status modules
+
+# Battery indicator (for laptops)
+[battery]
+format = "[$symbol$percentage]($style) "
+full_symbol = "🔋"
+charging_symbol = "⚡️"
+discharging_symbol = "💀"
+unknown_symbol = "❓"
+empty_symbol = "🔌"
+disabled = false
+
+[[battery.display]]
+threshold = 10
+style = "bold red"
+
+[[battery.display]]
+threshold = 30
+style = "bold yellow"
+
+[[battery.display]]
+threshold = 60
+style = "bold green"
+
+# Time module
+[time]
+format = "[$time]($style) "
+style = "bold dimmed white"
+use_12hr = false
+disabled = false
+
+# Memory usage
+[custom.memory]
+command = """
+case $(uname) in
+  Darwin)
+    # macOS
+    vm_stat | perl -ne '/page size of (\\d+)/ and $ps=$1; /Pages free:\\s+(\\d+)/ and $pf=$1; /Pages active:\\s+(\\d+)/ and $pa=$1; /Pages inactive:\\s+(\\d+)/ and $pi=$1; /Pages wired down:\\s+(\\d+)/ and $pw=$1; END { printf \"%.1fGB\", ($pf+$pa+$pi+$pw)*$ps/1024/1024/1024; }'
+    ;;
+  Linux)
+    # Linux
+    free -h | awk '/^Mem:/ {print $3}'
+    ;;
+esac
+"""
+format = "[💾 $output]($style) "
+style = "bold dimmed blue"
+when = "true"

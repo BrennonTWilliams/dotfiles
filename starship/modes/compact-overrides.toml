@@ -1,0 +1,125 @@
+# ===================================
+# Compact Mode Overrides
+# ===================================
+# Overrides for compact mode - most modules disabled
+
+# Directory - optimized for compact mode
+[directory]
+truncation_length = 2
+truncation_symbol = "…/"
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style)"
+style = "bold cyan"
+read_only = " 🔒"
+read_only_style = "red"
+home_symbol = "~"
+
+# Git branch - compact format
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = ""
+style = "bold purple"
+truncation_length = 15
+truncation_symbol = "…"
+
+# Git status - compact format
+[git_status]
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+style = "bold red"
+conflicted = "!"
+ahead = "↑"
+behind = "↓"
+diverged = "⚡"
+up_to_date = ""
+untracked = "?"
+stashed = ""
+modified = "•"
+staged = "[++($count)](green)"
+renamed = "→"
+deleted = "×"
+
+# Disabled modules for compact mode
+[username]
+disabled = true
+
+[hostname]
+disabled = true
+
+[shlvl]
+disabled = true
+
+[package]
+disabled = true
+
+[golang]
+disabled = true
+
+[python]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[rust]
+disabled = true
+
+[java]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[cmake]
+disabled = true
+
+[container]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[terraform]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[battery]
+disabled = true
+
+[time]
+disabled = true
+
+[localip]
+disabled = true
+
+# Custom modules - disable all for compact mode
+[custom.terminal]
+disabled = true
+
+[custom.macos]
+disabled = true
+
+[custom.linux]
+disabled = true
+
+[custom.sway]
+disabled = true
+
+[custom.tmux]
+disabled = true
+
+[custom.ghostty]
+disabled = true
+
+[custom.foot]
+disabled = true
+
+[custom.git_commit]
+disabled = true
+
+[custom.aws_profile]
+disabled = true
+
+[custom.memory]
+disabled = true

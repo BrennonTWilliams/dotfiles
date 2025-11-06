@@ -4,13 +4,14 @@ A comprehensive, cross-platform dotfiles repository with modular installation sc
 
 ## 🚀 What's New
 
-### ✨ Recent Cleanup & Improvements
+### ✨ Recent Improvements (November 2024)
 
+- **Dynamic Path Resolution**: Eliminated all 13 hardcoded paths for true cross-platform compatibility
+- **Health Check System**: Comprehensive post-installation validation with automated monitoring
 - **Modular Installation**: Replaced monolithic 1030-line installer with focused, maintainable scripts
-- **Starship Prompt**: Now the primary prompt system with Nerd Font icons (removed custom prompt conflicts)
+- **Starship Prompt**: Enhanced with Nerd Font icons and dynamic mode switching
 - **Security Enhancements**: Removed hardcoded IPs, consolidated PATH exports, eliminated dead code
 - **Performance**: Optimized shell startup with better error handling and validation
-- **Code Quality**: Standardized formatting across all configuration files
 
 ### 🛠️ New Modular Structure
 
@@ -73,6 +74,28 @@ cd ~/.dotfiles
 ./install-new.sh --all
 ```
 
+### 🆕 Quick Start for New Configurations
+
+After running the main installer:
+
+```bash
+# Update your Git user information (required)
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Install VS Code extensions (if using VS Code)
+xargs -a vscode/extensions.txt code --install-extension
+
+# Install essential NPM global packages
+xargs -a npm/global-packages.txt npm install -g
+
+# Add NPM global packages to PATH (add to ~/.zshrc.local)
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Reload shell
+exec zsh
+```
+
 ### 📦 Legacy Installer (Preserved)
 
 ```bash
@@ -103,6 +126,57 @@ cd ~/.dotfiles
 ./install-new.sh
 ```
 
+## 🐧 Linux First-Time Setup
+
+**For Ubuntu, Debian, Fedora, Arch, openSUSE, and other Linux distributions**
+
+### Step 1: Install Prerequisites
+
+```bash
+# Update package manager
+sudo apt update && sudo apt upgrade -y           # Ubuntu/Debian
+# sudo dnf update && sudo dnf upgrade -y         # Fedora
+# sudo pacman -Syu                              # Arch/Manjaro
+# sudo zypper update && sudo zypper up -y       # openSUSE
+
+# Install essential packages
+sudo apt install -y git stow zsh curl wget      # Ubuntu/Debian
+# sudo dnf install -y git stow zsh curl wget    # Fedora
+# sudo pacman -S git stow zsh curl wget         # Arch/Manjaro
+# sudo zypper install -y git stow zsh curl wget # openSUSE
+```
+
+### Step 2: Install Dotfiles
+
+```bash
+# Clone and install
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# Install everything with Linux-specific packages
+./install-new.sh --all
+
+# Reload your shell
+exec zsh
+```
+
+**⏱️ Total setup time: 10-20 minutes**
+
+### Linux Distribution Support
+
+| Distribution | Package Manager | Status | Notes |
+|--------------|-----------------|---------|-------|
+| **Ubuntu** | apt | ✅ Fully Supported | 20.04+ recommended |
+| **Debian** | apt | ✅ Fully Supported | Debian 11+ recommended |
+| **Fedora** | dnf | ✅ Fully Supported | Fedora 35+ recommended |
+| **Arch** | pacman | ✅ Fully Supported | Rolling release |
+| **openSUSE** | zypper | ✅ Fully Supported | Leap/Tumbleweed |
+| **Manjaro** | pacman | ✅ Fully Supported | Arch-based |
+| **Pop!_OS** | apt | ✅ Fully Supported | Ubuntu-based |
+| **Linux Mint** | apt | ✅ Fully Supported | Ubuntu-based |
+
+**Automatic distribution detection ensures proper package management and configuration.**
+
 ## 🍎 macOS First-Time Setup
 
 **For Apple Silicon (M1/M2/M3/M4) and Intel Macs**
@@ -129,7 +203,7 @@ git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Install everything with platform-specific packages
-./install.sh --all --packages
+./install-new.sh --all
 
 # Reload your shell
 exec zsh
@@ -153,12 +227,15 @@ exec zsh
 
 This repository contains configuration for:
 
-- **Shell** - Zsh with Oh My Zsh, custom aliases, and Gruvbox theme
+- **Shell** - Zsh with Oh My Zsh, Bash with cross-platform support, custom aliases, and Gruvbox theme
 - **Prompt** - Starship cross-shell prompt with Nerd Font icons, git and language support
 - **Terminal Multiplexer** - Tmux with custom keybindings and Gruvbox theme
 - **Window Manager** - Sway (i3-compatible Wayland compositor)
 - **Terminal Emulators** - Ghostty (macOS) and Foot (Linux) with Gruvbox color scheme
-- **Development Tools** - Git, NVM, and various CLI utilities
+- **Development Tools** - Git configuration, VS Code settings, NPM configuration, and CLI utilities
+- **Editor Configuration** - VS Code extensions, settings, and keybindings for optimal development
+
+**🆕 New in this version**: Added missing dotfiles from analysis - Git, VS Code, NPM, and enhanced shell configurations with security-focused template approach.
 
 ### Repository Structure
 
@@ -171,10 +248,26 @@ dotfiles/
 │   │   └── utils.sh            # 🆕 Shared utility functions
 │   ├── setup-packages.sh       # 🆕 System package installation
 │   ├── setup-terminal.sh       # 🆕 Terminal and shell setup
+│   ├── setup-new-configs.sh    # 🆕 Git, VS Code, and NPM setup
 │   ├── setup-dev-env           # Development environment setup
 │   └── uniclip-manager         # Clipboard management utility
+├── git/
+│   ├── .gitconfig              # Git configuration with templates
+│   └── .gitignore              # Git ignore patterns
+├── vscode/
+│   ├── settings.json           # VS Code settings and preferences
+│   ├── extensions.txt          # Essential extensions list
+│   └── keybindings.json        # Custom keyboard shortcuts
+├── npm/
+│   ├── .npmrc                  # NPM configuration
+│   └── global-packages.txt     # Essential global packages
+├── bash/
+│   ├── .bash_profile           # Bash login shell configuration
+│   └── .bashrc.local           # Local bash customizations template
 ├── zsh/
 │   ├── .zshrc                  # Zsh configuration (Starship-enabled)
+│   ├── .zprofile               # Zsh login shell configuration
+│   ├── .zshenv.local           # Local environment variables template
 │   └── .zsh_cross_platform     # Cross-platform utilities
 ├── starship/
 │   └── starship.toml           # Starship prompt configuration
@@ -199,6 +292,7 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 ### Smart Configuration
 
 - **🆕 Modular Installation** - Focused, maintainable installation scripts
+- **🚀 Dynamic Path Resolution** - Cross-platform path handling with automatic adaptation
 - **⚡ Optimized Performance** - Faster shell startup with Starship prompt
 - **🔒 Enhanced Security** - Consolidated PATH exports, removed hardcoded credentials
 - **Machine-specific overrides** - Use `*.local` files for machine-specific settings
@@ -206,11 +300,80 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 - **Vi-mode keybindings** - Consistent navigation across tmux and shell
 - **Error handling** - Comprehensive validation and backup system
 
+### 🆕 Cross-Platform Path Resolution
+
+The dotfiles now include a sophisticated path resolution system that automatically adapts to your platform:
+
+```bash
+# Example: Dynamic conda path resolution
+if command -v resolve_platform_path >/dev/null 2>&1; then
+    local conda_bin="$(resolve_platform_path "conda_bin")"
+    # On macOS: /Users/username/miniforge3/bin
+    # On Linux: /home/username/miniforge3/bin
+else
+    # Fallback to hardcoded paths
+    local conda_bin="$HOME/miniforge3/bin"
+fi
+```
+
+**Supported path types:**
+- `ai_projects` - Your AI projects directory
+- `conda_root` - Miniforge/Conda installation
+- `starship_config` - Starship configuration directory
+- `npm_global_bin` - NPM global packages bin directory
+- And many more...
+
+**All configurations automatically use the correct paths for your platform.**
+
+### 🆕 New Development Configurations
+
+#### Git Configuration
+- **Template-based setup** - Secure `.gitconfig` with placeholder user information
+- **Local overrides** - Use `~/.gitconfig.local` for personal data and credentials
+- **Development aliases** - Common Git commands and shortcuts
+- **Cross-platform support** - Works on macOS and Linux
+
+#### VS Code Integration
+- **Curated extensions** - Essential development extensions for web, Node.js, and Python
+- **Optimized settings** - Auto-format on save, smart file nesting, theme consistency
+- **Productivity keybindings** - Enhanced terminal management and navigation
+- **Security focused** - Excludes workspace-specific settings and personal data
+
+#### NPM Configuration
+- **Global packages management** - Essential development tools with curated list
+- **Security settings** - Audit enabled, secure registry configuration
+- **Path management** - Global packages without sudo requirement
+- **Local overrides** - Use `~/.npmrc.local` for sensitive configuration
+
+#### Shell Enhancements
+- **Bash support** - Complete Bash configuration alongside Zsh
+- **Template paths** - Conda, pyenv, and tool paths as configurable templates
+- **Local overrides** - `*.local` files for machine-specific customizations
+- **SSH agent** - Automatic SSH key management for development
+
 ### Security
 
 - Comprehensive `.gitignore` to prevent credential leakage
 - No secrets committed to version control
 - Local override files for sensitive configuration
+- Template-based approach for personal data protection
+
+#### 🔒 New Security Features
+
+**Template-Based Configuration**
+- Personal data (names, emails, paths) replaced with placeholders
+- Setup instructions guide users to add their own information
+- Templates prevent accidental commits of sensitive data
+
+**Local Override System**
+- `*.local` files for machine-specific settings (never tracked)
+- Examples: `~/.gitconfig.local`, `~/.npmrc.local`, `~/.zshrc.local`
+- Automatically created by installer for convenience
+
+**Development Environment Safety**
+- VS Code settings exclude workspace-specific configurations
+- NPM configuration excludes authentication tokens
+- Shell paths use configurable templates instead of hardcoded values
 
 ## Requirements
 
@@ -244,7 +407,11 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 - `foot` - Terminal emulator (Linux)
 - `ghostty` - Terminal emulator (macOS)
 - `nvm` - Node.js version manager
+- `code` - VS Code editor (for extension installation)
+- `npm` - Node Package Manager (for global packages)
 - Oh My Zsh plugins (installed via setup script)
+- `conda`/`miniforge` - Python environment management
+- `pyenv` - Python version management
 
 ## Migration Guide
 
@@ -489,6 +656,44 @@ output DP-1 resolution 1920x1080
 
 These `*.local` files are automatically sourced but never tracked in git.
 
+## 🔍 Health Check System
+
+### Comprehensive Post-Installation Validation
+
+The dotfiles include a comprehensive health check system that validates your installation and provides actionable recommendations:
+
+```bash
+# Run complete health check
+health-check
+
+# Alternative commands
+dotfiles-check
+system-health
+
+# Direct script execution
+./scripts/health-check.sh
+```
+
+### What Gets Checked
+
+- **Shell Environment**: Zsh configuration and cross-platform utilities
+- **Path Resolution**: Dynamic path resolution for all 21 path types
+- **Core Tools**: Essential development tools (git, curl, tmux, starship)
+- **Starship Configuration**: Prompt setup and mode switching
+- **Platform-Specific**: macOS/Linux specific configurations
+- **Symlink Structure**: Proper dotfiles symlink validation
+- **Services**: Background services and system integration
+- **Performance**: Shell startup time and system metrics
+
+### Health Scoring
+
+- **90-100%**: 🟢 EXCELLENT - Optimal configuration
+- **75-89%**: 🟡 GOOD - Minor issues or optional components missing
+- **50-74%**: 🟡 FAIR - Some issues that need attention
+- **0-49%**: 🔴 NEEDS ATTENTION - Critical issues requiring immediate action
+
+For detailed documentation, see [HEALTH_CHECK_SYSTEM.md](docs/HEALTH_CHECK_SYSTEM.md).
+
 ## Usage
 
 ### Shell Aliases
@@ -558,6 +763,73 @@ copy <command>       # Copy command output to clipboard (pipe)
 # Development tools
 xcode-info           # Show Xcode path
 simulators           # List iOS simulators
+```
+
+### 🆕 Development Configuration Usage
+
+#### Git Configuration Setup
+
+```bash
+# Update your personal information (required)
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+
+# Add machine-specific settings to ~/.gitconfig.local
+nano ~/.gitconfig.local
+
+# Verify configuration
+git config --global user.name
+git config --global user.email
+```
+
+#### VS Code Configuration
+
+```bash
+# Install all essential extensions
+xargs -a ~/.dotfiles/vscode/extensions.txt code --install-extension
+
+# Install individual extensions
+code --install-extension GitHub.copilot
+code --install-extension ms-vscode.vscode-eslint
+
+# View installed extensions
+code --list-extensions
+
+# Update settings (settings.json is symlinked from dotfiles)
+code --settings
+```
+
+#### NPM Global Packages
+
+```bash
+# Install essential global packages
+xargs -a ~/.dotfiles/npm/global-packages.txt npm install -g
+
+# Install specific categories
+npm install -g typescript nodemon eslint prettier
+
+# Add npm global packages to PATH (add to ~/.zshrc.local)
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# Update all global packages
+npm update -g
+
+# Check for outdated packages
+npm outdated -g
+```
+
+#### Local Configuration Files
+
+```bash
+# Edit local overrides (machine-specific settings)
+~/.gitconfig.local      # Git personal data and credentials
+~/.npmrc.local          # NPM tokens and registry settings
+~/.zshrc.local          # Custom aliases and functions
+~/.zshenv.local         # Environment variables
+~/.bashrc.local         # Bash-specific customizations
+
+# Reload shell after changes
+exec zsh
 ```
 
 ### Tmux Key Bindings
@@ -761,6 +1033,29 @@ exec zsh
 
 # For bash
 exec bash
+```
+
+#### New Configuration Issues
+
+**Git user information not set:**
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+**NPM global packages not found:**
+```bash
+# Add to PATH in ~/.zshrc.local
+export PATH="$HOME/.npm-global/bin:$PATH"
+exec zsh
+```
+
+**VS Code settings not applying:**
+```bash
+# Check if symlinks exist
+ls -la ~/.config/Code/User/settings.json
+# Reinstall with setup script
+./scripts/setup-new-configs.sh
 ```
 
 ## Documentation

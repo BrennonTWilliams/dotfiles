@@ -1,0 +1,65 @@
+# Essential VS Code Extensions for Development
+# Install with: code --install-extension <extension-id>
+# Or run: xargs -a extensions.txt code --install-extension
+
+# Development Tools
+ms-vscode.vscode-typescript-next    # TypeScript support
+ms-python.python                    # Python support
+ms-vscode.vscode-json               # JSON support and validation
+
+# Git and Version Control
+eamodio.gitlens                    # Enhanced Git capabilities
+GitHub.vscode-pull-request-github  # GitHub Pull Request support
+donjayamanne.githistory            # Git history viewer
+codezombiech.gitignore             # .gitignore language support
+
+# Language Support
+ms-vscode.vscode-eslint            # ESLint integration
+esbenp.prettier-vscode             # Prettier code formatter
+bradlc.vscode-tailwindcss          # Tailwind CSS support
+ms-vscode.vscode-markdown          # Markdown preview and editing
+bierner.markdown-mermaid           # Mermaid diagram support
+
+# AI and Code Assistance
+GitHub.copilot                     # GitHub Copilot AI assistant
+GitHub.copilot-chat                # GitHub Copilot Chat
+continue.continue                  # Continue AI assistant
+
+# Themes and Icons
+vscode-icons-team.vscode-icons     # Icon theme (alternative to vs-seti)
+PKief.material-icon-theme          # Material Design icons
+dracula-theme.theme-dracula        # Dracula theme option
+
+# Productivity Tools
+Gruntfuggly.todo-tree              # Todo list manager
+ms-vscode.test-adapter-converter   # Test runner integration
+humao.rest-client                  # HTTP client for API testing
+ms-vscode.hexdump                  # Hex viewer for binary files
+
+# Web Development
+ms-vscode.vscode-html-preview      # HTML live preview
+ritwickdey.LiveServer              # Live server for web development
+formulahendry.auto-rename-tag      # Auto rename paired HTML/XML tags
+
+# Containerization
+ms-azuretools.vscode-docker        # Docker integration
+ms-vscode-remote.remote-containers # Dev Containers support
+
+# Utilities
+streetsidesoftware.code-spell-checker # Spell checker
+wayou.vscode-todo-highlight       # Highlight TODOs and FIXMEs
+christian-kohler.path-intellisense # Path autocompletion
+alefragnani.Bookmarks             # Bookmark management
+ms-vscode.wordcount               # Word counter
+
+# Documentation
+shd101wyy.markdown-preview-enhanced # Enhanced markdown preview
+yzhang.markdown-all-in-one        # All-in-one markdown toolkit
+
+# Shell scripting
+foxundermoon.shell-format         # Shell script formatter
+timonwong.shellcheck              # Shell script linting
+
+# Database
+ms-mssql.mssql                    # SQL Server support
+ckolkman.vscode-postgres          # PostgreSQL support

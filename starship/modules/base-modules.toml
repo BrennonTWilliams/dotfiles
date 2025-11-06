@@ -1,0 +1,20 @@
+# ===================================
+# Base Modules Configuration
+# ===================================
+# Fundamental modules that don't fit into other categories
+
+# Command status module
+[status]
+format = "[$symbol$status]($style) "
+symbol = "❌"
+success_symbol = ""
+style = "bold red"
+disabled = false
+map_symbol = true
+
+# Local IP module (disabled by default)
+[localip]
+ssh_only = false
+format = "[$localipv4]($style) "
+style = "bold dimmed purple"
+disabled = true

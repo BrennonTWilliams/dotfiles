@@ -1,0 +1,123 @@
+{
+    // General editor settings
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.trimWhitespace": true,
+    "editor.insertFinalNewline": true,
+    "editor.trimAutoWhitespace": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+
+    // Font and appearance
+    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14,
+    "editor.lineHeight": 1.5,
+    "editor.cursorBlinking": "smooth",
+    "editor.minimap.enabled": true,
+    "editor.minimap.renderCharacters": false,
+
+    // Theme
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.iconTheme": "vs-seti",
+    "workbench.preferredDarkColorTheme": "Default Dark+",
+    "workbench.preferredLightColorTheme": "Default Light+",
+
+    // Files and explorer
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/node_modules": true,
+        "**/.next": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.cache": true,
+        "**/.pytest_cache": true,
+        "**/__pycache__": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+        "*.jsx": "${capture}.js",
+        "*.ts": "${capture}.js, ${capture}.d.ts",
+        "*.tsx": "${capture}.ts, ${capture}.js",
+        "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml",
+        "tsconfig.json": "tsconfig.*.json",
+        "*.vue": "${capture}.js, ${capture}.ts, ${capture}.css, ${capture}.scss"
+    },
+
+    // Terminal
+    "terminal.integrated.fontFamily": "'JetBrains Mono', monospace",
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.shell.osx": "/bin/zsh",
+    "terminal.integrated.shell.linux": "/bin/bash",
+
+    // Git
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.postCommitCommand": "none",
+    "git.showInlineOpenFileAction": false,
+
+    // Extensions settings
+    "extensions.autoUpdate": false,
+    "extensions.ignoreRecommendations": false,
+
+    // Python (if using Python)
+    "python.defaultInterpreterPath": "python3",
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+
+    // JavaScript/TypeScript
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+
+    // Markdown
+    "markdown.preview.fontSize": 14,
+    "markdown.preview.lineHeight": 1.5,
+    "markdown.preview.wordWrap": "on",
+
+    // Search
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/coverage": true,
+        "**/.next": true,
+        "**/.cache": true,
+        "**/__pycache__": true
+    },
+
+    // Workbench
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.showTabs": true,
+    "workbench.sideBar.location": "left",
+    "workbench.startupEditor": "none",
+
+    // Debug
+    "debug.internalConsoleOptions": "neverOpen",
+
+    // Security
+    "security.workspace.trust.enabled": true,
+    "security.workspace.trust.untrustedFiles": "open",
+
+    // Telemetry
+    "telemetry.telemetryLevel": "off"
+}
