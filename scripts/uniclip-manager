@@ -1,0 +1,443 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# Cross-Platform Uniclip Service Manager
+# ==============================================================================
+# Provides unified interface for managing Uniclip clipboard service
+# across macOS (launchd) and Linux (systemd) platforms
+#
+# Usage: ./uniclip-manager [command] [options]
+# Commands: install, uninstall, start, stop, restart, status, logs, enable, disable
+# ==============================================================================
+
+set -e
+
+# Source platform detection utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Load cross-platform utilities if available
+if [[ -f "$DOTFILES_DIR/zsh/.zsh_cross_platform" ]]; then
+    source "$DOTFILES_DIR/zsh/.zsh_cross_platform"
+else
+    # Fallback platform detection
+    detect_os() {
+        case "$(uname -s)" in
+            Darwin*)    echo "macos" ;;
+            Linux*)     echo "linux" ;;
+            *)          echo "unknown" ;;
+        esac
+    }
+fi
+
+# Platform detection
+PLATFORM=$(detect_os)
+SERVICE_NAME="uniclip"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Utility functions
+info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+    exit 1
+}
+
+success() {
+    echo -e "${GREEN}${BOLD}✓${NC} $1"
+}
+
+debug() {
+    if [[ "${DEBUG:-0}" == "1" ]]; then
+        echo -e "${BLUE}[DEBUG]${NC} $1"
+    fi
+}
+
+# Platform-specific implementations
+macos_service_exists() {
+    launchctl list | grep -q "$SERVICE_NAME" 2>/dev/null
+}
+
+macos_service_running() {
+    launchctl list | grep "$SERVICE_NAME" | grep -v "0" >/dev/null 2>&1
+}
+
+macos_service_install() {
+    local plist_file="$DOTFILES_DIR/macos/com.uniclip.plist"
+    local launchd_dir="$HOME/Library/LaunchAgents"
+
+    info "Installing Uniclip service for macOS..."
+
+    # Verify uniclip is installed
+    if ! command -v uniclip >/dev/null 2>&1; then
+        error "Uniclip not found. Install with: brew install uniclip"
+    fi
+
+    # Create LaunchAgents directory
+    mkdir -p "$launchd_dir"
+
+    # Update plist with correct paths
+    local uniclip_path=$(which uniclip)
+    local temp_plist=$(mktemp)
+
+    sed "s|/opt/homebrew/bin/uniclip|$uniclip_path|g" "$plist_file" > "$temp_plist"
+    sed -i '' "s|/Users/brennon|$HOME|g" "$temp_plist"
+
+    # Copy and load
+    cp "$temp_plist" "$launchd_dir/$SERVICE_NAME.plist"
+    chmod 644 "$launchd_dir/$SERVICE_NAME.plist"
+    rm "$temp_plist"
+
+    # Load and start
+    launchctl load "$launchd_dir/$SERVICE_NAME.plist"
+    launchctl start "$SERVICE_NAME"
+
+    success "Uniclip service installed and started on macOS"
+}
+
+macos_service_uninstall() {
+    local launchd_dir="$HOME/Library/LaunchAgents"
+    local plist_file="$launchd_dir/$SERVICE_NAME.plist"
+
+    info "Uninstalling Uniclip service from macOS..."
+
+    # Stop and unload
+    launchctl stop "$SERVICE_NAME" 2>/dev/null || true
+    launchctl unload "$plist_file" 2>/dev/null || true
+
+    # Remove plist file
+    rm -f "$plist_file"
+
+    success "Uniclip service uninstalled from macOS"
+}
+
+linux_service_exists() {
+    systemctl --user list-unit-files | grep -q "$SERVICE_NAME.service" 2>/dev/null
+}
+
+linux_service_running() {
+    systemctl --user is-active "$SERVICE_NAME.service" >/dev/null 2>&1
+}
+
+linux_service_install() {
+    local service_file="$DOTFILES_DIR/linux/uniclip.service"
+    local systemd_dir="$HOME/.config/systemd/user"
+
+    info "Installing Uniclip service for Linux..."
+
+    # Verify uniclip is installed
+    if ! command -v uniclip >/dev/null 2>&1; then
+        error "Uniclip not found. Install with your package manager or build from source"
+    fi
+
+    # Create systemd user directory
+    mkdir -p "$systemd_dir"
+
+    # Update service file with correct paths
+    local uniclip_path=$(which uniclip)
+    local temp_service=$(mktemp)
+
+    sed "s|ExecStart=/usr/bin/uniclip|ExecStart=$uniclip_path|g" "$service_file" > "$temp_service"
+
+    # Copy and enable
+    cp "$temp_service" "$systemd_dir/$SERVICE_NAME.service"
+    chmod 644 "$systemd_dir/$SERVICE_NAME.service"
+    rm "$temp_service"
+
+    # Create logs directory
+    mkdir -p "$HOME/.local/share/uniclip"
+
+    # Reload, enable, and start
+    systemctl --user daemon-reload
+    systemctl --user enable "$SERVICE_NAME.service"
+    systemctl --user start "$SERVICE_NAME.service"
+
+    success "Uniclip service installed and started on Linux"
+}
+
+linux_service_uninstall() {
+    local systemd_dir="$HOME/.config/systemd/user"
+    local service_file="$systemd_dir/$SERVICE_NAME.service"
+
+    info "Uninstalling Uniclip service from Linux..."
+
+    # Stop, disable, and remove
+    systemctl --user stop "$SERVICE_NAME.service" 2>/dev/null || true
+    systemctl --user disable "$SERVICE_NAME.service" 2>/dev/null || true
+    rm -f "$service_file"
+    systemctl --user daemon-reload
+
+    success "Uniclip service uninstalled from Linux"
+}
+
+# Cross-platform service functions
+service_exists() {
+    case "$PLATFORM" in
+        macos) macos_service_exists ;;
+        linux) linux_service_exists ;;
+        *) return 1 ;;
+    esac
+}
+
+service_running() {
+    case "$PLATFORM" in
+        macos) macos_service_running ;;
+        linux) linux_service_running ;;
+        *) return 1 ;;
+    esac
+}
+
+service_install() {
+    case "$PLATFORM" in
+        macos) macos_service_install ;;
+        linux) linux_service_install ;;
+        *) error "Unsupported platform: $PLATFORM" ;;
+    esac
+}
+
+service_uninstall() {
+    case "$PLATFORM" in
+        macos) macos_service_uninstall ;;
+        linux) linux_service_uninstall ;;
+        *) error "Unsupported platform: $PLATFORM" ;;
+    esac
+}
+
+service_start() {
+    info "Starting Uniclip service..."
+    case "$PLATFORM" in
+        macos) launchctl start "$SERVICE_NAME" ;;
+        linux) systemctl --user start "$SERVICE_NAME.service" ;;
+    esac
+    success "Uniclip service started"
+}
+
+service_stop() {
+    info "Stopping Uniclip service..."
+    case "$PLATFORM" in
+        macos) launchctl stop "$SERVICE_NAME" 2>/dev/null || true ;;
+        linux) systemctl --user stop "$SERVICE_NAME.service" 2>/dev/null || true ;;
+    esac
+    success "Uniclip service stopped"
+}
+
+service_restart() {
+    info "Restarting Uniclip service..."
+    case "$PLATFORM" in
+        macos)
+            launchctl stop "$SERVICE_NAME" 2>/dev/null || true
+            sleep 1
+            launchctl start "$SERVICE_NAME"
+            ;;
+        linux)
+            systemctl --user restart "$SERVICE_NAME.service"
+            ;;
+    esac
+    success "Uniclip service restarted"
+}
+
+service_status() {
+    info "Uniclip service status on $PLATFORM:"
+    echo
+
+    case "$PLATFORM" in
+        macos)
+            echo "Service Name: $SERVICE_NAME"
+            if service_exists; then
+                echo "Status: Installed"
+                if service_running; then
+                    echo "Running: Yes"
+                    echo "Details:"
+                    launchctl list | grep "$SERVICE_NAME" || echo "  Service not found in launchctl list"
+                else
+                    echo "Running: No"
+                    echo "Start with: $0 start"
+                fi
+            else
+                echo "Status: Not installed"
+                echo "Install with: $0 install"
+            fi
+            ;;
+        linux)
+            echo "Service Name: $SERVICE_NAME.service"
+            if service_exists; then
+                echo "Status: $(systemctl --user is-enabled "$SERVICE_NAME.service")"
+                echo "Running: $(systemctl --user is-active "$SERVICE_NAME.service")"
+                echo "Details:"
+                systemctl --user status "$SERVICE_NAME.service" --no-pager -l
+            else
+                echo "Status: Not installed"
+                echo "Install with: $0 install"
+            fi
+            ;;
+    esac
+}
+
+service_logs() {
+    info "Uniclip service logs on $PLATFORM:"
+    echo
+
+    case "$PLATFORM" in
+        macos)
+            echo "Recent logs:"
+            if [[ -f "/tmp/uniclip.log" ]]; then
+                tail -20 /tmp/uniclip.log
+            else
+                warn "No log file found at /tmp/uniclip.log"
+            fi
+            echo
+            echo "Error logs:"
+            if [[ -f "/tmp/uniclip.error.log" ]]; then
+                tail -20 /tmp/uniclip.error.log
+            else
+                warn "No error log file found at /tmp/uniclip.error.log"
+            fi
+            ;;
+        linux)
+            echo "System logs (last 50 lines):"
+            journalctl --user -u "$SERVICE_NAME.service" -n 50 --no-pager
+            echo
+            echo "Log files location: $HOME/.local/share/uniclip/"
+            ;;
+    esac
+}
+
+service_enable() {
+    info "Enabling Uniclip service (start at login)..."
+    case "$PLATFORM" in
+        macos)
+            # On macOS, RunAtLoad in plist handles auto-start
+            warn "Uniclip service is already configured to start at login via plist"
+            ;;
+        linux)
+            systemctl --user enable "$SERVICE_NAME.service"
+            success "Uniclip service enabled to start at login"
+            ;;
+    esac
+}
+
+service_disable() {
+    info "Disabling Uniclip service (don't start at login)..."
+    case "$PLATFORM" in
+        macos)
+            warn "To disable auto-start on macOS, edit the plist file:"
+            echo "  $HOME/Library/LaunchAgents/$SERVICE_NAME.plist"
+            echo "  Set <key>RunAtLoad</key><false/>"
+            ;;
+        linux)
+            systemctl --user disable "$SERVICE_NAME.service"
+            success "Uniclip service disabled from auto-start"
+            ;;
+    esac
+}
+
+# Usage information
+show_usage() {
+    cat << EOF
+Cross-Platform Uniclip Service Manager
+
+Platform detected: $PLATFORM
+
+Usage: $0 [command] [options]
+
+Commands:
+  install     Install and start the Uniclip service
+  uninstall   Stop and remove the Uniclip service
+  start       Start the Uniclip service
+  stop        Stop the Uniclip service
+  restart     Restart the Uniclip service
+  status      Show service status and information
+  logs        Show recent service logs
+  enable      Enable service to start at login
+  disable     Disable service from starting at login
+
+Examples:
+  $0 install              # Install and start service
+  $0 status               # Check service status
+  $0 logs                 # View recent logs
+  $0 restart              # Restart the service
+
+For more information, see: $DOTFILES_DIR/docs/PLATFORM_COMPARISON.md
+EOF
+}
+
+# Main script logic
+main() {
+    local command="${1:-help}"
+
+    debug "Platform: $PLATFORM"
+    debug "Command: $command"
+
+    case "$command" in
+        install)
+            service_install
+            ;;
+        uninstall)
+            service_uninstall
+            ;;
+        start)
+            if ! service_exists; then
+                error "Service not installed. Run '$0 install' first."
+            fi
+            service_start
+            ;;
+        stop)
+            if ! service_exists; then
+                warn "Service not installed."
+                exit 0
+            fi
+            service_stop
+            ;;
+        restart)
+            if ! service_exists; then
+                error "Service not installed. Run '$0 install' first."
+            fi
+            service_restart
+            ;;
+        status)
+            service_status
+            ;;
+        logs)
+            service_logs
+            ;;
+        enable)
+            if ! service_exists; then
+                error "Service not installed. Run '$0 install' first."
+            fi
+            service_enable
+            ;;
+        disable)
+            if ! service_exists; then
+                warn "Service not installed."
+                exit 0
+            fi
+            service_disable
+            ;;
+        help|--help|-h)
+            show_usage
+            ;;
+        *)
+            error "Unknown command: $command"
+            echo
+            show_usage
+            exit 1
+            ;;
+    esac
+}
+
+# Execute main function
+main "$@"

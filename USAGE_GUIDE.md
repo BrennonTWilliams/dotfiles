@@ -6,10 +6,11 @@ This guide provides detailed instructions for managing your dotfiles across mult
 
 1. [First-Time Setup on New Machine](#first-time-setup-on-new-machine)
 2. [Daily Workflow](#daily-workflow)
-3. [Updating Configurations](#updating-configurations)
-4. [Syncing Across Machines](#syncing-across-machines)
-5. [Security Best Practices](#security-best-practices)
-6. [Troubleshooting](#troubleshooting)
+3. [Starship Prompt Customization](#starship-prompt-customization)
+4. [Updating Configurations](#updating-configurations)
+5. [Syncing Across Machines](#syncing-across-machines)
+6. [Security Best Practices](#security-best-practices)
+7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -154,6 +155,94 @@ git add -A
 git commit -m "Update shell and tmux configs"
 git push
 ```
+
+---
+
+## Starship Prompt Customization
+
+The Starship prompt includes customizable Nerd Font icons for Git status and multiple visual styles.
+
+### Icon Style Switching
+
+The configuration includes three Nerd Font icon styles:
+
+1. **Material Design** (default) - Modern, clean icons
+2. **Font Awesome** - Classic, widely recognized icons
+3. **Minimalist** - Simple, subtle line art
+
+#### Switching Between Styles
+
+1. **Open Starship configuration:**
+   ```bash
+   vim ~/.config/starship.toml
+   ```
+
+2. **Comment out current active style:**
+   ```toml
+   # [git_status]  # Material Design (current)
+   # ... configuration ...
+   ```
+
+3. **Uncomment your preferred style:**
+   ```toml
+   [git_status]   # Font Awesome (activate)
+   # ... configuration ...
+   ```
+
+4. **Reload shell:**
+   ```bash
+   source ~/.zshrc
+   ```
+
+### Testing Icon Rendering
+
+Use the provided test script to verify icons display correctly:
+
+```bash
+cd ~/.dotfiles
+./nerd-font-test.sh
+```
+
+This script shows all three icon styles and helps verify your terminal font supports the chosen Nerd Font icons.
+
+### Common Icon Mappings
+
+| Git Status | Material Design | Font Awesome | Minimalist |
+|------------|-----------------|--------------|------------|
+| Modified |  |  |  |
+| Staged | ✓ | ✓ | ✓ |
+| Untracked |  |  |  |
+| Conflicted |  |  |  |
+
+### Custom Icon Configuration
+
+To customize individual icons, edit the active `[git_status]` section:
+
+```toml
+[git_status]
+format = "([\\[$all_status$ahead_behind\\]]($style) )"
+style = "bold red"
+# Custom icons
+conflicted = "⚠️ "
+modified = "• "
+untracked = "? "
+staged = "✓ "
+```
+
+### Troubleshooting Icons
+
+**Icons not displaying:**
+1. Verify terminal font: `echo $TERM`
+2. Test with script: `./nerd-font-test.sh`
+3. Check Ghostty font configuration
+4. Ensure IosevkaTerm Nerd Font is installed
+
+**Prompt not updating:**
+1. Reload shell: `source ~/.zshrc`
+2. Test configuration: `starship explain`
+3. Re-stow configuration: `cd ~/.dotfiles && stow -R starship`
+
+For comprehensive Starship documentation, see `docs/STARSHIP_CONFIGURATION.md`.
 
 ---
 

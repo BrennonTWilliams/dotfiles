@@ -27,7 +27,7 @@ theme = bren-dark
 font-family = IosevkaTerm Nerd Font
 
 # Font size optimized for Retina displays
-font-size = 14
+font-size = 16
 
 # Font rendering is handled automatically by Ghostty
 

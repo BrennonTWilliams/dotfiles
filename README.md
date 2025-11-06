@@ -1,6 +1,29 @@
 # Dotfiles
 
-Personal configuration files for Linux/Unix development environments, managed with [GNU Stow](https://www.gnu.org/software/stow/).
+A comprehensive, cross-platform dotfiles repository with modular installation scripts, supporting macOS and Linux environments. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+
+## 🚀 What's New
+
+### ✨ Recent Cleanup & Improvements
+
+- **Modular Installation**: Replaced monolithic 1030-line installer with focused, maintainable scripts
+- **Starship Prompt**: Now the primary prompt system with Nerd Font icons (removed custom prompt conflicts)
+- **Security Enhancements**: Removed hardcoded IPs, consolidated PATH exports, eliminated dead code
+- **Performance**: Optimized shell startup with better error handling and validation
+- **Code Quality**: Standardized formatting across all configuration files
+
+### 🛠️ New Modular Structure
+
+```
+scripts/
+├── lib/utils.sh           # Shared utility functions
+├── setup-packages.sh      # System package installation
+├── setup-terminal.sh      # Terminal and shell setup
+└── setup-dev-env          # Development environment setup
+```
+
+**Use the new modular installer**: `./install-new.sh` (recommended)
+**Legacy installer preserved**: `./install.sh` (backward compatibility)
 
 ## 🖥️ Multi-Device Architecture
 
@@ -36,13 +59,48 @@ Special optimizations for Mac Mini M4 and other Apple Silicon Macs:
 
 ## Quick Start
 
+### 🚀 Recommended (New Modular Installer)
+
 ```bash
 # Clone the repository
 git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
-# Run the installation script
+# Run the new modular installer (interactive)
+./install-new.sh
+
+# Or install all components at once
+./install-new.sh --all
+```
+
+### 📦 Legacy Installer (Preserved)
+
+```bash
+# Clone the repository
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+
+# Run the legacy installation script
 ./install.sh
+```
+
+### 🔧 Modular Installation Options
+
+```bash
+# Install all components
+./install-new.sh --all
+
+# Install system packages only
+./install-new.sh --packages
+
+# Setup terminal and shell only
+./install-new.sh --terminal
+
+# Install dotfiles only
+./install-new.sh --dotfiles
+
+# Interactive mode (default)
+./install-new.sh
 ```
 
 ## 🍎 macOS First-Time Setup
@@ -96,24 +154,35 @@ exec zsh
 This repository contains configuration for:
 
 - **Shell** - Zsh with Oh My Zsh, custom aliases, and Gruvbox theme
-- **Prompt** - Starship cross-shell prompt with git and language support
+- **Prompt** - Starship cross-shell prompt with Nerd Font icons, git and language support
 - **Terminal Multiplexer** - Tmux with custom keybindings and Gruvbox theme
 - **Window Manager** - Sway (i3-compatible Wayland compositor)
 - **Terminal Emulators** - Ghostty (macOS) and Foot (Linux) with Gruvbox color scheme
 - **Development Tools** - Git, NVM, and various CLI utilities
 
-### Package Structure
+### Repository Structure
 
 ```
 dotfiles/
-├── zsh/              # Zsh shell configuration
-├── bash/             # Bash shell configuration (fallback)
-├── starship/         # Starship prompt configuration
-├── tmux/             # Tmux configuration
-├── sway/             # Sway window manager
-├── foot/             # Foot terminal emulator (Linux)
-├── ghostty/          # Ghostty terminal emulator (macOS)
-└── scripts/          # Installation helper scripts
+├── install-new.sh              # 🆕 Main modular installer (recommended)
+├── install.sh                  # 📦 Legacy installer (preserved)
+├── scripts/
+│   ├── lib/
+│   │   └── utils.sh            # 🆕 Shared utility functions
+│   ├── setup-packages.sh       # 🆕 System package installation
+│   ├── setup-terminal.sh       # 🆕 Terminal and shell setup
+│   ├── setup-dev-env           # Development environment setup
+│   └── uniclip-manager         # Clipboard management utility
+├── zsh/
+│   ├── .zshrc                  # Zsh configuration (Starship-enabled)
+│   └── .zsh_cross_platform     # Cross-platform utilities
+├── starship/
+│   └── starship.toml           # Starship prompt configuration
+├── tmux/
+│   └── .tmux.conf              # Tmux configuration with Gruvbox theme
+├── ghostty/
+│   └── .config/ghostty/config  # Ghostty terminal configuration
+└── docs/                       # Documentation
 ```
 
 ## Features
@@ -129,11 +198,13 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 
 ### Smart Configuration
 
+- **🆕 Modular Installation** - Focused, maintainable installation scripts
+- **⚡ Optimized Performance** - Faster shell startup with Starship prompt
+- **🔒 Enhanced Security** - Consolidated PATH exports, removed hardcoded credentials
 - **Machine-specific overrides** - Use `*.local` files for machine-specific settings
-- **NVM lazy-loading** - Fast shell startup with on-demand Node.js loading
 - **Cross-platform clipboard** - Works with both X11 (xclip) and macOS (pbcopy)
 - **Vi-mode keybindings** - Consistent navigation across tmux and shell
-- **Starship integration** - Optimized prompt with git and language version display
+- **Error handling** - Comprehensive validation and backup system
 
 ### Security
 
@@ -175,9 +246,47 @@ All components use the Gruvbox Dark color scheme for a consistent visual experie
 - `nvm` - Node.js version manager
 - Oh My Zsh plugins (installed via setup script)
 
+## Migration Guide
+
+### 🔄 What Changed in Recent Cleanup
+
+If you're upgrading from a previous version:
+
+1. **Prompt System**: Now using Starship exclusively (removed custom prompt conflicts)
+2. **Installation**: New modular installer (`install-new.sh`) recommended
+3. **Performance**: Faster shell startup and better error handling
+4. **Security**: Removed hardcoded IPs and consolidated PATH exports
+5. **Code Quality**: Standardized formatting and removed dead code
+
+### 📋 Migration Steps
+
+```bash
+# 1. Backup current configuration (automatic with new installer)
+cd ~/.dotfiles
+
+# 2. Pull latest changes
+git pull
+
+# 3. Use new modular installer
+./install-new.sh --all
+
+# 4. Restart your shell
+exec zsh
+```
+
+Your existing configurations will be backed up automatically.
+
 ## Installation
 
-### Full Installation
+### 🚀 New Modular Installation (Recommended)
+
+```bash
+cd ~/.dotfiles
+./install-new.sh              # Interactive mode
+./install-new.sh --all        # Install all components
+```
+
+### 📦 Legacy Full Installation
 
 Install all configurations interactively:
 
@@ -261,13 +370,14 @@ chsh -s $(which zsh)
 
 ## Starship Prompt Configuration
 
-Custom starship prompt optimized for tmux and development workflows:
+Custom starship prompt with **Nerd Font icons** optimized for tmux and development workflows:
 
 ### Features
 
 - **Compact Format**: Optimized for tmux panes with minimal width usage
+- **Nerd Font Icons**: Professional Git status indicators with 3 switchable styles (Material Design, Font Awesome, Minimalist)
 - **Smart Detection**: SSH/Tmux-aware username and hostname display
-- **Git Integration**: Comprehensive branch, status, and commit hash indicators
+- **Git Integration**: Comprehensive branch, status, and commit hash indicators with visual icons
 - **Language Support**: Python, Node.js, Rust, Go, Java version display
 - **Performance**: Command execution time monitoring
 - **Security**: Sudo privilege indicator with crown emoji
@@ -277,6 +387,8 @@ Custom starship prompt optimized for tmux and development workflows:
 
 - **Main Config**: `starship/starship.toml` → `~/.config/starship.toml`
 - **Local Overrides**: Create `~/.config/starship.toml.local` for machine-specific settings
+- **Test Script**: `nerd-font-test.sh` for verifying Nerd Font icon rendering
+- **Documentation**: `docs/STARSHIP_CONFIGURATION.md` for comprehensive configuration guide
 - **Symlinked**: Automatically managed via GNU Stow during dotfile installation
 
 ### Key Modules

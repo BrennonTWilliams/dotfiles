@@ -1,0 +1,76 @@
+🎨 NERD FONT ICON STYLES DEMONSTRATION
+=====================================
+
+📝 nf-cod (Code/Codium) - Minimalist Line Art
+Style: Clean, geometric, monoline, technical
+Examples:
+  Arrow:      ↓  (clean, simple down arrow)
+  File:       📄  (minimal file icon)
+  Search:     🔍  (simple magnifying glass)
+  Settings:   ⚙️   (geometric gear)
+
+💻 nf-dev (Development) - Brand Recognition
+Style: Detailed, brand-specific, varied complexity
+Examples:
+  GitHub:     🐙  (octopus mascot - brand recognition)
+  Docker:     🐳  (whale mascot - distinctive)
+  Node.js:    📗  (green hexagon brand color)
+  Python:     🐍  (snake - language symbol)
+
+🎯 nf-fa (Font Awesome) - Classic Iconography
+Style: Balanced, traditional, moderate detail
+Examples:
+  User:       👤  (classic user silhouette)
+  Home:       🏠  (traditional house shape)
+  Check:      ✅  (balanced checkmark)
+  Star:       ⭐  (classic five-point star)
+
+📱 nf-md (Material Design) - Rounded & Friendly
+Style: Soft edges, consistent geometry, Google's design language
+Examples:
+  Account:    👤  (rounded user icon)
+  Settings:   ⚙️   (soft-edged gear)
+  Folder:     📁  (rounded folder tab)
+  Heart:      ❤️   (smooth curves)
+
+🐙 nf-oct (Octicons) - GitHub's Design System
+Style: Minimalist, precise, monoline, GitHub-specific
+Examples:
+  Mark:       ⭐  (simple star)
+  Issue:      ❗  (exclamation mark)
+  Pull Req:   ⬇️  (down arrow for pull)
+  Repo:       📦  (simple package)
+
+⚡ nf-iec (Electrical) - Technical Symbols
+Style: Precise, technical, standardized electrical symbols
+Examples:
+  Power:      ⚡  (lightning bolt)
+  Ground:     ⏚  (ground symbol)
+  Battery:    🔋  (battery indicator)
+  Signal:     📡  (signal waves)
+
+🌟 DESIGN COMPARISON MATRIX:
+================================
+
+MINIMALIST (Most Clean):
+  nf-cod: Technical precision, monoline
+  nf-oct: GitHub's minimal design language
+
+BALANCED TRADITIONAL:
+  nf-fa: Classic iconography, moderate detail
+
+FRIENDLY APPROACHABLE:
+  nf-md: Rounded corners, soft geometry
+
+BRAND RECOGNITION:
+  nf-dev: Detailed logos, varied complexity
+
+TECHNICAL PRECISION:
+  nf-iec: Standardized symbols, technical accuracy
+
+📊 Style Characteristics by Category:
+====================================
+Line Weight:  Cod/Octicons = thin, MD = medium, FA = varied
+Corner Style: MD = rounded, others = sharp/medium
+Detail Level: Dev = high, Cod/Oct = low, FA/MD = medium
+Consistency: Cod/Octicons = high, Dev = varied by brand

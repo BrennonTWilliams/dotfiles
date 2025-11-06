@@ -15,16 +15,16 @@ background = #1d2021
 # Gruvbox light1
 foreground = #ebdbb2
 
-# Selection colors - Enhanced bren theme contrast
-# Gruvbox dark1 with bren theme enhancement
-selection-background = #3c3836
-# Gruvbox light1
-selection-foreground = #ebdbb2
+# Selection colors - Enhanced bren theme with darker blue highlight
+# Darker blue for better contrast with white/gold text
+selection-background = #458588
+# Gruvbox dark gold for selected text
+selection-foreground = #d79921
 
-# Cursor colors - Gruvbox-appropriate accent
-# Gruvbox orange cursor - better palette integration
-cursor-color = #d65d0e
-# Gruvbox dark background
+# Cursor colors - Enhanced visibility with off-white cursor
+# Off-white cursor for better visibility
+cursor-color = #ebdbb2
+# Gruvbox dark background for contrast
 cursor-text = #1d2021
 
 # 16-color palette - Full Gruvbox integration with bren theme enhancement
@@ -37,7 +37,7 @@ palette = 1=#cc241d
 palette = 2=#98971a
 # yellow - Gruvbox dark yellow
 palette = 3=#d79921
-# blue - Gruvbox dark blue
+# blue - Darker blue for better contrast
 palette = 4=#458588
 # magenta - Gruvbox dark magenta
 palette = 5=#b16286
@@ -55,8 +55,8 @@ palette = 9=#fb4934
 palette = 10=#b8bb26
 # bright-yellow - electric yellow
 palette = 11=#fabd2f
-# bright-blue - enhanced bren theme blue
-palette = 12=#83a598
+# bright-blue - enhanced bren theme blue (darker)
+palette = 12=#458588
 # bright-magenta - bren theme magenta
 palette = 13=#d3869b
 # bright-cyan - vibrant cyan
@@ -79,7 +79,10 @@ bold-color = #ebdbb2
 # - Enhanced bren theme with full Gruvbox dark color palette integration
 # - Deep Gruvbox background (#1d2021) for reduced eye strain while maintaining bren theme aesthetic
 # - Complete 16-color Gruvbox palette with bren theme vibrance enhancement
-# - Gruvbox orange cursor accent - palette-consistent and readable
+# - Darker blue highlight color (#458588) for better contrast with white/gold text
+# - Dark gold selected text (#d79921) for improved readability
+# - Off-white cursor (#ebdbb2) for enhanced visibility
+# - Enhanced blue colors for better syntax highlighting visibility
 # - Authentic color harmony: Gruvbox foundation with bren theme accents
 # - Solid background (100% opacity) for maximum readability
 # - High contrast optimized for development workflow with syntax highlighting

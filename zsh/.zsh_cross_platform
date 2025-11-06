@@ -1,0 +1,660 @@
+#!/usr/bin/env zsh
+# ==============================================================================
+# Cross-Platform Shell Utilities
+# ==============================================================================
+# Provides consistent utilities across macOS and Linux/Sway environments
+# Detects platform, handles platform-specific commands, and abstracts differences
+
+# ==============================================================================
+# Platform Detection
+# ==============================================================================
+
+# Detect operating system
+detect_os() {
+    case "$(uname -s)" in
+        Darwin*)    echo "macos" ;;
+        Linux*)     echo "linux" ;;
+        CYGWIN*|MINGW*|MSYS*) echo "windows" ;;
+        *)          echo "unknown" ;;
+    esac
+}
+
+# Detect Linux distribution
+detect_linux_distro() {
+    if [[ -f /etc/os-release ]]; then
+        . /etc/os-release
+        echo "$ID"
+    elif command -v lsb_release >/dev/null 2>&1; then
+        lsb_release -si | tr '[:upper:]' '[:lower:]'
+    else
+        echo "unknown"
+    fi
+}
+
+# Detect desktop environment/window manager
+detect_desktop_env() {
+    if [[ -n "$SWAYSOCK" ]]; then
+        echo "sway"
+    elif [[ -n "$WAYLAND_DISPLAY" ]]; then
+        echo "wayland"
+    elif [[ -n "$DISPLAY" ]]; then
+        if command -v i3 >/dev/null 2>&1; then
+            echo "i3"
+        else
+            echo "x11"
+        fi
+    else
+        echo "unknown"
+    fi
+}
+
+# Detect terminal emulator
+detect_terminal() {
+    if [[ -n "$GHOSTTY_RESOURCES" ]]; then
+        echo "ghostty"
+    elif [[ -n "$FOOT_TERMINAL_ID" ]]; then
+        echo "foot"
+    elif [[ -n "$KITTY_WINDOW_ID" ]]; then
+        echo "kitty"
+    elif [[ "$TERM" == "alacritty" ]]; then
+        echo "alacritty"
+    elif [[ "$TERM_PROGRAM" == "vscode" ]]; then
+        echo "vscode"
+    elif [[ "$TERM_PROGRAM" == "wezterm" ]]; then
+        echo "wezterm"
+    else
+        echo "$TERM"
+    fi
+}
+
+# ==============================================================================
+# Cross-Platform Command Abstractions
+# ==============================================================================
+
+# Cross-platform clipboard operations
+clipboard_copy() {
+    local content="$1"
+    case "$(detect_os)" in
+        macos)
+            echo "$content" | pbcopy
+            ;;
+        linux)
+            if command -v wl-copy >/dev/null 2>&1 && [[ -n "$WAYLAND_DISPLAY" ]]; then
+                echo "$content" | wl-copy
+            elif command -v xclip >/dev/null 2>&1; then
+                echo "$content" | xclip -selection clipboard
+            elif command -v xsel >/dev/null 2>&1; then
+                echo "$content" | xsel --clipboard --input
+            else
+                echo "❌ No clipboard command found on Linux"
+                return 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported OS for clipboard operations"
+            return 1
+            ;;
+    esac
+}
+
+clipboard_paste() {
+    case "$(detect_os)" in
+        macos)
+            pbpaste
+            ;;
+        linux)
+            if command -v wl-paste >/dev/null 2>&1 && [[ -n "$WAYLAND_DISPLAY" ]]; then
+                wl-paste
+            elif command -v xclip >/dev/null 2>&1; then
+                xclip -selection clipboard -o
+            elif command -v xsel >/dev/null 2>&1; then
+                xsel --clipboard --output
+            else
+                echo "❌ No clipboard command found on Linux"
+                return 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported OS for clipboard operations"
+            return 1
+            ;;
+    esac
+}
+
+# Cross-platform file open command
+open_file() {
+    local file="$1"
+    case "$(detect_os)" in
+        macos)
+            open "$file"
+            ;;
+        linux)
+            if command -v xdg-open >/dev/null 2>&1; then
+                xdg-open "$file"
+            else
+                echo "❌ xdg-open not found on Linux"
+                return 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported OS for file opening"
+            return 1
+            ;;
+    esac
+}
+
+# Cross-platform notification system
+send_notification() {
+    local title="$1"
+    local message="$2"
+    case "$(detect_os)" in
+        macos)
+            osascript -e "display notification \"$message\" with title \"$title\""
+            ;;
+        linux)
+            if command -v notify-send >/dev/null 2>&1; then
+                notify-send "$title" "$message"
+            else
+                echo "❌ notify-send not found on Linux"
+                return 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported OS for notifications"
+            return 1
+            ;;
+    esac
+}
+
+# Cross-platform screenshot capture
+take_screenshot() {
+    local area="${1:-full}"  # Options: full, window, selection
+    local output_dir="${2:-$HOME/Desktop}"
+
+    case "$(detect_os)" in
+        macos)
+            case "$area" in
+                full)
+                    screencapture "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                    ;;
+                window)
+                    screencapture -w "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                    ;;
+                selection)
+                    screencapture -s "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                    ;;
+            esac
+            ;;
+        linux)
+            if command -v grim >/dev/null 2>&1; then
+                # Wayland screenshot with grim
+                case "$area" in
+                    full)
+                        grim "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                    window)
+                        grim -g "$(slurp -f '%wx%h+%x+%y')" "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                    selection)
+                        grim -g "$(slurp)" "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                esac
+            elif command -v import >/dev/null 2>&1; then
+                # X11 screenshot with ImageMagick
+                case "$area" in
+                    full)
+                        import -window root "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                    window)
+                        import "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                    selection)
+                        import -crop "$(import - | identify -format '%wx%h+%X+%Y' /dev/fd/0)" \
+                               "$output_dir/screenshot-$(date +%Y%m%d-%H%M%S).png"
+                        ;;
+                esac
+            else
+                echo "❌ No screenshot command found on Linux (install grim or ImageMagick)"
+                return 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported OS for screenshots"
+            return 1
+            ;;
+    esac
+}
+
+# ==============================================================================
+# System Information
+# ==============================================================================
+
+# Cross-platform memory usage
+get_memory_usage() {
+    case "$(detect_os)" in
+        macos)
+            # macOS memory usage
+            vm_stat | perl -ne '/page size of (\d+)/ and $ps=$1; /Pages free:\s+(\d+)/ and $pf=$1; /Pages active:\s+(\d+)/ and $pa=$1; /Pages inactive:\s+(\d+)/ and $pi=$1; /Pages wired down:\s+(\d+)/ and $pw=$1; END { printf "%.1fGB", ($pf+$pa+$pi+$pw)*$ps/1024/1024/1024; }'
+            ;;
+        linux)
+            # Linux memory usage
+            free -h | awk '/^Mem:/ {print $3 "/" $2}'
+            ;;
+        *)
+            echo "N/A"
+            ;;
+    esac
+}
+
+# Cross-platform CPU usage
+get_cpu_usage() {
+    case "$(detect_os)" in
+        macos)
+            # macOS CPU usage
+            ps -A -o %cpu | awk '{s+=$1} END {printf "%.1f%%", s}'
+            ;;
+        linux)
+            # Linux CPU usage
+            top -bn1 | grep "Cpu(s)" | awk '{print $2}' | sed 's/%us,//'
+            ;;
+        *)
+            echo "N/A"
+            ;;
+    esac
+}
+
+# Cross-platform battery status
+get_battery_status() {
+    case "$(detect_os)" in
+        macos)
+            # macOS battery status
+            pmset -g batt | grep -o '[0-9]*%' | head -1
+            ;;
+        linux)
+            # Linux battery status
+            if [[ -d /sys/class/power_supply/BAT0 ]]; then
+                cat /sys/class/power_supply/BAT0/capacity
+            elif [[ -d /sys/class/power_supply/BAT1 ]]; then
+                cat /sys/class/power_supply/BAT1/capacity
+            else
+                echo "N/A"
+            fi
+            ;;
+        *)
+            echo "N/A"
+            ;;
+    esac
+}
+
+# ==============================================================================
+# Package Management
+# ==============================================================================
+
+# Cross-platform package installation
+install_package() {
+    local package="$1"
+    case "$(detect_os)" in
+        macos)
+            if command -v brew >/dev/null 2>&1; then
+                brew install "$package"
+            else
+                echo "❌ Homebrew not found on macOS"
+                return 1
+            fi
+            ;;
+        linux)
+            local distro=$(detect_linux_distro)
+            case "$distro" in
+                ubuntu|debian)
+                    sudo apt-get install -y "$package"
+                    ;;
+                fedora)
+                    sudo dnf install -y "$package"
+                    ;;
+                arch|manjaro)
+                    sudo pacman -S --noconfirm "$package"
+                    ;;
+                *)
+                    echo "❌ Unsupported Linux distribution: $distro"
+                    return 1
+                    ;;
+            esac
+            ;;
+        *)
+            echo "❌ Unsupported OS for package installation"
+            return 1
+            ;;
+    esac
+}
+
+# Cross-platform package update
+update_packages() {
+    case "$(detect_os)" in
+        macos)
+            if command -v brew >/dev/null 2>&1; then
+                brew update && brew upgrade
+            else
+                echo "❌ Homebrew not found on macOS"
+                return 1
+            fi
+            ;;
+        linux)
+            local distro=$(detect_linux_distro)
+            case "$distro" in
+                ubuntu|debian)
+                    sudo apt-get update && sudo apt-get upgrade -y
+                    ;;
+                fedora)
+                    sudo dnf update -y
+                    ;;
+                arch|manjaro)
+                    sudo pacman -Syu --noconfirm
+                    ;;
+                *)
+                    echo "❌ Unsupported Linux distribution: $distro"
+                    return 1
+                    ;;
+            esac
+            ;;
+        *)
+            echo "❌ Unsupported OS for package updates"
+            return 1
+            ;;
+    esac
+}
+
+# ==============================================================================
+# Enhanced Shell Functions
+# ==============================================================================
+
+# Enhanced memory info function that works cross-platform
+cross_platform_memory_info() {
+    local mem_usage=$(get_memory_usage)
+    echo "%F{014}💾 ${mem_usage}%f"  # Cyan memory info
+}
+
+# Enhanced CPU info function that works cross-platform
+cross_platform_cpu_info() {
+    local cpu_usage=$(get_cpu_usage)
+    echo "%F{011}⚡ ${cpu_usage}%f"  # Yellow CPU info
+}
+
+# Cross-platform workspace info
+cross_platform_workspace_info() {
+    local os=$(detect_os)
+    local desktop=$(detect_desktop_env)
+    local terminal=$(detect_terminal)
+
+    # Start with platform info
+    local info="🖥️ $os"
+    [[ "$desktop" != "unknown" ]] && info="$info | $desktop"
+    [[ "$terminal" != "unknown" ]] && info="$info | $terminal"
+
+    # Add project context
+    if git rev-parse --git-dir > /dev/null 2>&1; then
+        local repo_name=$(basename $(git rev-parse --show-toplevel))
+        info="$info | 📁 $repo_name"
+    elif [[ -f "package.json" ]]; then
+        local project_name=$(jq -r .name package.json 2>/dev/null || echo "Node")
+        info="$info | 📦 $project_name"
+    elif [[ -f "Cargo.toml" ]]; then
+        local project_name=$(grep '^name = ' Cargo.toml | cut -d'"' -f2 || echo "Rust")
+        info="$info | 🦀 $project_name"
+    elif [[ -f "pyproject.toml" ]]; then
+        local project_name=$(grep '^name = ' pyproject.toml | cut -d'"' -f2 || echo "Python")
+        info="$info | 🐍 $project_name"
+    fi
+
+    echo "%F{013}$info%f"  # Magenta workspace info
+}
+
+# Cross-platform system status
+system_status() {
+    echo "🖥️  System Status"
+    echo "================"
+    echo "OS: $(detect_os)"
+    echo "Desktop: $(detect_desktop_env)"
+    echo "Terminal: $(detect_terminal)"
+    echo "Memory: $(get_memory_usage)"
+    echo "CPU: $(get_cpu_usage)"
+    echo "Battery: $(get_battery_status)"
+    echo ""
+}
+
+# Cross-platform platform-specific aliases
+setup_platform_aliases() {
+    case "$(detect_os)" in
+        macos)
+            alias ls='ls -G'
+            alias ll='ls -laG'
+            alias la='ls -laG'
+            # macOS-specific commands
+            alias show-files='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
+            alias hide-files='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
+            alias lock='/System/Library/CoreServices/Menu\\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+            ;;
+        linux)
+            alias ls='ls --color=auto'
+            alias ll='ls -la --color=auto'
+            alias la='ls -la --color=auto'
+            # Linux-specific commands
+            alias open='xdg-open'
+            alias pbcopy='wl-copy || xclip -selection clipboard'
+            alias pbpaste='wl-paste || xclip -selection clipboard -o'
+            alias screenshot='take_screenshot'
+            ;;
+    esac
+}
+
+# ==============================================================================
+# Uniclip Service Management
+# ==============================================================================
+
+# Cross-platform Uniclip service control
+uniclip_manager() {
+    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local uniclip_manager="$script_dir/../scripts/uniclip-manager"
+
+    if [[ -f "$uniclip_manager" ]]; then
+        "$uniclip_manager" "$@"
+    else
+        echo "❌ Uniclip manager not found at: $uniclip_manager"
+        return 1
+    fi
+}
+
+# Convenience aliases for Uniclip management
+alias uniclip-install='uniclip_manager install'
+alias uniclip-uninstall='uniclip_manager uninstall'
+alias uniclip-start='uniclip_manager start'
+alias uniclip-stop='uniclip_manager stop'
+alias uniclip-restart='uniclip_manager restart'
+alias uniclip-status='uniclip_manager status'
+alias uniclip-logs='uniclip_manager logs'
+alias uniclip-enable='uniclip_manager enable'
+alias uniclip-disable='uniclip_manager disable'
+
+# ==============================================================================
+# Development Environment Management
+# ==============================================================================
+
+# Cross-platform development environment setup
+setup_dev_env() {
+    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local setup_script="$script_dir/../scripts/setup-dev-env"
+
+    if [[ -f "$setup_script" ]]; then
+        "$setup_script" "$@"
+    else
+        echo "❌ Development environment setup script not found at: $setup_script"
+        return 1
+    fi
+}
+
+# Convenience aliases for development environment management
+alias dev-setup='setup_dev_env'
+alias dev-install='setup_dev_env --update all'
+alias dev-minimal='setup_dev_env --minimal core shell dev-tools'
+alias dev-update='setup_dev_env --update'
+alias dev-dryrun='setup_dev_env --dry-run all'
+
+# Development environment status check
+dev_status() {
+    echo "🖥️  Development Environment Status"
+    echo "==============================="
+    echo
+
+    # Platform information
+    echo "Platform: $(detect_os) ${LINUX_DISTRO:+($LINUX_DISTRO)}"
+    echo "Desktop: $(detect_desktop_env)"
+    echo "Terminal: $(detect_terminal)"
+    echo
+
+    # Check core tools
+    echo "🔧 Core Tools:"
+    local core_tools=("git" "curl" "wget" "zsh" "tmux" "starship")
+    for tool in "${core_tools[@]}"; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            echo "  ✅ $tool"
+        else
+            echo "  ❌ $tool (not found)"
+        fi
+    done
+    echo
+
+    # Check development tools
+    echo "🛠️  Development Tools:"
+    local dev_tools=("python3" "neovim" "ripgrep" "fzf" "fd" "jq")
+    for tool in "${dev_tools[@]}"; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            echo "  ✅ $tool"
+        else
+            echo "  ❌ $tool (not found)"
+        fi
+    done
+    echo
+
+    # Check platform-specific tools
+    echo "🖥️  Platform-Specific Tools:"
+    case "$(detect_os)" in
+        macos)
+            local macos_tools=("ghostty" "rectangle" "sketchybar")
+            for tool in "${macos_tools[@]}"; do
+                if command -v "$tool" >/dev/null 2>&1; then
+                    echo "  ✅ $tool"
+                else
+                    echo "  ❌ $tool (not found)"
+                fi
+            done
+            ;;
+        linux)
+            local linux_tools=("sway" "waybar" "foot" "grim")
+            for tool in "${linux_tools[@]}"; do
+                if command -v "$tool" >/dev/null 2>&1; then
+                    echo "  ✅ $tool"
+                else
+                    echo "  ❌ $tool (not found)"
+                fi
+            done
+            ;;
+    esac
+    echo
+
+    # Check services
+    echo "🔄 Services:"
+    if uniclip_manager status >/dev/null 2>&1; then
+        echo "  ✅ Uniclip service"
+    else
+        echo "  ❌ Uniclip service (not running or not installed)"
+    fi
+    echo
+
+    # Check shell configuration
+    echo "🐚 Shell Configuration:"
+    if [[ "$SHELL" == *"zsh"* ]]; then
+        echo "  ✅ Zsh is default shell"
+    else
+        echo "  ⚠️  Zsh is not default shell (current: $SHELL)"
+    fi
+
+    if [[ -f "$HOME/.zshrc" ]]; then
+        echo "  ✅ .zshrc exists"
+    else
+        echo "  ❌ .zshrc not found"
+    fi
+
+    if [[ -f "$HOME/.config/starship.toml" ]]; then
+        echo "  ✅ Starship configuration exists"
+    else
+        echo "  ❌ Starship configuration not found"
+    fi
+    echo
+
+    # Quick fix suggestions
+    echo "🔧 Quick Actions:"
+    if ! command -v starship >/dev/null 2>&1; then
+        echo "  - Install Starship: setup_dev_env core"
+    fi
+    if ! uniclip_manager status >/dev/null 2>&1; then
+        echo "  - Setup Uniclip: uniclip-install"
+    fi
+    if [[ "$SHELL" != *"zsh"* ]]; then
+        echo "  - Set Zsh as default: chsh -s \$(which zsh)"
+    fi
+
+    echo
+    echo "For full setup, run: dev-install"
+    echo "For minimal setup, run: dev-minimal"
+}
+
+# ==============================================================================
+# Initialization
+# ==============================================================================
+
+# Set up platform aliases automatically
+setup_platform_aliases
+
+# Export environment variables for scripts
+export PLATFORM_OS=$(detect_os)
+export PLATFORM_DESKTOP=$(detect_desktop_env)
+export PLATFORM_TERMINAL=$(detect_terminal)
+
+# ==============================================================================
+# Usage Information
+# ==============================================================================
+# This script provides the following cross-platform utilities:
+#
+# Platform Detection:
+# - detect_os() - Detect operating system
+# - detect_linux_distro() - Detect Linux distribution
+# - detect_desktop_env() - Detect desktop environment/window manager
+# - detect_terminal() - Detect terminal emulator
+#
+# Cross-Platform Commands:
+# - clipboard_copy() <text> - Copy text to clipboard
+# - clipboard_paste() - Paste from clipboard
+# - open_file() <file> - Open file with default application
+# - send_notification() <title> <message> - Send system notification
+# - take_screenshot() [area] [output_dir] - Take screenshot (full/window/selection)
+#
+# System Information:
+# - get_memory_usage() - Get current memory usage
+# - get_cpu_usage() - Get current CPU usage
+# - get_battery_status() - Get battery percentage
+# - system_status() - Display comprehensive system status
+#
+# Package Management:
+# - install_package() <package> - Install package using appropriate manager
+# - update_packages() - Update all system packages
+#
+# Enhanced Shell Functions:
+# - cross_platform_memory_info() - Memory info for prompts
+# - cross_platform_cpu_info() - CPU info for prompts
+# - cross_platform_workspace_info() - Enhanced workspace context for prompts
+#
+# Environment Variables:
+# - $PLATFORM_OS - Current operating system
+# - $PLATFORM_DESKTOP - Current desktop environment
+# - $PLATFORM_TERMINAL - Current terminal emulator
+#
+# Platform-specific aliases are automatically set up based on detected OS.

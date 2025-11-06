@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2025-11-05] - Starship Nerd Font Enhancement Release
+
+### Added
+- **Starship Nerd Font Icons**: Replaced emoji Git status symbols with professional Nerd Font icons
+- **Multiple Icon Styles**: Three distinct visual styles - Material Design, Font Awesome, and Minimalist
+- **Easy Style Switching**: Comment/uncomment configuration sections for instant style changes
+- **Icon Test Script**: `nerd-font-test.sh` for verifying Nerd Font icon rendering
+- **Comprehensive Documentation**: `docs/STARSHIP_CONFIGURATION.md` with detailed configuration guide
+- **Enhanced README**: Updated with Nerd Font icons information and usage instructions
+- **Usage Guide Integration**: Added Starship customization section to `USAGE_GUIDE.md`
+
+### Improved
+- **Visual Consistency**: Better alignment and readability across all terminal environments
+- **Professional Appearance**: Clean, modern icons that scale properly at all font sizes
+- **Cross-Platform Compatibility**: Icons render consistently on macOS (Ghostty) and Linux (Foot)
+- **Git Status Clarity**: More intuitive visual indicators for repository state
+- **Configuration Flexibility**: Easy customization and personalization options
+
+### Technical Details
+- **Backup Configuration**: Original emoji configuration preserved as comments
+- **IosevkaTerm Nerd Font**: Optimized for the font used in Ghostty terminal
+- **Performance**: No impact on prompt rendering speed
+- **Compatibility**: Full backward compatibility with existing Starship setup
+
+---
+
 ## [2025-10-30] - Multi-Wave Implementation Release
 
 ### Added
