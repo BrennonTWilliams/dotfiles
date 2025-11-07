@@ -304,4 +304,11 @@ fi
 
 # Starship is the primary prompt system
 # Custom prompt functions have been removed for better performance
+
+# Clear any existing prompt configurations to prevent conflicts
+unset PROMPT
+unset RPROMPT
+unset PROMPT_COMMAND
+
+# Initialize Starship
 eval "$(starship init zsh)"
