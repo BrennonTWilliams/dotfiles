@@ -3,50 +3,16 @@
 # ===================================
 # Overrides for compact mode - most modules disabled
 
-# Directory - optimized for compact mode
-[directory]
-truncation_length = 2
-truncation_symbol = "…/"
-truncate_to_repo = true
-format = "[$path]($style)[$read_only]($read_only_style)"
-style = "bold cyan"
-read_only = " 🔒"
-read_only_style = "red"
-home_symbol = "~"
+# Directory configuration handled in core-overridable.toml
 
-# Git branch - compact format
-[git_branch]
-format = "[$symbol$branch]($style) "
-symbol = ""
-style = "bold purple"
-truncation_length = 15
-truncation_symbol = "…"
 
-# Git status - compact format
-[git_status]
-format = "([\\[$all_status$ahead_behind\\]]($style) )"
-style = "bold red"
-conflicted = "!"
-ahead = "↑"
-behind = "↓"
-diverged = "⚡"
-up_to_date = ""
-untracked = "?"
-stashed = ""
-modified = "•"
-staged = "[++($count)](green)"
-renamed = "→"
-deleted = "×"
+# GitHub username settings handled in github-modules.toml
 
-# Disabled modules for compact mode
-[username]
-disabled = true
+# System username disabled - using GitHub username instead
 
-[hostname]
-disabled = true
+# Hostname disabled for compact mode
 
-[shlvl]
-disabled = true
+# Shell level disabled for compact mode
 
 [package]
 disabled = true
@@ -122,4 +88,7 @@ disabled = true
 disabled = true
 
 [custom.memory]
+disabled = true
+
+[custom.github_status]
 disabled = true

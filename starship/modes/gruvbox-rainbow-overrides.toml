@@ -1,0 +1,65 @@
+# ===================================
+# Gruvbox-Rainbow Mode Overrides
+# ===================================
+# Gruvbox-rainbow preset specific customizations
+# Optimized for IosevkaTerm Nerd Font
+
+# Use the gruvbox_rainbow color scheme
+# Note: palette setting disabled to avoid Starship parsing warnings
+
+# OS module
+[os]
+format = "[ $symbol]($style)"
+style = "color_a1"
+disabled = false
+
+[os.symbols]
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = ""
+Artix = ""
+CentOS = ""
+Debian = ""
+Fedora = ""
+FreeBSD = ""
+Gentoo = ""
+Linux = ""
+Macos = ""
+Manjaro = ""
+Mint = ""
+NixOS = ""
+OpenBSD = ""
+openSUSE = ""
+Pop = ""
+Raspbian = ""
+Redhat = ""
+RedHatEnterprise = ""
+Solus = ""
+SUSE = ""
+Ubuntu = ""
+Unknown = ""
+Windows = ""
+
+# Shell module
+[shell]
+bash_indicator = "bash"
+fish_indicator = "fish"
+zsh_indicator = "zsh"
+powershell_indicator = "pwsh"
+ion_indicator = "ion"
+elvish_indicator = "esh"
+tcsh_indicator = "tsh"
+nu_indicator = "nu"
+cmd_indicator = "cmd"
+unknown_indicator = "mystery shell"
+format = "[$indicator]($style)"
+style = "color_a1"
+disabled = false
+
+# Note: directory, git_branch, and git_status modules are defined in core-overridable.toml
+# and will use the gruvbox_rainbow palette colors automatically
+
+# Note: All modules inherit Nerd Font symbols from base modules
+# Style can be overridden here if needed for gruvbox colors
+

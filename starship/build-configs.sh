@@ -15,7 +15,7 @@ cd "$SCRIPT_DIR"
 CONFIG_DIR="$HOME/.config"
 
 # Modes to build
-MODES=("compact" "standard" "verbose")
+MODES=("compact" "standard" "verbose" "gruvbox-rainbow")
 
 # Colors for output
 RED='\033[0;31m'
@@ -141,13 +141,22 @@ EOF
         "platform-modules.toml"      # Custom platform modules
         "system-modules.toml"         # System info modules
         "base-modules.toml"           # Status and local IP
+        "github-modules.toml"         # GitHub integration modules
         "core-overridable.toml"       # Core modules that may be overridden
     )
 
     for module in "${modules[@]}"; do
         if [[ -f "modules/$module" ]]; then
             log_info "  Adding module: $module"
-            cat "modules/$module" >> "$temp_file"
+            # Filter out modules that will be overridden
+            local module_temp=$(mktemp)
+            trap "rm -f $module_temp" RETURN
+            if [[ ${#overridden_modules[@]} -gt 0 ]]; then
+                filter_module_file "modules/$module" "$module_temp" "${overridden_modules[@]}"
+            else
+                cat "modules/$module" > "$module_temp"
+            fi
+            cat "$module_temp" >> "$temp_file"
             echo "" >> "$temp_file"
         else
             log_warning "  Module not found: modules/$module"
@@ -270,11 +279,13 @@ build_all() {
     echo "  starship-compact   # Switch to compact mode"
     echo "  starship-standard  # Switch to standard mode"
     echo "  starship-verbose   # Switch to verbose mode"
+    echo "  starship-gruvbox-rainbow # Switch to gruvbox-rainbow mode"
     echo ""
     log_info "Or manually update the symlink:"
     echo "  ln -sf \$(pwd)/modes/compact.toml   ~/.config/starship.toml"
     echo "  ln -sf \$(pwd)/modes/standard.toml  ~/.config/starship.toml"
     echo "  ln -sf \$(pwd)/modes/verbose.toml   ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/modes/gruvbox-rainbow.toml ~/.config/starship.toml"
 }
 
 # Function to clean old configurations

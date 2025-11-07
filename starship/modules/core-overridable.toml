@@ -3,11 +3,12 @@
 # ===================================
 # Core modules that are frequently overridden in different modes
 
-# Username and hostname
+# System username (disabled - using GitHub username instead)
 [username]
-format = "[$user]($style)@"
-style_user = "bold blue"
-show_always = false
+disabled = true
+
+# GitHub username module replaces the standard username
+# This is defined in github-modules.toml and will be included by the build system
 
 [hostname]
 format = "[$hostname]($style) in "
@@ -20,7 +21,7 @@ trim_at = "."
 [shlvl]
 disabled = false
 format = "[$symbol]($style) "
-symbol = "↕️ "
+symbol = "󰔟 "
 threshold = 2
 repeat = true
 style = "bold yellow"
@@ -31,23 +32,23 @@ truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = true
 format = "[$path]($style)[$read_only]($read_only_style) "
-style = "bold cyan"
-read_only = " 🔒"
+style = "bold cyan"  # Will be overridden by gruvbox_rainbow palette if active
+read_only = " 󰌾"
 read_only_style = "red"
-home_symbol = "🏠 "
+home_symbol = "󰋜 "
 
 # Git branch module
 [git_branch]
 format = "[$symbol$branch]($style) "
-symbol = "🌱 "
-style = "bold purple"
+symbol = " "
+style = "bold purple"  # Will be overridden by gruvbox_rainbow palette if active
 truncation_length = 20
 truncation_symbol = "…"
 
 # Git status module
 [git_status]
 format = "([\\[$all_status$ahead_behind\\]]($style) )"
-style = "bold red"
+style = "bold red"  # Will be overridden by gruvbox_rainbow palette if active
 conflicted = "!"
 ahead = "↑"
 behind = "↓"

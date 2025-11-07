@@ -1,0 +1,52 @@
+# ===================================
+# Gruvbox-Rainbow Format Configuration
+# ===================================
+# Based on https://starship.rs/presets/gruvbox-rainbow
+# Optimized for IosevkaTerm Nerd Font
+
+# Gruvbox-rainbow format string - colorful single-line layout
+format = """
+[](color_a1)$os$shell[](color_a1:bg=color_b1)$directory[](color_b1:bg=color_c1)$git_branch[](color_c1:bg=color_d1)$git_status[](color_d1:bg=color_e1)$nodejs$python$golang$rust$java[](color_e1:bg=color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
+
+# Alternative format with more module visibility
+# format = """
+# [](color_a1)$custom.github_username$hostname[](color_a1:bg=color_b1)$directory[](color_b1:bg=color_c1)$git_branch[](color_c1:bg=color_d1)$git_status[](color_d1:bg=color_e1)$nodejs$python$golang$rust$java[](color_e1:bg=color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
+
+# Blank line between prompts
+add_newline = false
+
+# Command timeout
+command_timeout = 1000
+
+# Gruvbox-rainbow color palette
+[palettes.gruvbox_rainbow]
+# Original gruvbox colors
+color_bg0 = '#1d2021'  # dark0_hard
+color_bg1 = '#282828'  # dark0
+color_bg2 = '#3c3836'  # dark1
+color_bg3 = '#504945'  # dark2
+color_bg4 = '#665c54'  # dark3
+
+color_fg0 = '#fbf1c7'  # light0_hard
+color_fg1 = '#ebdbb2'  # light0
+color_fg2 = '#d5c4a1'  # light1
+color_fg3 = '#bdae93'  # light2
+color_fg4 = '#a89984'  # light3
+
+# Rainbow colors for the gradient effect
+color_a1 = '#cc241d'   # red
+color_b1 = '#d65d0e'   # orange
+color_c1 = '#d79921'   # yellow
+color_d1 = '#98971a'   # green
+color_e1 = '#458588'   # aqua/cyan
+color_f1 = '#689d6a'   # teal
+
+# Additional gruvbox colors for modules
+red = '#fb4934'
+orange = '#fe8019'
+yellow = '#fabd2f'
+green = '#b8bb26'
+aqua = '#8ec07c'
+blue = '#83a598'
+purple = '#d3869b'
+gray = '#928374'

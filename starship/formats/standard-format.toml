@@ -5,7 +5,7 @@
 
 # Standard format string - balanced multi-line layout
 format = """
-[┌─────────────────────>](bold green)$username$hostname$shlvl$directory$git_branch$git_status$package$golang$python$nodejs$rust$java
+[┌─────────────────────>](bold green)$custom.github_username$hostname$shlvl$directory$git_branch$git_status$package$golang$python$nodejs$rust$java
 [│](bold green)$docker_context$cmake$container$kubernetes$terraform$nix_shell
 [└─>](bold green)$status$character"""
 

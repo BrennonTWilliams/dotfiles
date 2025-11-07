@@ -6,7 +6,7 @@
 # Docker context module
 [docker_context]
 format = "[$symbol$context]($style) "
-symbol = "🐳 "
+symbol = "󰡨 "
 style = "blue bold"
 detect_extensions = []
 detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile", "docker-compose.dev.yml", "docker-compose.ci.yml"]
@@ -15,13 +15,13 @@ detect_folders = []
 # Container module
 [container]
 format = "[$symbol \\[$name\\]]($style) "
-symbol = "⬢"
+symbol = "󰏨"
 style = "red bold dimmed"
 
 # Kubernetes module
 [kubernetes]
 format = '[$symbol$context( \($namespace\))]($style) '
-symbol = "☸ "
+symbol = "󱃾 "
 style = "cyan bold"
 disabled = false
 detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
@@ -31,7 +31,7 @@ detect_extensions = ["yaml", "yml"]
 # Terraform module
 [terraform]
 format = "[$symbol$workspace]($style) "
-symbol = "💠 "
+symbol = "󰔱 "
 style = "bold 105"
 detect_extensions = ["tf", "tfplan", "tfstate"]
 detect_files = [".terraformrc", ".terraform.lock.hcl"]
@@ -40,7 +40,7 @@ detect_folders = [".terraform"]
 # CMake build system
 [cmake]
 format = "[$symbol($version )]($style)"
-symbol = "🔨 "
+symbol = " "
 style = "bold blue"
 detect_extensions = ["cmake"]
 detect_files = ["CMakeLists.txt", "CMakeCache.txt"]
@@ -49,11 +49,8 @@ detect_folders = []
 # Nix shell module
 [nix_shell]
 format = '[$symbol$state( \($name\))]($style) '
-symbol = "❄️ "
+symbol = " "
 style = "bold blue"
 impure_msg = "impure"
 pure_msg = "pure"
 unknown_msg = ""
-detect_files = ["shell.nix", "default.nix", "flake.nix"]
-detect_dirs = ["nix"]
-detect_folders = []

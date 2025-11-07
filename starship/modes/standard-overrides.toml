@@ -3,9 +3,8 @@
 # ===================================
 # Overrides for standard mode - balanced module selection
 
-# Username - show only when needed
-[username]
-show_always = false
+# Username module is disabled - using GitHub username instead
+# See github-modules.toml for custom.github_username configuration
 
 # All other modules use default settings from shared modules
 # This file can be expanded for any standard-mode specific customizations

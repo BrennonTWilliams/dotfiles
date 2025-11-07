@@ -14,7 +14,7 @@
 
 # Standard format string - balanced multi-line layout
 format = """
-[┌─────────────────────>](bold green)$username$hostname$shlvl$directory$git_branch$git_status$package$golang$python$nodejs$rust$java
+[┌─────────────────────>](bold green)$custom.github_username$hostname$shlvl$directory$git_branch$git_status$package$golang$python$nodejs$rust$java
 [│](bold green)$docker_context$cmake$container$kubernetes$terraform$nix_shell
 [└─>](bold green)$status$character"""
 
@@ -44,14 +44,14 @@ vimcmd_visual_symbol = "[❮](bold yellow)"
 # Package manager module
 [package]
 format = "[$symbol$version]($style) "
-symbol = "📦 "
+symbol = "󰏗 "
 style = "bold 208"
 display_private = false
 
 # Go programming language
 [golang]
 format = "[$symbol($version )]($style)"
-symbol = "🐹 "
+symbol = " "
 style = "bold cyan"
 detect_extensions = ["go"]
 detect_files = ["go.mod", "go.sum", "go.work", "go.work.sum"]
@@ -60,7 +60,7 @@ detect_folders = ["go"]
 # Python programming language
 [python]
 format = "[${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"
-symbol = "🐍 "
+symbol = " "
 style = "bold yellow"
 pyenv_version_name = false
 pyenv_prefix = "pyenv "
@@ -72,7 +72,7 @@ detect_folders = []
 # Node.js programming language
 [nodejs]
 format = "[$symbol($version )]($style)"
-symbol = "📗 "
+symbol = " "
 style = "bold green"
 detect_extensions = ["js", "mjs", "cjs", "ts", "mts", "cts"]
 detect_files = ["package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "node_modules"]
@@ -81,7 +81,7 @@ detect_folders = ["node_modules"]
 # Rust programming language
 [rust]
 format = "[$symbol($version )]($style)"
-symbol = "🦀 "
+symbol = "󱘗 "
 style = "bold red"
 detect_extensions = ["rs"]
 detect_files = ["Cargo.toml", "Cargo.lock"]
@@ -90,7 +90,7 @@ detect_folders = []
 # Java programming language
 [java]
 format = "[${symbol}(${version} )]($style)"
-symbol = "☕ "
+symbol = " "
 style = "bold dimmed red"
 detect_extensions = ["java", "class", "jar", "war", "ear"]
 detect_files = ["pom.xml", "build.gradle.kts", "build.sbt", ".java-version"]
@@ -103,7 +103,7 @@ detect_folders = ["src", "target", "pom.xml"]
 # Docker context module
 [docker_context]
 format = "[$symbol$context]($style) "
-symbol = "🐳 "
+symbol = "󰡨 "
 style = "blue bold"
 detect_extensions = []
 detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile", "docker-compose.dev.yml", "docker-compose.ci.yml"]
@@ -112,13 +112,13 @@ detect_folders = []
 # Container module
 [container]
 format = "[$symbol \\[$name\\]]($style) "
-symbol = "⬢"
+symbol = "󰏨"
 style = "red bold dimmed"
 
 # Kubernetes module
 [kubernetes]
 format = '[$symbol$context( \($namespace\))]($style) '
-symbol = "☸ "
+symbol = "󱃾 "
 style = "cyan bold"
 disabled = false
 detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
@@ -128,7 +128,7 @@ detect_extensions = ["yaml", "yml"]
 # Terraform module
 [terraform]
 format = "[$symbol$workspace]($style) "
-symbol = "💠 "
+symbol = "󰔱 "
 style = "bold 105"
 detect_extensions = ["tf", "tfplan", "tfstate"]
 detect_files = [".terraformrc", ".terraform.lock.hcl"]
@@ -137,7 +137,7 @@ detect_folders = [".terraform"]
 # CMake build system
 [cmake]
 format = "[$symbol($version )]($style)"
-symbol = "🔨 "
+symbol = " "
 style = "bold blue"
 detect_extensions = ["cmake"]
 detect_files = ["CMakeLists.txt", "CMakeCache.txt"]
@@ -146,14 +146,11 @@ detect_folders = []
 # Nix shell module
 [nix_shell]
 format = '[$symbol$state( \($name\))]($style) '
-symbol = "❄️ "
+symbol = " "
 style = "bold blue"
 impure_msg = "impure"
 pure_msg = "pure"
 unknown_msg = ""
-detect_files = ["shell.nix", "default.nix", "flake.nix"]
-detect_dirs = ["nix"]
-detect_folders = []
 # ===================================
 # Platform-Specific Modules Configuration
 # ===================================
@@ -184,28 +181,28 @@ style = "bold dimmed white"
 [custom.sway]
 command = "echo $SWAYSOCK"
 when = "[[ -n $SWAYSOCK ]]"
-format = "[🪟 Sway]($style) "
+format = "[󰕲 Sway]($style) "
 style = "bold magenta"
 
 # Show if in a tmux session
 [custom.tmux]
 command = "echo $TMUX"
 when = "[[ -n $TMUX ]]"
-format = "[📺 tmux]($style) "
+format = "[󰆍 tmux]($style) "
 style = "bold blue"
 
 # Show if running in Ghostty (macOS)
 [custom.ghostty]
 command = "echo $GHOSTTY_RESOURCES"
 when = "[[ -n $GHOSTTY_RESOURCES ]]"
-format = "[👻 Ghostty]($style) "
+format = "[󰊠 Ghostty]($style) "
 style = "bold green"
 
 # Show if running in Foot (Linux Wayland)
 [custom.foot]
 command = "echo $FOOT_TERMINAL_ID"
 when = "[[ -n $FOOT_TERMINAL_ID ]]"
-format = "[🦶 Foot]($style) "
+format = "[󰆍 Foot]($style) "
 style = "bold green"
 
 # Show current git commit hash
@@ -219,7 +216,7 @@ style = "bold dimmed white"
 [custom.aws_profile]
 command = "echo $AWS_PROFILE"
 when = "[[ -n $AWS_PROFILE ]]"
-format = "[🔐 AWS: $output]($style) "
+format = "[󰌾 AWS: $output]($style) "
 style = "bold yellow"
 # ===================================
 # System Information Modules Configuration
@@ -229,11 +226,11 @@ style = "bold yellow"
 # Battery indicator (for laptops)
 [battery]
 format = "[$symbol$percentage]($style) "
-full_symbol = "🔋"
-charging_symbol = "⚡️"
-discharging_symbol = "💀"
-unknown_symbol = "❓"
-empty_symbol = "🔌"
+full_symbol = "󰁹"
+charging_symbol = "󰂄"
+discharging_symbol = "󰂃"
+unknown_symbol = "󰁼"
+empty_symbol = "󰚥"
 disabled = false
 
 [[battery.display]]
@@ -269,7 +266,7 @@ case $(uname) in
     ;;
 esac
 """
-format = "[💾 $output]($style) "
+format = "[󰍛 $output]($style) "
 style = "bold dimmed blue"
 when = "true"
 # ===================================
@@ -293,15 +290,67 @@ format = "[$localipv4]($style) "
 style = "bold dimmed purple"
 disabled = true
 # ===================================
+# GitHub Integration Modules Configuration
+# ===================================
+# Custom modules for GitHub integration and user information
+
+# GitHub username module - displays first name from GitHub or git config
+[custom.github_username]
+command = """
+#!/bin/bash
+# Try GitHub CLI first
+if command -v gh &> /dev/null && gh auth status &> /dev/null; then
+    # Get GitHub name and extract first name
+    github_name=$(gh api user --jq .name 2>/dev/null)
+    if [[ -n "$github_name" && "$github_name" != "null" ]]; then
+        echo "$github_name" | cut -d' ' -f1
+        exit 0
+    fi
+fi
+
+# Fallback to git config
+git_name=$(git config user.name 2>/dev/null)
+if [[ -n "$git_name" ]]; then
+    echo "$git_name" | cut -d' ' -f1
+    exit 0
+fi
+
+# Final fallback to system username
+echo "$USER"
+"""
+when = "true"
+format = "[$output]($style)"
+style = "bold blue"
+show_always = false
+description = "Displays GitHub first name or git config first name"
+
+# GitHub repository status indicator (enhanced)
+[custom.github_status]
+command = """
+if command -v gh &> /dev/null && git rev-parse --git-dir &> /dev/null; then
+    # Check if we're in a GitHub repo
+    if gh repo view --json nameWithOwner &> /dev/null 2>&1; then
+        # Get repo info
+        repo_info=$(gh repo view --json nameWithOwner,visibility,isFork --jq '.nameWithOwner + " " + .visibility + " " + (if .isFork then "fork" else "origin" end)')
+        echo "$repo_info"
+    fi
+fi
+"""
+when = "true"
+format = "[󰊬 $output]($style) "
+style = "dimmed white"
+description = "Shows GitHub repository information when in a GitHub repo"
+# ===================================
 # Core Overridable Modules Configuration
 # ===================================
 # Core modules that are frequently overridden in different modes
 
-# Username and hostname
+# System username (disabled - using GitHub username instead)
 [username]
-format = "[$user]($style)@"
-style_user = "bold blue"
-show_always = false
+disabled = true
+
+# GitHub username module replaces the standard username
+# This is defined in github-modules.toml and will be included by the build system
 
 [hostname]
 format = "[$hostname]($style) in "
@@ -314,7 +363,7 @@ trim_at = "."
 [shlvl]
 disabled = false
 format = "[$symbol]($style) "
-symbol = "↕️ "
+symbol = "󰔟 "
 threshold = 2
 repeat = true
 style = "bold yellow"
@@ -325,23 +374,23 @@ truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = true
 format = "[$path]($style)[$read_only]($read_only_style) "
-style = "bold cyan"
-read_only = " 🔒"
+style = "bold cyan"  # Will be overridden by gruvbox_rainbow palette if active
+read_only = " 󰌾"
 read_only_style = "red"
-home_symbol = "🏠 "
+home_symbol = "󰋜 "
 
 # Git branch module
 [git_branch]
 format = "[$symbol$branch]($style) "
-symbol = "🌱 "
-style = "bold purple"
+symbol = " "
+style = "bold purple"  # Will be overridden by gruvbox_rainbow palette if active
 truncation_length = 20
 truncation_symbol = "…"
 
 # Git status module
 [git_status]
 format = "([\\[$all_status$ahead_behind\\]]($style) )"
-style = "bold red"
+style = "bold red"  # Will be overridden by gruvbox_rainbow palette if active
 conflicted = "!"
 ahead = "↑"
 behind = "↓"
@@ -358,9 +407,8 @@ deleted = "×"
 # ===================================
 # Overrides for standard mode - balanced module selection
 
-# Username - show only when needed
-[username]
-show_always = false
+# Username module is disabled - using GitHub username instead
+# See github-modules.toml for custom.github_username configuration
 
 # All other modules use default settings from shared modules
 # This file can be expanded for any standard-mode specific customizations

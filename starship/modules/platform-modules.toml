@@ -28,28 +28,28 @@ style = "bold dimmed white"
 [custom.sway]
 command = "echo $SWAYSOCK"
 when = "[[ -n $SWAYSOCK ]]"
-format = "[🪟 Sway]($style) "
+format = "[󰕲 Sway]($style) "
 style = "bold magenta"
 
 # Show if in a tmux session
 [custom.tmux]
 command = "echo $TMUX"
 when = "[[ -n $TMUX ]]"
-format = "[📺 tmux]($style) "
+format = "[󰆍 tmux]($style) "
 style = "bold blue"
 
 # Show if running in Ghostty (macOS)
 [custom.ghostty]
 command = "echo $GHOSTTY_RESOURCES"
 when = "[[ -n $GHOSTTY_RESOURCES ]]"
-format = "[👻 Ghostty]($style) "
+format = "[󰊠 Ghostty]($style) "
 style = "bold green"
 
 # Show if running in Foot (Linux Wayland)
 [custom.foot]
 command = "echo $FOOT_TERMINAL_ID"
 when = "[[ -n $FOOT_TERMINAL_ID ]]"
-format = "[🦶 Foot]($style) "
+format = "[󰆍 Foot]($style) "
 style = "bold green"
 
 # Show current git commit hash
@@ -63,5 +63,5 @@ style = "bold dimmed white"
 [custom.aws_profile]
 command = "echo $AWS_PROFILE"
 when = "[[ -n $AWS_PROFILE ]]"
-format = "[🔐 AWS: $output]($style) "
+format = "[󰌾 AWS: $output]($style) "
 style = "bold yellow"

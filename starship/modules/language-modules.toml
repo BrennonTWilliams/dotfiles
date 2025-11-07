@@ -6,14 +6,14 @@
 # Package manager module
 [package]
 format = "[$symbol$version]($style) "
-symbol = "📦 "
+symbol = "󰏗 "
 style = "bold 208"
 display_private = false
 
 # Go programming language
 [golang]
 format = "[$symbol($version )]($style)"
-symbol = "🐹 "
+symbol = " "
 style = "bold cyan"
 detect_extensions = ["go"]
 detect_files = ["go.mod", "go.sum", "go.work", "go.work.sum"]
@@ -22,7 +22,7 @@ detect_folders = ["go"]
 # Python programming language
 [python]
 format = "[${symbol}${pyenv_prefix}(${version} )(\\($virtualenv\\) )]($style)"
-symbol = "🐍 "
+symbol = " "
 style = "bold yellow"
 pyenv_version_name = false
 pyenv_prefix = "pyenv "
@@ -34,7 +34,7 @@ detect_folders = []
 # Node.js programming language
 [nodejs]
 format = "[$symbol($version )]($style)"
-symbol = "📗 "
+symbol = " "
 style = "bold green"
 detect_extensions = ["js", "mjs", "cjs", "ts", "mts", "cts"]
 detect_files = ["package.json", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "node_modules"]
@@ -43,7 +43,7 @@ detect_folders = ["node_modules"]
 # Rust programming language
 [rust]
 format = "[$symbol($version )]($style)"
-symbol = "🦀 "
+symbol = "󱘗 "
 style = "bold red"
 detect_extensions = ["rs"]
 detect_files = ["Cargo.toml", "Cargo.lock"]
@@ -52,7 +52,7 @@ detect_folders = []
 # Java programming language
 [java]
 format = "[${symbol}(${version} )]($style)"
-symbol = "☕ "
+symbol = " "
 style = "bold dimmed red"
 detect_extensions = ["java", "class", "jar", "war", "ear"]
 detect_files = ["pom.xml", "build.gradle.kts", "build.sbt", ".java-version"]

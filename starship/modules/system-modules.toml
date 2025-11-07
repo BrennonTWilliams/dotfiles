@@ -6,11 +6,11 @@
 # Battery indicator (for laptops)
 [battery]
 format = "[$symbol$percentage]($style) "
-full_symbol = "🔋"
-charging_symbol = "⚡️"
-discharging_symbol = "💀"
-unknown_symbol = "❓"
-empty_symbol = "🔌"
+full_symbol = "󰁹"
+charging_symbol = "󰂄"
+discharging_symbol = "󰂃"
+unknown_symbol = "󰁼"
+empty_symbol = "󰚥"
 disabled = false
 
 [[battery.display]]
@@ -46,6 +46,6 @@ case $(uname) in
     ;;
 esac
 """
-format = "[💾 $output]($style) "
+format = "[󰍛 $output]($style) "
 style = "bold dimmed blue"
 when = "true"

@@ -1,0 +1,51 @@
+# ===================================
+# GitHub Integration Modules Configuration
+# ===================================
+# Custom modules for GitHub integration and user information
+
+# GitHub username module - displays first name from GitHub or git config
+[custom.github_username]
+command = """
+#!/bin/bash
+# Try GitHub CLI first
+if command -v gh &> /dev/null && gh auth status &> /dev/null; then
+    # Get GitHub name and extract first name
+    github_name=$(gh api user --jq .name 2>/dev/null)
+    if [[ -n "$github_name" && "$github_name" != "null" ]]; then
+        echo "$github_name" | cut -d' ' -f1
+        exit 0
+    fi
+fi
+
+# Fallback to git config
+git_name=$(git config user.name 2>/dev/null)
+if [[ -n "$git_name" ]]; then
+    echo "$git_name" | cut -d' ' -f1
+    exit 0
+fi
+
+# Final fallback to system username
+echo "$USER"
+"""
+when = "true"
+format = "[$output]($style)"
+style = "bold blue"
+show_always = false
+description = "Displays GitHub first name or git config first name"
+
+# GitHub repository status indicator (enhanced)
+[custom.github_status]
+command = """
+if command -v gh &> /dev/null && git rev-parse --git-dir &> /dev/null; then
+    # Check if we're in a GitHub repo
+    if gh repo view --json nameWithOwner &> /dev/null 2>&1; then
+        # Get repo info
+        repo_info=$(gh repo view --json nameWithOwner,visibility,isFork --jq '.nameWithOwner + " " + .visibility + " " + (if .isFork then "fork" else "origin" end)')
+        echo "$repo_info"
+    fi
+fi
+"""
+when = "true"
+format = "[󰊬 $output]($style) "
+style = "dimmed white"
+description = "Shows GitHub repository information when in a GitHub repo"
