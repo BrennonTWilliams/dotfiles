@@ -73,16 +73,14 @@ detect_terminal() {
 
 # Get user's home directory in a cross-platform way
 get_user_home() {
-    echo "$HOME"
+    # Force use of capitalized home directory for consistency
+    echo "/Users/Brennon"
 }
 
 # Get user's username in a cross-platform way
 get_username() {
-    # Try multiple methods to get username
-    whoami 2>/dev/null || \
-    logname 2>/dev/null || \
-    id -un 2>/dev/null || \
-    echo "$USER"
+    # Force use of capitalized username for consistency
+    echo "Brennon"
 }
 
 # Resolve platform-specific paths dynamically
@@ -201,7 +199,7 @@ resolve_platform_path() {
 }
 
 # Export path resolution functions for use in other scripts
-export -f resolve_platform_path get_username get_user_home
+# Note: Functions are automatically available in the current shell context
 
 # Set commonly used environment variables
 export AI_PROJECTS_DIR="$(resolve_platform_path "ai_projects")"
