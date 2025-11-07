@@ -9,41 +9,12 @@
 
 set -e
 
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m'
+# Source utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../lib/utils.sh"
 
-info() { echo -e "${GREEN}[INFO]${NC} $1"; }
-warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
-error() { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
-success() { echo -e "${GREEN}✓${NC} $1"; }
-
-# Detect OS
-detect_os() {
-    if [ -f /etc/debian_version ]; then
-        OS="debian"
-        PKG_MANAGER="apt"
-    elif [ -f /etc/redhat-release ]; then
-        OS="redhat"
-        PKG_MANAGER="dnf"
-    elif [ -f /etc/arch-release ]; then
-        OS="arch"
-        PKG_MANAGER="pacman"
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        OS="macos"
-        PKG_MANAGER="brew"
-    else
-        OS="unknown"
-        PKG_MANAGER="unknown"
-    fi
-}
-
-# Check if command exists
-command_exists() {
-    command -v "$1" &> /dev/null
-}
+# Initialize OS detection using utils.sh
+detect_os
 
 # Install pip using system package manager or ensurepip
 install_pip() {
