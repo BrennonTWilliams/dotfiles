@@ -79,8 +79,15 @@ get_user_home() {
 
 # Get user's username in a cross-platform way
 get_username() {
-    # Force use of capitalized username for consistency
-    echo "Brennon"
+    if command -v whoami >/dev/null 2>&1; then
+        whoami
+    elif [[ -n "$USER" ]]; then
+        echo "$USER"
+    elif [[ -n "$USERNAME" ]]; then
+        echo "$USERNAME"
+    else
+        echo "user"  # Safe fallback
+    fi
 }
 
 # Resolve platform-specific paths dynamically

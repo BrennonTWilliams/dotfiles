@@ -52,7 +52,6 @@ snyk                        # Find and fix vulnerabilities
 vercel                      # Vercel CLI for deployment
 netlify-cli                 # Netlify CLI for deployment
 surge                       # Simple deployment to surge.sh
-now                         # Vercel (formerly Now) deployment
 
 # AI and Development Tools
 @anthropic-ai/claude-code   # Claude Code AI assistant
@@ -90,5 +89,4 @@ husky                       # Git hooks made easy
 lint-staged                 # Lint files staged by git
 
 # Monitoring and Debugging
-nodemon                     # Auto-restart for Node.js (duplicate - remove above)
 debug                       # Node.js debugging utility

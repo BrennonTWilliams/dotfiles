@@ -258,7 +258,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   # System maintenance
   alias update-macos='sudo softwareupdate -i -a'
   alias flush-dns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
-  alias clear-logs='sudo rm -rf /var/log/*'
+  alias clear-logs='echo "Use: sudo log files --clear or journalctl --vacuum-time=1d"'
   alias system-cleanup='echo "Running macOS maintenance..."; brew cleanup; brew doctor; sudo softwareupdate -i -a'
 
 fi
