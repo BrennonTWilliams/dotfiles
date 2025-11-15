@@ -5,7 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2025-11-05] - Starship Nerd Font Enhancement Release
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [1.0.0] - 2025-11-15
+
+### Added
+- **Semantic Versioning**: Implemented proper semantic versioning system
+  - VERSION file tracking current version
+  - Automated version management script (`scripts/version.sh`)
+  - Version bump, tagging, and CHANGELOG update automation
+  - Versioning documentation in CONTRIBUTING.md
+- **Version Display**: Added version information to install script
+
+### Changed
+- **CHANGELOG Format**: Converted from date-based releases to semantic versioning
+  - Previous releases mapped to pre-1.0.0 development history
+  - Unreleased section for tracking ongoing changes
+
+## [0.4.0] - 2025-11-05 - Starship Nerd Font Enhancement Release
 
 ### Added
 - **Starship Nerd Font Icons**: Replaced emoji Git status symbols with professional Nerd Font icons
@@ -31,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2025-10-30] - Multi-Wave Implementation Release
+## [0.3.0] - 2025-10-30 - Multi-Wave Implementation Release
 
 ### Added
 - **Comprehensive macOS Support**: Full Apple Silicon (M1/M2/M3/M4) and Intel Mac optimization
@@ -66,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Integration Testing**: Comprehensive end-to-end installation and configuration validation
 - **Performance Validation**: Verified setup times and resource usage optimization
 
-## [2025-10-29] - Infrastructure Enhancement
+## [0.2.0] - 2025-10-29 - Infrastructure Enhancement
 
 ### Added
 - **PATH Configuration**: Centralized environment configuration
@@ -77,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Usage Documentation**: Enhanced daily workflow guidance
 - **Repository References**: Updated GitHub username and repository URLs
 
-## [2025-10-28] - Documentation Foundation
+## [0.1.1] - 2025-10-28 - Documentation Foundation
 
 ### Added
 - **Usage Guide**: Comprehensive daily usage documentation
@@ -87,7 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Repository Configuration**: Corrected GitHub username in project files
 
-## [2025-10-27] - Initial Release
+## [0.1.0] - 2025-10-27 - Initial Release
 
 ### Added
 - **Base Dotfiles**: Initial system configuration files

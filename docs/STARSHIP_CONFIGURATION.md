@@ -172,26 +172,35 @@ Configuration: /Users/brennon/AIProjects/ai-workspaces/dotfiles/starship/modes/v
 
 ### Configuration File Structure
 
-Each display mode uses a separate configuration file:
+The starship configuration uses a modular structure with separate mode files:
 
 ```
 starship/
-├── modes/
-│   ├── compact.toml     # Minimal single-line layout
-│   ├── standard.toml    # Balanced multi-line layout (default)
-│   └── verbose.toml     # Maximum information display
-└── starship.toml        # Main configuration file (symlinked to active mode)
+├── modes/                  # Complete mode configurations
+│   ├── compact.toml        # Minimal single-line layout
+│   ├── standard.toml       # Balanced multi-line layout (default)
+│   ├── verbose.toml        # Maximum information display
+│   ├── gruvbox-rainbow.toml # Gruvbox rainbow theme
+│   └── *-overrides.toml    # Mode-specific override files
+├── modules/                # Shared module configurations
+│   ├── core-base.toml
+│   ├── language-modules.toml
+│   └── ...
+├── formats/                # Format configurations
+│   ├── compact-format.toml
+│   └── ...
+└── build-configs.sh        # Configuration builder script
 ```
 
-The `~/.config/starship.toml` file is a symlink that points to the currently active mode configuration file.
+The `~/.config/starship.toml` file is a symlink that points to the currently active mode configuration file in the `modes/` directory.
 
 ## Switching Between Icon Styles
 
-1. **Open the configuration file:**
+1. **Open the active mode configuration file:**
    ```bash
-   vim ~/.config/starship.toml
-   # or
-   vim starship/modes/standard.toml
+   # Edit the mode file you're currently using
+   vim ~/.dotfiles/starship/modes/standard.toml
+   # or whichever mode you prefer (compact.toml, verbose.toml, gruvbox-rainbow.toml)
    ```
 
 2. **Comment out the current active section:**
@@ -280,7 +289,7 @@ Starship includes intelligent platform detection:
 #### Mode Not Switching
 1. **Check the symlink is correct:**
    ```bash
-   ls -la ~/.config/starship/starship.toml
+   ls -la ~/.config/starship.toml
    ```
 
 2. **Verify mode function availability:**
@@ -291,7 +300,7 @@ Starship includes intelligent platform detection:
 3. **Manual mode switch:**
    ```bash
    # Switch to compact mode manually
-   ln -sf ~/AIProjects/ai-workspaces/dotfiles/starship/modes/compact.toml ~/.config/starship/starship.toml
+   ln -sf ~/.dotfiles/starship/modes/compact.toml ~/.config/starship.toml
    exec zsh
    ```
 
@@ -303,8 +312,8 @@ Starship includes intelligent platform detection:
 
 2. **Verify file permissions:**
    ```bash
-   ls -la ~/.config/starship/
-   ls -la ~/AIProjects/ai-workspaces/dotfiles/starship/modes/
+   ls -la ~/.config/starship.toml
+   ls -la ~/.dotfiles/starship/modes/
    ```
 
 3. **Reset to standard mode:**

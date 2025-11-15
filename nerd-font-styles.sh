@@ -3,6 +3,8 @@
 # Nerd Font Icon Style Demonstration
 # Shows stylistic differences between icon categories
 
+set -euo pipefail
+
 echo "🎨 NERD FONT ICON STYLES DEMONSTRATION"
 echo "====================================="
 echo ""

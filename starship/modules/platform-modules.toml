@@ -56,7 +56,7 @@ style = "bold green"
 [custom.git_commit]
 command = "git rev-parse --short HEAD 2>/dev/null"
 when = "git rev-parse --git-dir > /dev/null 2>&1"
-format = "[($hash)]($style) "
+format = "[($output)]($style) "
 style = "bold dimmed white"
 
 # Show AWS profile if active

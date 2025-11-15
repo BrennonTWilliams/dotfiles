@@ -1,5 +1,10 @@
 # Dotfiles
 
+[![Test Suite](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/test.yml)
+[![ShellCheck](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/shellcheck.yml)
+[![Starship Config](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml)
+[![Code Quality](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml)
+
 A comprehensive, cross-platform dotfiles repository with modular installation scripts, supporting macOS and Linux environments. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
 
 ## 🚀 What's New
@@ -412,6 +417,132 @@ fi
 - Oh My Zsh plugins (installed via setup script)
 - `conda`/`miniforge` - Python environment management
 - `pyenv` - Python version management
+
+## Minimum Version Requirements
+
+To ensure full compatibility with all features in this dotfiles repository, please verify that you meet the following minimum version requirements:
+
+### Core Dependencies
+
+| Tool | Minimum Version | Recommended | Reason | Verification |
+|------|----------------|-------------|---------|--------------|
+| **Git** | 2.23.0 | 2.30+ | Modern commands (git switch, restore), better defaults | `git --version` |
+| **GNU Stow** | 2.2.0 | 2.3+ | Symlink management and conflict detection | `stow --version` |
+| **Zsh** | 5.8 | 5.9 | Oh My Zsh compatibility, modern features | `zsh --version` |
+| **Bash** | 4.0 | 5.0+ | Associative arrays, modern syntax | `bash --version` |
+| **Tmux** | 3.2a | 3.5a | Modern keybindings and features | `tmux -V` |
+
+### Shell and Prompt
+
+| Tool | Minimum Version | Recommended | Reason | Verification |
+|------|----------------|-------------|---------|--------------|
+| **Starship** | 1.10.0 | 1.18+ | Modern prompt features, TOML schema support | `starship --version` |
+| **NVM** | 0.39.0 | v0.40.3 | Node.js version management | `nvm --version` |
+
+### Development Tools
+
+| Tool | Minimum Version | Recommended | Reason | Verification |
+|------|----------------|-------------|---------|--------------|
+| **Python** | 3.8 | 3.10+ | Modern syntax (f-strings, type hints, walrus operator) | `python3 --version` |
+| **Node.js** | 18.0 | 20+ LTS | Current LTS, ES modules, modern features | `node --version` |
+| **Neovim** | 0.8.0 | 0.9+ | Lua API features, lazy.nvim compatibility | `nvim --version` |
+
+### Fonts and UI
+
+| Tool | Minimum Version | Recommended | Reason | Verification |
+|------|----------------|-------------|---------|--------------|
+| **Nerd Fonts** | 3.0.0 | v3.3.0 | Icon compatibility with Starship | Check font version |
+
+### Platform-Specific Requirements
+
+#### macOS
+- **macOS Version**: 12.0 (Monterey) or later
+- **Xcode Command Line Tools**: Latest version for your macOS
+- **Homebrew**: 4.0+ recommended
+
+#### Linux
+- **Kernel**: 5.0+ for modern Wayland support
+- **systemd**: 245+ (if using services)
+- **Package Manager**:
+  - apt (Debian/Ubuntu): Recent version from distro
+  - dnf (Fedora): 4.0+
+  - pacman (Arch): Recent version
+
+### Version Check Commands
+
+Run these commands to verify your environment:
+
+```bash
+# Core tools
+git --version        # Should show 2.23.0+
+stow --version       # Should show 2.2.0+
+zsh --version        # Should show 5.8+
+bash --version       # Should show 4.0+
+tmux -V              # Should show 3.2a+
+
+# Shell and prompt
+starship --version   # Should show 1.10.0+
+nvm --version        # Should show 0.39.0+ (v0.40.3 recommended)
+
+# Development tools
+python3 --version    # Should show 3.8+
+node --version       # Should show 18.0+ (if using Node.js)
+nvim --version       # Should show 0.8.0+ (if using Neovim)
+
+# Fonts
+fc-list | grep -i "iosevka.*nerd"  # Should show Nerd Font fonts
+```
+
+### Why These Versions?
+
+**Git 2.23+**: Introduces `git switch` and `git restore` commands used in aliases and workflows. Version 2.30+ provides better security defaults.
+
+**Zsh 5.8+**: Required for full Oh My Zsh plugin compatibility and modern completion features. Version 5.9 documented in SYSTEM_SETUP.md.
+
+**Bash 4.0+**: Needed for associative arrays and modern shell features used in installation scripts.
+
+**Tmux 3.2a+**: Provides modern keybinding syntax and features used in configuration. Version 3.5a tested and documented.
+
+**Starship 1.10+**: Required for TOML schema features and modern prompt modules used in configuration.
+
+**Python 3.8+**: Minimum for modern Python features including f-strings, walrus operator, and type hints used in scripts.
+
+**Node.js 18+**: Current LTS version with long-term support. Provides ES modules and modern JavaScript features.
+
+**NVM 0.39+**: Modern Node version management. Version v0.40.3 is enforced in setup script.
+
+**Nerd Fonts 3.0+**: Required for icon compatibility with Starship prompt. Version v3.3.0 is enforced in setup script.
+
+**Neovim 0.8+**: Required for modern Lua API features and lazy.nvim plugin manager compatibility.
+
+### Upgrading Components
+
+If your versions are below the minimums:
+
+```bash
+# Update package manager
+sudo apt update && sudo apt upgrade -y     # Debian/Ubuntu
+sudo dnf upgrade -y                        # Fedora
+brew update && brew upgrade                # macOS
+
+# Update specific tools
+brew upgrade git starship tmux zsh         # macOS
+sudo apt install --only-upgrade git tmux zsh  # Ubuntu
+
+# Update NVM (run install script again)
+./scripts/setup-nvm.sh
+
+# Update Nerd Fonts (run install script again)
+./scripts/setup-fonts.sh
+
+# Update Node.js (via NVM)
+nvm install --lts
+nvm use --lts
+
+# Update Python (via system package manager or pyenv)
+sudo apt install python3.10                # Ubuntu
+pyenv install 3.10.13 && pyenv global 3.10.13  # Via pyenv
+```
 
 ## Migration Guide
 
@@ -1058,17 +1189,95 @@ ls -la ~/.config/Code/User/settings.json
 ./scripts/setup-new-configs.sh
 ```
 
+## Versioning
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemVer).
+
+### Current Version
+
+```bash
+# Check current version
+./scripts/version.sh current
+```
+
+The version is tracked in the `VERSION` file and follows the format `MAJOR.MINOR.PATCH`:
+
+- **MAJOR**: Breaking changes that require manual intervention
+- **MINOR**: New features that are backwards-compatible
+- **PATCH**: Bug fixes and minor improvements
+
+### Version Management
+
+For contributors and maintainers:
+
+```bash
+# Bump patch version (bug fixes)
+./scripts/version.sh bump patch
+
+# Bump minor version (new features)
+./scripts/version.sh bump minor
+
+# Bump major version (breaking changes)
+./scripts/version.sh bump major
+
+# Create git tag for current version
+./scripts/version.sh tag
+
+# Validate versioning
+./scripts/version.sh validate
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md#semantic-versioning) for detailed versioning guidelines.
+
+### Release History
+
+See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes in each version.
+
 ## Documentation
 
 For detailed system setup documentation, see [SYSTEM_SETUP.md](SYSTEM_SETUP.md).
 
-## Backup
+## Backup and Recovery
 
 Important: Your original dotfiles are automatically backed up during installation to:
 
 ```
 ~/.dotfiles_backup_YYYYMMDD_HHMMSS/
 ```
+
+### Restoring from Backup
+
+Use the recovery script to restore dotfiles from any backup:
+
+```bash
+# List all available backups
+./scripts/recover.sh --list
+
+# Restore from the latest backup (interactive)
+./scripts/recover.sh --latest
+
+# Interactive mode - select backup and files to restore
+./scripts/recover.sh --interactive
+
+# Restore from a specific backup
+./scripts/recover.sh --backup ~/.dotfiles_backup_20250115_120000
+
+# Verify backup integrity
+./scripts/recover.sh --verify ~/.dotfiles_backup_20250115_120000
+
+# Preview changes without applying them
+./scripts/recover.sh --latest --dry-run
+
+# Show all options
+./scripts/recover.sh --help
+```
+
+**Safety Features:**
+- Creates a safety backup before restoring
+- Verifies backup integrity before restoration
+- Interactive mode for selective file restoration
+- Dry-run mode to preview changes
+- Confirmation prompts (use --force to skip)
 
 ## Package List
 

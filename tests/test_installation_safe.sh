@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Safe Integration Test - Tests functions without running the full script
-set -e
+set -euo pipefail
 
 # Configuration
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

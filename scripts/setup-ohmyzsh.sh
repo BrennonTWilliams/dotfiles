@@ -6,7 +6,7 @@
 # Installs Oh My Zsh and custom plugins/themes
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 # Source utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

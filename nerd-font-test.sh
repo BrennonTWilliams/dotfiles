@@ -2,6 +2,8 @@
 # Test Nerd Font Icons Rendering in Starship
 # This script displays the new Nerd Font icons for Git status
 
+set -euo pipefail
+
 echo "🔍 Testing Nerd Font Icons for Starship Git Status"
 echo "=================================================="
 echo

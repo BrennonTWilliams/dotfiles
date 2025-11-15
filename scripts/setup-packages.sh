@@ -6,8 +6,10 @@
 # Handles installation of platform-specific packages for dotfiles setup
 # ==============================================================================
 
+set -euo pipefail
+
 # Get script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Source utilities
@@ -23,6 +25,14 @@ declare -A PACKAGES=(
     ["redhat"]="git curl wget vim make gcc stow zsh tmux"
     ["arch"]="git curl wget vim base-devel stow zsh tmux"
     ["macos"]="git curl wget vim stow zsh tmux"
+    ["opensuse-leap"]="git curl wget vim make gcc stow zsh tmux"
+    ["opensuse-tumbleweed"]="git curl wget vim make gcc stow zsh tmux"
+    ["void"]="git curl wget vim base-devel stow zsh tmux"
+    ["void-musl"]="git curl wget vim base-devel stow zsh tmux"
+    ["alpine"]="git curl wget vim build-base stow zsh tmux"
+    ["gentoo"]="git curl wget vim stow zsh tmux"
+    ["solus"]="git curl wget vim make gcc stow zsh tmux"
+    ["clear-linux-os"]="git curl wget vim stow zsh tmux"
 )
 
 # ==============================================================================
@@ -86,6 +96,42 @@ install_package() {
                 brew install "$package"
             fi
             ;;
+        "zypper")
+            if check_zypper_package_availability "$package"; then
+                info "Installing $package with zypper..."
+                sudo zypper install -y "$package"
+            fi
+            ;;
+        "xbps")
+            if check_xbps_package_availability "$package"; then
+                info "Installing $package with xbps..."
+                sudo xbps-install -y "$package"
+            fi
+            ;;
+        "apk")
+            if check_apk_package_availability "$package"; then
+                info "Installing $package with apk..."
+                sudo apk add --no-cache "$package"
+            fi
+            ;;
+        "emerge")
+            if check_emerge_package_availability "$package"; then
+                info "Installing $package with emerge..."
+                sudo emerge "$package"
+            fi
+            ;;
+        "eopkg")
+            if check_eopkg_package_availability "$package"; then
+                info "Installing $package with eopkg..."
+                sudo eopkg install -y "$package"
+            fi
+            ;;
+        "swupd")
+            if check_swupd_package_availability "$package"; then
+                info "Installing $package with swupd..."
+                sudo swupd bundle-add "$package"
+            fi
+            ;;
         *)
             warn "Unknown package manager: $PKG_MANAGER"
             return 1
@@ -143,7 +189,7 @@ main() {
     section "Package Installation"
 
     # Change to dotfiles directory
-    cd "$DOTFILES_DIR"
+    cd "$DOTFILES_DIR" || exit 1
 
     # Check prerequisites
     check_prerequisites

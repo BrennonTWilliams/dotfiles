@@ -12,11 +12,8 @@ alias .....='cd ../../../..'
 # ============================================
 # File Operations
 # ============================================
-alias ls='ls --color=auto'
-alias ll='ls -alFh'
-alias la='ls -A'
-alias l='ls -CF'
-alias lh='ls -lh'
+# NOTE: ls aliases are defined in .zsh_cross_platform for platform compatibility
+# macOS uses -G flag, Linux uses --color=auto flag
 
 # ============================================
 # Git Shortcuts (complement to git plugin)

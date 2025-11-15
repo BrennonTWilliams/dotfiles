@@ -6,7 +6,7 @@
 # Comprehensive testing of installation scripts and cross-platform functionality
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 # Test configuration
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

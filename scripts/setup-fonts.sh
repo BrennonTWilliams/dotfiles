@@ -6,7 +6,7 @@
 # Downloads and installs IosevkaTerm Nerd Font and other popular fonts
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 # Source utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
