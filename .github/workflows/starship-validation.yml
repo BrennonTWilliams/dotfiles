@@ -1,0 +1,273 @@
+name: Starship Config Validation
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'starship/**/*.toml'
+      - 'starship/*.toml'
+      - 'starship/build-configs.sh'
+      - '.github/workflows/starship-validation.yml'
+  pull_request:
+    branches: [ main, master, develop ]
+    paths:
+      - 'starship/**/*.toml'
+      - 'starship/*.toml'
+      - 'starship/build-configs.sh'
+      - '.github/workflows/starship-validation.yml'
+
+jobs:
+  # ===========================================================================
+  # Validate Starship Configurations
+  # ===========================================================================
+  validate-configs:
+    name: Validate Starship TOML Configs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # -----------------------------------------------------------------------
+      # Install Dependencies
+      # -----------------------------------------------------------------------
+      - name: Install Starship
+        run: |
+          curl -sS https://starship.rs/install.sh | sh -s -- -y
+          sudo cp ~/.local/bin/starship /usr/local/bin/
+          starship --version
+
+      - name: Install TOML validator
+        run: |
+          # Install taplo for TOML validation
+          curl -fsSL https://github.com/tamasfe/taplo/releases/latest/download/taplo-linux-x86_64.gz | gunzip -c > /usr/local/bin/taplo
+          chmod +x /usr/local/bin/taplo
+          taplo --version
+
+      # -----------------------------------------------------------------------
+      # Validate TOML Syntax
+      # -----------------------------------------------------------------------
+      - name: Validate TOML syntax
+        run: |
+          echo "## TOML Syntax Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          failed=0
+          checked=0
+
+          # Find all TOML files
+          while IFS= read -r toml_file; do
+            checked=$((checked + 1))
+            echo "Checking: $toml_file"
+
+            if taplo check "$toml_file" 2>&1; then
+              echo "  ✅ Valid"
+            else
+              echo "  ❌ Invalid syntax"
+              echo "- ❌ \`$toml_file\` - Invalid syntax" >> $GITHUB_STEP_SUMMARY
+              failed=$((failed + 1))
+            fi
+          done < <(find starship -name "*.toml" -type f)
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Summary:** Checked $checked files, $failed failed" >> $GITHUB_STEP_SUMMARY
+
+          if [[ $failed -gt 0 ]]; then
+            exit 1
+          fi
+
+      # -----------------------------------------------------------------------
+      # Validate with Starship
+      # -----------------------------------------------------------------------
+      - name: Validate main configurations with Starship
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Starship Configuration Validation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          failed=0
+
+          # Test main configuration files (in root of starship/)
+          for config in starship/compact.toml starship/standard.toml starship/verbose.toml starship/gruvbox-rainbow.toml; do
+            if [[ -f "$config" ]]; then
+              echo "Validating: $config"
+
+              # Use starship to print config (validates it)
+              if STARSHIP_CONFIG="$GITHUB_WORKSPACE/$config" starship print-config > /dev/null 2>&1; then
+                echo "  ✅ Valid Starship config"
+                echo "- ✅ \`$config\` - Valid" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "  ❌ Invalid Starship config"
+                echo "- ❌ \`$config\` - Invalid" >> $GITHUB_STEP_SUMMARY
+                failed=$((failed + 1))
+
+                # Show error details
+                STARSHIP_CONFIG="$GITHUB_WORKSPACE/$config" starship print-config 2>&1 || true
+              fi
+            fi
+          done
+
+          if [[ $failed -gt 0 ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ Some configurations failed validation" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ All configurations are valid" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # -----------------------------------------------------------------------
+      # Test Configuration Modes
+      # -----------------------------------------------------------------------
+      - name: Test configuration mode switching
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Configuration Mode Testing" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Test that each mode can be loaded
+          for mode in compact standard verbose gruvbox-rainbow; do
+            config_file="starship/${mode}.toml"
+
+            if [[ -f "$config_file" ]]; then
+              echo "Testing mode: $mode"
+
+              # Test that starship can explain the prompt with this config
+              if STARSHIP_CONFIG="$GITHUB_WORKSPACE/$config_file" starship explain > /dev/null 2>&1; then
+                echo "  ✅ Mode '$mode' works"
+                echo "- ✅ Mode: \`$mode\`" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "  ❌ Mode '$mode' failed"
+                echo "- ❌ Mode: \`$mode\`" >> $GITHUB_STEP_SUMMARY
+                exit 1
+              fi
+            fi
+          done
+
+  # ===========================================================================
+  # Validate Build Process
+  # ===========================================================================
+  validate-build:
+    name: Validate Config Build Process
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Starship
+        run: |
+          curl -sS https://starship.rs/install.sh | sh -s -- -y
+          sudo cp ~/.local/bin/starship /usr/local/bin/
+
+      - name: Make build script executable
+        run: chmod +x starship/build-configs.sh
+
+      - name: Test build script
+        run: |
+          cd starship
+
+          # Run build script
+          if ./build-configs.sh; then
+            echo "✅ Build script executed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Build script failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Verify built configurations
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Built Configuration Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check that main config files exist after build
+          for config in starship/compact.toml starship/standard.toml starship/verbose.toml starship/gruvbox-rainbow.toml; do
+            if [[ -f "$config" ]]; then
+              echo "- ✅ \`$config\` exists" >> $GITHUB_STEP_SUMMARY
+
+              # Verify it's valid
+              if STARSHIP_CONFIG="$GITHUB_WORKSPACE/$config" starship print-config > /dev/null 2>&1; then
+                echo "  ✅ Built config is valid"
+              else
+                echo "  ❌ Built config is invalid"
+                echo "- ❌ \`$config\` built but invalid" >> $GITHUB_STEP_SUMMARY
+                exit 1
+              fi
+            else
+              echo "- ❌ \`$config\` missing after build" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
+          done
+
+  # ===========================================================================
+  # TOML Formatting Check
+  # ===========================================================================
+  check-formatting:
+    name: Check TOML Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install taplo
+        run: |
+          curl -fsSL https://github.com/tamasfe/taplo/releases/latest/download/taplo-linux-x86_64.gz | gunzip -c > /usr/local/bin/taplo
+          chmod +x /usr/local/bin/taplo
+
+      - name: Check TOML formatting
+        run: |
+          echo "## TOML Formatting Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check if any files need formatting
+          if taplo fmt --check starship/**/*.toml starship/*.toml 2>&1; then
+            echo "✅ All TOML files are properly formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Some TOML files need formatting" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Run \`taplo fmt starship/**/*.toml starship/*.toml\` to fix" >> $GITHUB_STEP_SUMMARY
+            # Don't fail on formatting issues, just warn
+          fi
+
+  # ===========================================================================
+  # Summary
+  # ===========================================================================
+  validation-summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [validate-configs, validate-build, check-formatting]
+    if: always()
+
+    steps:
+      - name: Generate summary
+        run: |
+          echo "## Starship Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.validate-configs.result }}" == "success" ]]; then
+            echo "✅ Config Validation: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Config Validation: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.validate-build.result }}" == "success" ]]; then
+            echo "✅ Build Process: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Build Process: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.check-formatting.result }}" == "success" ]]; then
+            echo "✅ Formatting Check: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Formatting Check: Warnings" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Final status check
+        run: |
+          # Fail if critical validations failed
+          if [[ "${{ needs.validate-configs.result }}" != "success" ]] || \
+             [[ "${{ needs.validate-build.result }}" != "success" ]]; then
+            exit 1
+          fi

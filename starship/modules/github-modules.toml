@@ -7,12 +7,36 @@
 [custom.github_username]
 command = """
 #!/bin/bash
-# Try GitHub CLI first
+# Setup cache directory
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/starship-github"
+mkdir -p "$CACHE_DIR" 2>/dev/null || CACHE_DIR="/tmp/starship-github-$USER"
+mkdir -p "$CACHE_DIR" 2>/dev/null
+
+CACHE_FILE="$CACHE_DIR/github_user_name.cache"
+CACHE_TTL=3600  # 1 hour in seconds
+
+# Function to check if cache is fresh
+is_cache_fresh() {
+    [[ -f "$1" ]] && [[ $(($(date +%s) - $(stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null))) -lt $CACHE_TTL ]]
+}
+
+# Try GitHub CLI first with caching
 if command -v gh &> /dev/null && gh auth status &> /dev/null; then
-    # Get GitHub name and extract first name
+    # Check cache first
+    if is_cache_fresh "$CACHE_FILE"; then
+        cached_name=$(cat "$CACHE_FILE" 2>/dev/null)
+        if [[ -n "$cached_name" && "$cached_name" != "null" ]]; then
+            echo "$cached_name"
+            exit 0
+        fi
+    fi
+
+    # Cache miss or expired - fetch from API
     github_name=$(gh api user --jq .name 2>/dev/null)
     if [[ -n "$github_name" && "$github_name" != "null" ]]; then
-        echo "$github_name" | cut -d' ' -f1
+        first_name=$(echo "$github_name" | cut -d' ' -f1)
+        echo "$first_name" > "$CACHE_FILE" 2>/dev/null
+        echo "$first_name"
         exit 0
     fi
 fi
@@ -31,16 +55,41 @@ when = "true"
 format = "[$output]($style)"
 style = "bold blue"
 show_always = false
-description = "Displays GitHub first name or git config first name"
+description = "Displays GitHub first name or git config first name (cached for 1 hour)"
 
 # GitHub repository status indicator (enhanced)
 [custom.github_status]
 command = """
+#!/bin/bash
 if command -v gh &> /dev/null && git rev-parse --git-dir &> /dev/null; then
-    # Check if we're in a GitHub repo
-    if gh repo view --json nameWithOwner &> /dev/null 2>&1; then
-        # Get repo info
-        repo_info=$(gh repo view --json nameWithOwner,visibility,isFork --jq '.nameWithOwner + " " + .visibility + " " + (if .isFork then "fork" else "origin" end)')
+    # Setup cache directory
+    CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/starship-github"
+    mkdir -p "$CACHE_DIR" 2>/dev/null || CACHE_DIR="/tmp/starship-github-$USER"
+    mkdir -p "$CACHE_DIR" 2>/dev/null
+
+    # Get current repo path as cache key
+    REPO_PATH=$(git rev-parse --show-toplevel 2>/dev/null | sed 's/[^a-zA-Z0-9]/_/g')
+    CACHE_FILE="$CACHE_DIR/github_repo_${REPO_PATH}.cache"
+    CACHE_TTL=3600  # 1 hour in seconds
+
+    # Function to check if cache is fresh
+    is_cache_fresh() {
+        [[ -f "$1" ]] && [[ $(($(date +%s) - $(stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null))) -lt $CACHE_TTL ]]
+    }
+
+    # Check cache first
+    if is_cache_fresh "$CACHE_FILE"; then
+        cached_info=$(cat "$CACHE_FILE" 2>/dev/null)
+        if [[ -n "$cached_info" ]]; then
+            echo "$cached_info"
+            exit 0
+        fi
+    fi
+
+    # Cache miss or expired - fetch from API (single combined call)
+    repo_info=$(gh repo view --json nameWithOwner,visibility,isFork --jq '.nameWithOwner + " " + .visibility + " " + (if .isFork then "fork" else "origin" end)' 2>/dev/null)
+    if [[ -n "$repo_info" ]]; then
+        echo "$repo_info" > "$CACHE_FILE" 2>/dev/null
         echo "$repo_info"
     fi
 fi
@@ -48,4 +97,4 @@ fi
 when = "true"
 format = "[󰊬 $output]($style) "
 style = "dimmed white"
-description = "Shows GitHub repository information when in a GitHub repo"
+description = "Shows GitHub repository information when in a GitHub repo (cached for 1 hour)"

@@ -119,7 +119,6 @@ style = "red bold dimmed"
 format = '[$symbol$context( \($namespace\))]($style) '
 symbol = "󱃾 "
 style = "cyan bold"
-disabled = false
 detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
 detect_folders = []
 detect_extensions = ["yaml", "yml"]
@@ -232,7 +231,6 @@ charging_symbol = "󰂄"
 discharging_symbol = "󰂃"
 unknown_symbol = "󰁼"
 empty_symbol = "󰚥"
-disabled = false
 
 [[battery.display]]
 threshold = 10
@@ -251,7 +249,6 @@ style = "bold green"
 format = "[$time]($style) "
 style = "bold dimmed white"
 use_12hr = false
-disabled = false
 
 # Memory usage
 [custom.memory]
@@ -282,7 +279,6 @@ format = "[$symbol$status]($style) "
 symbol = "❌"
 success_symbol = ""
 style = "bold red"
-disabled = false
 map_symbol = true
 
 # Local IP module (disabled by default)
@@ -365,7 +361,6 @@ trim_at = "."
 
 # Shell level indicator
 [shlvl]
-disabled = false
 format = "[$symbol]($style) "
 symbol = "󰔟 "
 threshold = 2

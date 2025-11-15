@@ -6,6 +6,8 @@
 # This script sets up the new configuration packages (git, vscode, npm)
 # ==============================================================================
 
+set -euo pipefail
+
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

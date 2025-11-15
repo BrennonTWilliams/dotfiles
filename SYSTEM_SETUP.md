@@ -497,8 +497,9 @@ This approach loads NVM only when first used, significantly improving shell star
 
 **Raspberry Pi Setup:**
 - **Service Status:** Enabled and running
-- **Address:** `192.168.1.24:38687` (port may change on restart)
+- **Address:** Dynamic (port may change on restart)
 - **Wayland Support:** Uses `wl-clipboard` (wl-copy/wl-paste)
+- **Configuration:** Set `UNICLIP_SERVER` environment variable with Pi's address (e.g., `192.168.1.x:port`)
 
 **Mac Mini M4 Setup:**
 - **Installation:** `brew install uniclip`
@@ -553,9 +554,32 @@ journalctl --user -u uniclip -f
 #### How It Works
 
 1. **Pi:** Uniclip runs as systemd service, creates clipboard server
-2. **Mac:** Connect to Pi's address using `uniclip 192.168.1.24:38687`
+2. **Mac:** Set `UNICLIP_SERVER` environment variable and use `clipboard-sync` alias
 3. **Sync:** Copy on one device, paste on the other automatically
 4. **Auto-start:** Pi service starts on boot, Mac uses shell alias for manual connection
+
+#### Environment Configuration
+
+**Setting UNICLIP_SERVER:**
+
+To avoid hardcoding the server address in configuration files, set the `UNICLIP_SERVER` environment variable:
+
+1. **In `~/.zshenv` (recommended for all sessions):**
+   ```bash
+   export UNICLIP_SERVER="192.168.1.x:port"
+   ```
+
+2. **In `~/.zshrc.local` (for machine-specific config):**
+   ```bash
+   export UNICLIP_SERVER="192.168.1.x:port"
+   ```
+
+3. **Get current address from Pi logs:**
+   ```bash
+   journalctl --user -u uniclip -n 5 --no-pager | grep "Run"
+   ```
+
+The `clipboard-sync` alias will use `$UNICLIP_SERVER` if set, or fall back to `localhost:53168` if not configured.
 
 #### Troubleshooting
 

@@ -9,8 +9,9 @@ This guide provides detailed instructions for managing your dotfiles across mult
 3. [Starship Prompt Customization](#starship-prompt-customization)
 4. [Updating Configurations](#updating-configurations)
 5. [Syncing Across Machines](#syncing-across-machines)
-6. [Security Best Practices](#security-best-practices)
-7. [Troubleshooting](#troubleshooting)
+6. [Linux Uniclip Service](#linux-uniclip-service)
+7. [Security Best Practices](#security-best-practices)
+8. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -172,9 +173,11 @@ The configuration includes three Nerd Font icon styles:
 
 #### Switching Between Styles
 
-1. **Open Starship configuration:**
+1. **Open your active Starship mode configuration:**
    ```bash
-   vim ~/.config/starship.toml
+   # Edit the mode you're currently using
+   vim ~/.dotfiles/starship/modes/standard.toml
+   # or: compact.toml, verbose.toml, gruvbox-rainbow.toml
    ```
 
 2. **Comment out current active style:**
@@ -349,6 +352,232 @@ git push -u origin desktop
 # Merge shared changes from main
 git checkout laptop
 git merge main
+```
+
+---
+
+## Linux Uniclip Service
+
+Uniclip provides universal clipboard synchronization between your Raspberry Pi (running Linux) and Mac Mini M4. The service runs automatically on the Raspberry Pi and allows seamless copy/paste between devices.
+
+### Overview
+
+- **Purpose:** Universal clipboard sync between Raspberry Pi and Mac Mini M4
+- **Version:** 2.3.6 (via Homebrew)
+- **Service Type:** Systemd user service (auto-starts on boot)
+- **Wayland Support:** Uses `wl-clipboard` utilities (wl-copy/wl-paste)
+
+### Managing the Service
+
+#### Check Service Status
+
+```bash
+systemctl --user status uniclip
+```
+
+This shows whether the service is running, enabled, and any recent log entries.
+
+#### Start the Service
+
+```bash
+systemctl --user start uniclip
+```
+
+#### Stop the Service
+
+```bash
+systemctl --user stop uniclip
+```
+
+#### Restart the Service
+
+If clipboard sync stops working or you need to refresh the connection:
+
+```bash
+systemctl --user restart uniclip
+```
+
+#### Enable/Disable Auto-Start
+
+The service is configured to start automatically on boot. To manage this:
+
+```bash
+# Disable auto-start
+systemctl --user disable uniclip
+
+# Re-enable auto-start
+systemctl --user enable uniclip
+```
+
+### Using Clipboard Sync
+
+#### How It Works
+
+1. **Raspberry Pi:** Uniclip runs as a systemd service and creates a clipboard server
+2. **Mac Mini:** Set the `UNICLIP_SERVER` environment variable and use the `clipboard-sync` alias
+3. **Sync:** Copy text on one device, paste on the other automatically
+4. **Auto-start:** Pi service starts on boot; Mac uses shell alias for manual connection
+
+#### Finding the Connection Address
+
+The Uniclip service uses a dynamic address that may change when the service restarts. To find the current connection address:
+
+```bash
+journalctl --user -u uniclip -n 5 --no-pager | grep "Run"
+```
+
+This displays the server address (e.g., `192.168.1.x:port`) that you need to set on the Mac.
+
+#### Connecting from Mac Mini
+
+On your Mac Mini, set the `UNICLIP_SERVER` environment variable:
+
+**In `~/.zshenv` (recommended):**
+```bash
+export UNICLIP_SERVER="192.168.1.x:port"
+```
+
+Replace `192.168.1.x:port` with the actual address from the previous command.
+
+**Then use the clipboard-sync alias** (configured in `~/.zshrc` or `~/.bashrc`):
+```bash
+clipboard-sync
+```
+
+#### Testing the Sync
+
+1. **Copy on Pi:** Copy text to clipboard on Raspberry Pi
+2. **Paste on Mac:** Paste (Cmd+V) on Mac Mini - should show the Pi's clipboard content
+3. **Copy on Mac:** Copy text on Mac Mini
+4. **Paste on Pi:** Paste on Raspberry Pi - should show the Mac's clipboard content
+
+### Viewing Service Logs
+
+#### Live Log Monitoring
+
+To watch service logs in real-time (useful for troubleshooting):
+
+```bash
+journalctl --user -u uniclip -f
+```
+
+Press `Ctrl+C` to stop following.
+
+#### Recent Log Entries
+
+View the last 20 log entries:
+
+```bash
+journalctl --user -u uniclip -n 20 --no-pager
+```
+
+#### Log Since Last Boot
+
+```bash
+journalctl --user -u uniclip -b
+```
+
+### Common Troubleshooting
+
+#### Clipboard Not Syncing
+
+**Check service is running:**
+```bash
+systemctl --user status uniclip
+```
+
+If not running, start it:
+```bash
+systemctl --user start uniclip
+```
+
+**Verify Wayland display:**
+The service requires `WAYLAND_DISPLAY=wayland-1`. Check the service configuration:
+```bash
+systemctl --user cat uniclip
+```
+
+#### Connection Address Changed
+
+After restarting the Uniclip service, the port may change. Update the Mac's `UNICLIP_SERVER` variable:
+
+1. **Find new address on Pi:**
+   ```bash
+   journalctl --user -u uniclip -n 5 --no-pager | grep "Run"
+   ```
+
+2. **Update on Mac** in `~/.zshenv`:
+   ```bash
+   export UNICLIP_SERVER="192.168.1.x:new-port"
+   ```
+
+3. **Reload shell on Mac:**
+   ```bash
+   source ~/.zshenv
+   ```
+
+#### Service Fails to Start
+
+**Check service logs for errors:**
+```bash
+journalctl --user -u uniclip -n 50 --no-pager
+```
+
+**Common issues:**
+- `wl-clipboard` not installed: `brew install wl-clipboard`
+- Uniclip binary not found: Verify installation at `/home/linuxbrew/.linuxbrew/bin/uniclip`
+- Wayland session not available: Ensure you're running Sway or another Wayland compositor
+
+**Restart the service after fixing issues:**
+```bash
+systemctl --user restart uniclip
+```
+
+#### Service Configuration Location
+
+The service file is located at:
+```
+~/.config/systemd/user/uniclip.service
+```
+
+After editing the service file, reload systemd:
+```bash
+systemctl --user daemon-reload
+systemctl --user restart uniclip
+```
+
+#### Network Connectivity Issues
+
+If the Mac can't connect to the Pi:
+
+1. **Verify Pi's IP address:**
+   ```bash
+   ip addr show
+   ```
+
+2. **Ping Pi from Mac:**
+   ```bash
+   ping 192.168.1.x
+   ```
+
+3. **Check firewall rules on Pi** (if applicable):
+   ```bash
+   sudo ufw status
+   ```
+
+4. **Ensure both devices are on the same network**
+
+### Dependencies
+
+The Uniclip service requires these packages:
+- `uniclip` (2.3.6) - Universal clipboard sync tool
+- `wl-clipboard` (2.2.1-2) - Wayland clipboard utilities
+
+**Verify installation:**
+```bash
+which uniclip
+which wl-copy
+which wl-paste
 ```
 
 ---

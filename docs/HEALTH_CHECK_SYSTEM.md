@@ -79,7 +79,8 @@ dev-status
 
 ### 3. Starship Configuration
 - **Installation**: Verifies Starship prompt is installed
-- **Configuration**: Checks starship.toml exists and is valid
+- **Configuration**: Checks ~/.config/starship.toml symlink points to a valid mode configuration
+- **Mode Files**: Validates mode configurations in starship/modes/ directory
 - **Mode Switching**: Tests Starship mode switching functions
 
 ### 4. Conda Integration

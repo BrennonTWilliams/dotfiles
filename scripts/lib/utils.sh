@@ -6,6 +6,8 @@
 # Common utility functions used across all installation scripts
 # ==============================================================================
 
+set -euo pipefail
+
 # Error handling and debugging
 trap 'echo "Error occurred at line $LINENO. Command: $BASH_COMMAND"' ERR
 
@@ -409,7 +411,9 @@ stow_package() {
     fi
 
     # Stow the package
-    if stow -d "$(pwd)" -t "$target_dir" "$package"; then
+    local current_dir
+    current_dir="$(pwd)" || return 1
+    if stow -d "$current_dir" -t "$target_dir" "$package"; then
         success "Stowed $package"
     else
         error "Failed to stow $package"

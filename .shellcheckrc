@@ -1,0 +1,38 @@
+# ==============================================================================
+# ShellCheck Configuration
+# ==============================================================================
+# This file configures ShellCheck for the dotfiles repository
+# Documentation: https://www.shellcheck.net/wiki/
+# ==============================================================================
+
+# Specify shell dialect (default: auto-detect from shebang)
+# shell=bash
+
+# Enable optional checks
+enable=add-default-case
+enable=avoid-nullary-conditions
+enable=check-unassigned-uppercase
+enable=quote-safe-variables
+enable=require-variable-braces
+
+# Disable specific checks that are less critical or cause too many false positives
+# SC1090: Can't follow non-constant source. Use a directive to specify location
+disable=SC1090
+
+# SC1091: Not following: file not found
+disable=SC1091
+
+# SC2034: Variable appears unused. Verify use (or export if used externally)
+# Note: Keep this enabled as it helps find dead code, but review carefully
+# disable=SC2034
+
+# SC2155: Declare and assign separately to avoid masking return values
+# This is a common pattern, but can hide errors. We'll fix critical instances.
+# disable=SC2155
+
+# Set severity threshold (error, warning, info, style)
+# Only show warnings and errors by default
+severity=warning
+
+# Source path for additional files (helps shellcheck find sourced files)
+# source-path=SCRIPTDIR

@@ -1,9 +1,8 @@
 [user]
-	# TODO: Replace with your actual name and email
-	# name = Your Name
-	# email = your.email@example.com
-	name = Brennon Williams
-	email = brennonw@gmail.com
+	# TODO: Replace with your actual name and email in ~/.gitconfig.local
+	# Personal information should be set in .gitconfig.local (not tracked in git)
+	name = Your Name
+	email = your.email@example.com
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f
@@ -38,6 +37,6 @@
 	graph = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 
 # Platform-specific configurations can be added in ~/.gitconfig.local
-# Example:
-# [include]
-#   path = ~/.gitconfig.local
+# This allows you to keep personal information out of version control
+[include]
+  path = ~/.gitconfig.local

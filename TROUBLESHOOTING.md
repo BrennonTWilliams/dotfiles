@@ -502,6 +502,98 @@ chmod 755 ~/dotfiles/install.sh ~/dotfiles/scripts/*.sh
 
 ---
 
+## Restoring from Backup
+
+If you need to restore your dotfiles from a previous backup (created automatically during installation), use the recovery script.
+
+### Quick Recovery
+
+```bash
+# List all available backups
+./scripts/recover.sh --list
+
+# Restore from the latest backup (with confirmation)
+./scripts/recover.sh --latest
+
+# Interactive mode - select what to restore
+./scripts/recover.sh --interactive
+```
+
+### Common Recovery Scenarios
+
+#### Accidentally Deleted Configuration
+
+If you accidentally deleted or broke your dotfiles:
+
+```bash
+# Restore from the most recent backup
+cd ~/.dotfiles
+./scripts/recover.sh --latest
+```
+
+#### Restore Specific Files Only
+
+If you only want to restore certain files:
+
+```bash
+# Use interactive mode to select specific files
+./scripts/recover.sh --interactive
+
+# This will:
+# 1. Show available backups
+# 2. Let you choose a backup
+# 3. Let you select specific files to restore
+```
+
+#### Verify Backup Before Restoring
+
+If you want to check a backup before restoring:
+
+```bash
+# Verify backup integrity
+./scripts/recover.sh --verify ~/.dotfiles_backup_20250115_120000
+
+# Preview what would be restored (dry run)
+./scripts/recover.sh --backup ~/.dotfiles_backup_20250115_120000 --dry-run
+```
+
+#### Restore from Specific Backup
+
+If you have multiple backups and want to restore from a specific one:
+
+```bash
+# List all backups to find the one you want
+./scripts/recover.sh --list
+
+# Restore from specific backup
+./scripts/recover.sh --backup ~/.dotfiles_backup_20250115_120000
+```
+
+### Safety Features
+
+The recovery script includes several safety features:
+
+- **Verification**: Checks backup integrity before restoring
+- **Safety Backup**: Creates a backup of current files before overwriting
+- **Confirmation Prompts**: Asks for confirmation before making changes
+- **Dry Run Mode**: Preview changes without applying them
+- **Selective Restore**: Choose which files to restore
+
+### Recovery Script Options
+
+```bash
+# Show all available options
+./scripts/recover.sh --help
+
+# Common flags
+--force      # Skip confirmation prompts
+--dry-run    # Preview without making changes
+--list       # List all available backups
+--verify     # Check backup integrity
+```
+
+---
+
 ## 📚 Related Documentation
 
 ### macOS-Specific Guides

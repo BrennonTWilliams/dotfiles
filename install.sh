@@ -13,6 +13,7 @@
 #   ./install.sh --packages         # Install platform-specific packages only
 #   ./install.sh zsh tmux           # Install only specified packages (interactive setup)
 #   ./install.sh --all --reference-mac  # Install all packages safe for Mac reference systems
+#   ./install.sh --development      # Complete development environment setup (all packages + setup + dev tools)
 #
 # Options:
 #   --all         Install all packages without prompting
@@ -20,9 +21,10 @@
 #   --setup-only  Only run setup scripts, skip package installation
 #   --packages    Install platform-specific system packages only
 #   --reference-mac Skip packages that modify hotkeys (for Mac reference systems)
+#   --development Complete development environment setup (combines --all --packages)
 # ==============================================================================
 
-set -eo pipefail
+set -euo pipefail
 
 # Error handling and debugging
 trap 'echo "Error occurred at line $LINENO. Command: $BASH_COMMAND"' ERR
@@ -37,44 +39,17 @@ fi
 # Configuration
 # ==============================================================================
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
 BACKUP_DIR="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 BACKUP_CREATED=false
 REFERENCE_MAC=false
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-NC='\033[0m' # No Color
+# Source utility functions
+source "$DOTFILES_DIR/scripts/lib/utils.sh"
 
 # ==============================================================================
 # Helper Functions
 # ==============================================================================
-
-info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
-}
-
-warn() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
-}
-
-error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-    exit 1
-}
-
-section() {
-    echo -e "\n${BLUE}${BOLD}===${NC} ${BOLD}$1${NC} ${BLUE}${BOLD}===${NC}\n"
-}
-
-success() {
-    echo -e "${GREEN}${BOLD}✓${NC} $1"
-}
 
 # Check if command exists
 command_exists() {
@@ -623,7 +598,7 @@ stow_package() {
     info "Installing $package..."
 
     # Change to dotfiles directory
-    cd "$DOTFILES_DIR"
+    cd "$DOTFILES_DIR" || return 1
 
     # First, try a dry run to detect conflicts
     local conflicts
@@ -920,6 +895,12 @@ EOF
 # ==============================================================================
 
 print_banner() {
+    # Get version from VERSION file if it exists
+    local version="unknown"
+    if [ -f "$DOTFILES_DIR/VERSION" ]; then
+        version=$(cat "$DOTFILES_DIR/VERSION" | tr -d '[:space:]')
+    fi
+
     cat << 'EOF'
     ____        __  _____ __
    / __ \____  / /_/ __(_) /__  _____
@@ -929,6 +910,7 @@ print_banner() {
 
 Bootstrap Installation Script
 EOF
+    echo -e "${CYAN}Version:${NC} $version"
     echo
 }
 
@@ -941,6 +923,7 @@ main() {
     local setup_only=false
     local install_packages=false
     local reference_mac=false
+    local development_mode=false
     local package_args=()
 
     for arg in "$@"; do
@@ -961,23 +944,33 @@ main() {
                 reference_mac=true
                 REFERENCE_MAC=true
                 ;;
+            --development)
+                development_mode=true
+                ;;
             *)
                 package_args+=("$arg")
                 ;;
         esac
     done
 
+    # Development mode implies --all and --packages
+    if [ "$development_mode" = true ]; then
+        install_all=true
+        install_packages=true
+        info "Development mode: Installing all packages and system dependencies with full setup"
+    fi
+
     # Determine setup mode
     local setup_mode="interactive"
     if [ "$no_setup" = true ]; then
         setup_mode="skip"
-    elif [ "$install_all" = true ]; then
+    elif [ "$install_all" = true ] || [ "$development_mode" = true ]; then
         setup_mode="all"
     fi
 
     # Check if this is packages-only mode early to skip unnecessary steps
     local packages_only_mode=false
-    if [ "$install_packages" = true ] && [ "$setup_only" = false ] && [ "$install_all" = false ] && [ ${#package_args[@]} -eq 0 ]; then
+    if [ "$install_packages" = true ] && [ "$setup_only" = false ] && [ "$install_all" = false ] && [ "$development_mode" = false ] && [ ${#package_args[@]} -eq 0 ]; then
         packages_only_mode=true
     fi
 

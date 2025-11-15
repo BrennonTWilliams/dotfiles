@@ -6,15 +6,9 @@
 
 set -euo pipefail
 
-# Colors for output
-readonly RED='\033[0;31m'
-readonly GREEN='\033[0;32m'
-readonly YELLOW='\033[1;33m'
-readonly BLUE='\033[0;34m'
-readonly PURPLE='\033[0;35m'
-readonly CYAN='\033[0;36m'
-readonly BOLD='\033[1m'
-readonly NC='\033[0m' # No Color
+# Source utility functions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../scripts/lib/utils.sh"
 
 # Test counters
 TESTS_TOTAL=0
@@ -36,17 +30,17 @@ readonly SPECIAL_TAPS="sketchybar:FelixKratz/formulae"
 # Platform-inappropriate packages (Linux packages that shouldn't be on macOS)
 readonly LINUX_PACKAGES="sway waybar foot grim slurp mako-notifier xclip"
 
-# Logging functions
+# Create aliases for logging functions to match this script's naming convention
 log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    info "$1"
 }
 
 log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    success "$1"
 }
 
 log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    warn "$1"
     VALIDATION_WARNINGS=$((VALIDATION_WARNINGS + 1))
 }
 
@@ -54,6 +48,7 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Additional logging functions specific to this script
 log_test() {
     echo -e "${PURPLE}[TEST]${NC} $1"
 }
@@ -61,6 +56,10 @@ log_test() {
 log_validation() {
     echo -e "${CYAN}[VALIDATION]${NC} $1"
 }
+
+# Define PURPLE color for log_test (not in utils.sh)
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
 
 # Test result reporting
 test_start() {
