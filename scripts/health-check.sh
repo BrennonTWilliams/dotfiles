@@ -110,7 +110,7 @@ check_path_resolution() {
         # Temporarily source functions for testing
         source "$cross_platform_file"
 
-        local path_types=("ai_projects" "ai_workspaces" "dotfiles" "conda_root"
+        local path_types=("dotfiles" "conda_root"
                         "conda_bin" "conda_profile" "starship_config" "npm_global_bin")
 
         for path_type in "${path_types[@]}"; do
@@ -347,7 +347,7 @@ check_performance() {
     if [[ -f "$HOME/.zsh_cross_platform" ]]; then
         local start_time=$(date +%s%N)
         source "$HOME/.zsh_cross_platform"
-        resolve_platform_path "ai_projects" >/dev/null 2>&1 || true
+        resolve_platform_path "dotfiles" >/dev/null 2>&1 || true
         local end_time=$(date +%s%N)
         local duration=$(( (end_time - start_time) / 1000000 )) # Convert to milliseconds
 

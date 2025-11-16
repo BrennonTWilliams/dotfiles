@@ -246,15 +246,10 @@ _init_path_cache() {
         "conda_bin"
         "conda_profile"
         "conda_root"
-        "uzi"
-        "sdd_workshops"
         "npm_global_bin"
         "starship_config"
         "dotfiles"
-        "video_analysis_cli"
         "local_lib"
-        "ai_projects"
-        "ai_workspaces"
     )
 
     # Resolve each path once to populate cache
@@ -270,8 +265,6 @@ _init_path_cache() {
 _init_path_cache
 
 # Set commonly used environment variables (these will now use cached values)
-export AI_PROJECTS_DIR="$(resolve_platform_path "ai_projects")"
-export AI_WORKSPACES_DIR="$(resolve_platform_path "ai_workspaces")"
 export DOTFILES_DIR="$(resolve_platform_path "dotfiles")"
 export CONDA_ROOT="$(resolve_platform_path "conda_root")"
 export CONDA_BIN="$(resolve_platform_path "conda_bin")"
