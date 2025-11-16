@@ -182,8 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 For support, please:
 1. Check the [Troubleshooting Guide](TROUBLESHOOTING.md)
-2. Contact the maintainer directly (this is a private repository)
-3. Create a new issue with detailed information about your environment and problem
+2. Create a new issue with detailed information about your environment and problem
+3. Contact the maintainer directly if needed
 
 ## Contributing
 

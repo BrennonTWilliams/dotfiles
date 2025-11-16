@@ -20,7 +20,6 @@ Thank you for your interest in contributing to this dotfiles project! This docum
 
 - **Git**: Version control system
 - **GitHub Account**: For submitting pull requests
-- **SSH Key configured**: This is a private repository, requires SSH access
 - **Shell Environment**: Zsh or Bash (recommended)
 - **Text Editor**: Your preferred editor with shell script support
 
