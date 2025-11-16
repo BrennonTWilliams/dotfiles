@@ -41,7 +41,7 @@ cd ~/.dotfiles
 
 **Interactive (recommended for first time):**
 ```bash
-./install.sh
+./install-new.sh
 ```
 
 The script will:
@@ -53,7 +53,7 @@ The script will:
 
 **Non-interactive (install everything):**
 ```bash
-./install.sh --all
+./install-new.sh --all
 ```
 
 ### 4. Install Additional Dependencies
@@ -203,7 +203,7 @@ Use the provided test script to verify icons display correctly:
 
 ```bash
 cd ~/.dotfiles
-./nerd-font-test.sh
+./scripts/nerd-font-test.sh
 ```
 
 This script shows all three icon styles and helps verify your terminal font supports the chosen Nerd Font icons.
@@ -236,7 +236,7 @@ staged = "✓ "
 
 **Icons not displaying:**
 1. Verify terminal font: `echo $TERM`
-2. Test with script: `./nerd-font-test.sh`
+2. Test with script: `./scripts/nerd-font-test.sh`
 3. Check Ghostty font configuration
 4. Ensure IosevkaTerm Nerd Font is installed
 
@@ -776,10 +776,10 @@ Install only what you need on specific machines:
 
 ```bash
 # Minimal server setup (no GUI)
-./install.sh zsh bash tmux
+./install-new.sh zsh bash tmux
 
 # Full desktop setup
-./install.sh --all
+./install-new.sh --all
 ```
 
 ### Viewing Repository Structure
@@ -840,7 +840,7 @@ git pull
 
 ```bash
 # Install on new machine
-./install.sh
+./install-new.sh
 
 # Update from GitHub
 cd ~/.dotfiles && git pull

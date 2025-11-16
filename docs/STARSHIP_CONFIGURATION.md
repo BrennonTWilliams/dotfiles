@@ -242,7 +242,7 @@ staged = "✓ "
 Use the provided test script to verify icon rendering:
 
 ```bash
-./nerd-font-test.sh
+./scripts/nerd-font-test.sh
 ```
 
 This script will display all available icon styles and help you verify that your terminal font supports the chosen icons.
@@ -331,7 +331,7 @@ Starship includes intelligent platform detection:
 
 2. **Verify Nerd Font installation:**
    ```bash
-   ./nerd-font-test.sh
+   ./scripts/nerd-font-test.sh
    ```
 
 3. **Ensure Ghostty is using correct font:**

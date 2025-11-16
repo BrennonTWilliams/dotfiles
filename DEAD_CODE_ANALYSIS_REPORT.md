@@ -321,8 +321,8 @@ email = your.email@example.com
 
 ### 5.1 Nerd Font Test Scripts
 **Files:**
-- `/home/user/dotfiles/nerd-font-test.sh` (59 lines)
-- `/home/user/dotfiles/nerd-font-styles.sh` (73 lines)
+- `/home/user/dotfiles/scripts/nerd-font-test.sh` (59 lines)
+- `/home/user/dotfiles/scripts/nerd-font-styles.sh` (73 lines)
 
 **Status:** 🟢 UTILITY SCRIPTS - Used for manual testing
 
@@ -332,8 +332,7 @@ email = your.email@example.com
 - Help users verify font installation
 
 **Recommendation:** ✅ **KEEP** - Useful utilities
-- Consider moving to `scripts/` directory for better organization
-- Or create `utils/` directory
+- COMPLETED: Moved to `scripts/` directory
 
 **Estimated Impact:**
 - Optional: Better organization if moved to scripts/
@@ -607,8 +606,8 @@ All deprecations have:
 - [ ] `macos-setup.md` - Update lines 39 and 175: install.sh → install-new.sh
 
 ### Optional Reorganization
-- [ ] Move `nerd-font-test.sh` to `scripts/`
-- [ ] Move `nerd-font-styles.sh` to `scripts/`
+- [x] Move `nerd-font-test.sh` to `scripts/`
+- [x] Move `nerd-font-styles.sh` to `scripts/`
 
 ---
 
