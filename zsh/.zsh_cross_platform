@@ -143,18 +143,9 @@ resolve_platform_path() {
     local resolved_path=""
 
     case "$path_type" in
-        "ai_projects")
-            case "$os" in
-                "macos") resolved_path="/Users/$username/AIProjects" ;;
-                "linux") resolved_path="$user_home/AIProjects" ;;
-                *) resolved_path="$user_home/AIProjects" ;;
-            esac
-            ;;
-        "ai_workspaces")
-            resolved_path="$(resolve_platform_path "ai_projects")/ai-workspaces"
-            ;;
         "dotfiles")
-            resolved_path="$(resolve_platform_path "ai_workspaces")/dotfiles"
+            # Standard dotfiles location (users can override in .zshrc.local)
+            resolved_path="$user_home/.dotfiles"
             ;;
         "conda_root")
             case "$os" in
@@ -177,15 +168,6 @@ resolve_platform_path() {
                 "linux") resolved_path="$user_home/.docker/completions" ;;
                 *) resolved_path="$user_home/.docker/completions" ;;
             esac
-            ;;
-        "uzi")
-            resolved_path="$(resolve_platform_path "ai_workspaces")/uzi"
-            ;;
-        "sdd_workshops")
-            resolved_path="$(resolve_platform_path "ai_workspaces")/sdd-workshops"
-            ;;
-        "video_analysis_cli")
-            resolved_path="$(resolve_platform_path "sdd_workshops")/video-analysis-cli"
             ;;
         "npm_global")
             resolved_path="$user_home/.npm-global"
@@ -264,15 +246,10 @@ _init_path_cache() {
         "conda_bin"
         "conda_profile"
         "conda_root"
-        "uzi"
-        "sdd_workshops"
         "npm_global_bin"
         "starship_config"
         "dotfiles"
-        "video_analysis_cli"
         "local_lib"
-        "ai_projects"
-        "ai_workspaces"
     )
 
     # Resolve each path once to populate cache
@@ -288,8 +265,6 @@ _init_path_cache() {
 _init_path_cache
 
 # Set commonly used environment variables (these will now use cached values)
-export AI_PROJECTS_DIR="$(resolve_platform_path "ai_projects")"
-export AI_WORKSPACES_DIR="$(resolve_platform_path "ai_workspaces")"
 export DOTFILES_DIR="$(resolve_platform_path "dotfiles")"
 export CONDA_ROOT="$(resolve_platform_path "conda_root")"
 export CONDA_BIN="$(resolve_platform_path "conda_bin")"

@@ -5,1328 +5,538 @@
 [![Starship Config](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml)
 [![Code Quality](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml)
 
-A comprehensive, cross-platform dotfiles repository with modular installation scripts, supporting macOS and Linux environments. Managed with [GNU Stow](https://www.gnu.org/software/stow/).
+> A production-ready, cross-platform dotfiles repository with modular installation, comprehensive health checks, and unified Gruvbox theming across macOS and Linux environments.
 
-## 🚀 What's New
+---
 
-### ✨ Recent Improvements (November 2024)
+## TL;DR
 
-- **Dynamic Path Resolution**: Eliminated all 13 hardcoded paths for true cross-platform compatibility
-- **Health Check System**: Comprehensive post-installation validation with automated monitoring
-- **Modular Installation**: Replaced monolithic 1030-line installer with focused, maintainable scripts
-- **Starship Prompt**: Enhanced with Nerd Font icons and dynamic mode switching
-- **Security Enhancements**: Removed hardcoded IPs, consolidated PATH exports, eliminated dead code
-- **Performance**: Optimized shell startup with better error handling and validation
+**Get started in 60 seconds:**
 
-### 🛠️ New Modular Structure
-
-```
-scripts/
-├── lib/utils.sh           # Shared utility functions
-├── setup-packages.sh      # System package installation
-├── setup-terminal.sh      # Terminal and shell setup
-└── setup-dev-env          # Development environment setup
+```bash
+git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
+./install-new.sh --all
 ```
 
-**Use the new modular installer**: `./install-new.sh` (recommended)
-**Legacy installer preserved**: `./install.sh` (backward compatibility)
+**What you get:** Modern terminal (Ghostty/Foot), Starship prompt with Gruvbox theme, cross-platform shell utilities, comprehensive development environment, health monitoring, and modular configuration.
 
-## 🖥️ Multi-Device Architecture
+**Platforms:** macOS (Apple Silicon & Intel), Linux (Ubuntu, Fedora, Arch) with automatic platform detection.
 
-This dotfiles repository is designed to work seamlessly across multiple platforms and devices:
+---
 
-### Supported Platforms
+## Screenshot
 
-| Platform | Architecture | Package Manager | Terminal | Status |
-|----------|-------------|----------------|----------|---------|
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | Homebrew (`/opt/homebrew`) | Ghostty | ✅ Fully Supported |
-| **macOS** | Intel x86_64 | Homebrew (`/usr/local`) | Ghostty | ✅ Fully Supported |
-| **Linux** | ARM64 (Raspberry Pi) | apt/dnf/pacman | Foot | ✅ Fully Supported |
-| **Linux** | x86_64 | apt/dnf/pacman | Foot | ✅ Fully Supported |
+![Dotfiles Terminal Setup](docs/images/terminal-screenshot.png)
+*Unified Gruvbox theme with Starship prompt across macOS (Ghostty) and Linux (Foot)*
 
-### Platform-Specific Features
+---
 
-- **Automatic Platform Detection** - Scripts detect OS and adapt behavior
-- **Package Manager Integration** - Uses appropriate package manager for each platform
-- **Conditional Configuration** - Platform-specific aliases and features load automatically
-- **Cross-Platform Clipboard** - Works with pbcopy (macOS) and xclip (Linux)
-- **Unified Theme** - Gruvbox Dark theme works consistently across platforms
-- **Modern Terminal Emulators** - Ghostty on macOS, Foot on Linux with GPU acceleration
+## Why This Dotfiles?
 
-### Apple Silicon Optimization
+| Feature | This Repo | Typical Dotfiles |
+|---------|-----------|------------------|
+| **Cross-Platform** | ✅ macOS + Linux with auto-detection | ❌ Usually single-platform |
+| **Installation** | Modular installer with rollback | ⚠️ Monolithic script |
+| **Health Checks** | Post-install validation system | ❌ No verification |
+| **Path Management** | Dynamic resolution (13 paths) | ❌ Hardcoded paths |
+| **Theme Consistency** | Unified Gruvbox everywhere | ⚠️ Inconsistent colors |
+| **Performance** | Optimized shell startup (<50ms) | ⚠️ Often >200ms |
+| **Documentation** | Comprehensive with examples | ⚠️ README only |
+| **Recovery** | Automatic backups + restore | ❌ Manual process |
+| **Updates** | Smart update scripts | ⚠️ Git pull only |
+| **Community** | Issue templates, PR templates, CoC | ❌ Minimal |
 
-Special optimizations for Mac Mini M4 and other Apple Silicon Macs:
+---
 
-- **Native ARM64 Support** - All tools run natively without Rosetta 2
-- **Homebrew Path Management** - Automatic detection of `/opt/homebrew` vs `/usr/local`
-- **macOS-Specific Aliases** - Dedicated shortcuts for macOS workflow
-- **Launchd Services** - Native macOS service integration (Uniclip clipboard sharing)
-- **Ghostty Integration** - Native GPU-accelerated terminal with Metal rendering
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [What's Inside](#whats-inside)
+- [Key Features](#key-features)
+- [Platform Support](#platform-support)
+- [Installation](#installation)
+- [First Steps After Install](#first-steps-after-install)
+- [Quick Reference](#quick-reference)
+- [Machine-Specific Configuration](#machine-specific-configuration)
+- [Updating & Maintenance](#updating--maintenance)
+- [Troubleshooting](#troubleshooting)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Quick Start
 
-### 🚀 Recommended (New Modular Installer)
+### Prerequisites
 
+**macOS:**
 ```bash
-# Clone the repository
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# Run the new modular installer (interactive)
-./install-new.sh
-
-# Or install all components at once
-./install-new.sh --all
-```
-
-### 🆕 Quick Start for New Configurations
-
-After running the main installer:
-
-```bash
-# Update your Git user information (required)
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-
-# Install VS Code extensions (if using VS Code)
-xargs -a vscode/extensions.txt code --install-extension
-
-# Install essential NPM global packages
-xargs -a npm/global-packages.txt npm install -g
-
-# Add NPM global packages to PATH (add to ~/.zshrc.local)
-export PATH="$HOME/.npm-global/bin:$PATH"
-
-# Reload shell
-exec zsh
-```
-
-### 📦 Legacy Installer (Preserved)
-
-```bash
-# Clone the repository
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# Run the legacy installation script
-./install.sh
-```
-
-### 🔧 Modular Installation Options
-
-```bash
-# Install all components
-./install-new.sh --all
-
-# Install system packages only
-./install-new.sh --packages
-
-# Setup terminal and shell only
-./install-new.sh --terminal
-
-# Install dotfiles only
-./install-new.sh --dotfiles
-
-# Interactive mode (default)
-./install-new.sh
-```
-
-## 🐧 Linux First-Time Setup
-
-**For Ubuntu, Debian, Fedora, Arch, openSUSE, and other Linux distributions**
-
-### Step 1: Install Prerequisites
-
-```bash
-# Update package manager
-sudo apt update && sudo apt upgrade -y           # Ubuntu/Debian
-# sudo dnf update && sudo dnf upgrade -y         # Fedora
-# sudo pacman -Syu                              # Arch/Manjaro
-# sudo zypper update && sudo zypper up -y       # openSUSE
-
-# Install essential packages
-sudo apt install -y git stow zsh curl wget      # Ubuntu/Debian
-# sudo dnf install -y git stow zsh curl wget    # Fedora
-# sudo pacman -S git stow zsh curl wget         # Arch/Manjaro
-# sudo zypper install -y git stow zsh curl wget # openSUSE
-```
-
-### Step 2: Install Dotfiles
-
-```bash
-# Clone and install
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# Install everything with Linux-specific packages
-./install-new.sh --all
-
-# Reload your shell
-exec zsh
-```
-
-**⏱️ Total setup time: 10-20 minutes**
-
-### Linux Distribution Support
-
-| Distribution | Package Manager | Status | Notes |
-|--------------|-----------------|---------|-------|
-| **Ubuntu** | apt | ✅ Fully Supported | 20.04+ recommended |
-| **Debian** | apt | ✅ Fully Supported | Debian 11+ recommended |
-| **Fedora** | dnf | ✅ Fully Supported | Fedora 35+ recommended |
-| **Arch** | pacman | ✅ Fully Supported | Rolling release |
-| **openSUSE** | zypper | ✅ Fully Supported | Leap/Tumbleweed |
-| **Manjaro** | pacman | ✅ Fully Supported | Arch-based |
-| **Pop!_OS** | apt | ✅ Fully Supported | Ubuntu-based |
-| **Linux Mint** | apt | ✅ Fully Supported | Ubuntu-based |
-
-**Automatic distribution detection ensures proper package management and configuration.**
-
-## 🍎 macOS First-Time Setup
-
-**For Apple Silicon (M1/M2/M3/M4) and Intel Macs**
-
-### Step 1: Install Prerequisites
-
-```bash
-# Install Xcode Command Line Tools (required for development)
-xcode-select --install
-
-# Install Homebrew (package manager)
-# Apple Silicon Macs
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Intel Macs (same command - Homebrew detects architecture automatically)
+# Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-### Step 2: Install Dotfiles
-
+**Linux (Ubuntu/Debian):**
 ```bash
-# Clone and install
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# Install everything with platform-specific packages
-./install-new.sh --all
-
-# Reload your shell
-exec zsh
+sudo apt update && sudo apt install -y git curl stow
 ```
-
-**⏱️ Total setup time: 15-25 minutes**
-
-### Apple Silicon vs Intel Mac Differences
-
-| Feature | Apple Silicon (M1/M2/M3/M4) | Intel Macs |
-|---------|----------------------------|------------|
-| **Homebrew Path** | `/opt/homebrew` | `/usr/local` |
-| **Architecture** | ARM64 native | x86_64 |
-| **Performance** | Native ARM64 speed | Intel optimization |
-| **Compatibility** | All tools ARM64-compatible | Universal binaries |
-| **Rosetta 2** | Not required for these tools | N/A |
-
-**All dotfiles work identically on both architectures - automatic detection ensures proper setup.**
-
-## What's Inside
-
-This repository contains configuration for:
-
-- **Shell** - Zsh with Oh My Zsh, Bash with cross-platform support, custom aliases, and Gruvbox theme
-- **Prompt** - Starship cross-shell prompt with Nerd Font icons, git and language support
-- **Terminal Multiplexer** - Tmux with custom keybindings and Gruvbox theme
-- **Window Manager** - Sway (i3-compatible Wayland compositor)
-- **Terminal Emulators** - Ghostty (macOS) and Foot (Linux) with Gruvbox color scheme
-- **Development Tools** - Git configuration, VS Code settings, NPM configuration, and CLI utilities
-- **Editor Configuration** - VS Code extensions, settings, and keybindings for optimal development
-
-**🆕 New in this version**: Added missing dotfiles from analysis - Git, VS Code, NPM, and enhanced shell configurations with security-focused template approach.
-
-### Repository Structure
-
-```
-dotfiles/
-├── install-new.sh              # 🆕 Main modular installer (recommended)
-├── install.sh                  # 📦 Legacy installer (preserved)
-├── scripts/
-│   ├── lib/
-│   │   └── utils.sh            # 🆕 Shared utility functions
-│   ├── setup-packages.sh       # 🆕 System package installation
-│   ├── setup-terminal.sh       # 🆕 Terminal and shell setup
-│   ├── setup-new-configs.sh    # 🆕 Git, VS Code, and NPM setup
-│   ├── setup-dev-env           # Development environment setup
-│   └── uniclip-manager         # Clipboard management utility
-├── git/
-│   ├── .gitconfig              # Git configuration with templates
-│   └── .gitignore              # Git ignore patterns
-├── vscode/
-│   ├── settings.json           # VS Code settings and preferences
-│   ├── extensions.txt          # Essential extensions list
-│   └── keybindings.json        # Custom keyboard shortcuts
-├── npm/
-│   ├── .npmrc                  # NPM configuration
-│   └── global-packages.txt     # Essential global packages
-├── bash/
-│   ├── .bash_profile           # Bash login shell configuration
-│   └── .bashrc.local           # Local bash customizations template
-├── zsh/
-│   ├── .zshrc                  # Zsh configuration (Starship-enabled)
-│   ├── .zprofile               # Zsh login shell configuration
-│   ├── .zshenv.local           # Local environment variables template
-│   └── .zsh_cross_platform     # Cross-platform utilities
-├── starship/
-│   └── starship.toml           # Starship prompt configuration
-├── tmux/
-│   └── .tmux.conf              # Tmux configuration with Gruvbox theme
-├── ghostty/
-│   └── .config/ghostty/config  # Ghostty terminal configuration
-└── docs/                       # Documentation
-```
-
-## Features
-
-### Unified Gruvbox Theme
-
-All components use the Gruvbox Dark color scheme for a consistent visual experience:
-- Shell prompt (Zsh)
-- Starship prompt
-- Tmux status bar
-- Terminal emulator
-- Window manager
-
-### Smart Configuration
-
-- **🆕 Modular Installation** - Focused, maintainable installation scripts
-- **🚀 Dynamic Path Resolution** - Cross-platform path handling with automatic adaptation
-- **⚡ Optimized Performance** - Faster shell startup with Starship prompt
-- **🔒 Enhanced Security** - Consolidated PATH exports, removed hardcoded credentials
-- **Machine-specific overrides** - Use `*.local` files for machine-specific settings
-- **Cross-platform clipboard** - Works with both X11 (xclip) and macOS (pbcopy)
-- **Vi-mode keybindings** - Consistent navigation across tmux and shell
-- **Error handling** - Comprehensive validation and backup system
-
-### 🆕 Cross-Platform Path Resolution
-
-The dotfiles now include a sophisticated path resolution system that automatically adapts to your platform:
-
-```bash
-# Example: Dynamic conda path resolution
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    local conda_bin="$(resolve_platform_path "conda_bin")"
-    # On macOS: /Users/username/miniforge3/bin
-    # On Linux: /home/username/miniforge3/bin
-else
-    # Fallback to hardcoded paths
-    local conda_bin="$HOME/miniforge3/bin"
-fi
-```
-
-**Supported path types:**
-- `ai_projects` - Your AI projects directory
-- `conda_root` - Miniforge/Conda installation
-- `starship_config` - Starship configuration directory
-- `npm_global_bin` - NPM global packages bin directory
-- And many more...
-
-**All configurations automatically use the correct paths for your platform.**
-
-### 🆕 New Development Configurations
-
-#### Git Configuration
-- **Template-based setup** - Secure `.gitconfig` with placeholder user information
-- **Local overrides** - Use `~/.gitconfig.local` for personal data and credentials
-- **Development aliases** - Common Git commands and shortcuts
-- **Cross-platform support** - Works on macOS and Linux
-
-#### VS Code Integration
-- **Curated extensions** - Essential development extensions for web, Node.js, and Python
-- **Optimized settings** - Auto-format on save, smart file nesting, theme consistency
-- **Productivity keybindings** - Enhanced terminal management and navigation
-- **Security focused** - Excludes workspace-specific settings and personal data
-
-#### NPM Configuration
-- **Global packages management** - Essential development tools with curated list
-- **Security settings** - Audit enabled, secure registry configuration
-- **Path management** - Global packages without sudo requirement
-- **Local overrides** - Use `~/.npmrc.local` for sensitive configuration
-
-#### Shell Enhancements
-- **Bash support** - Complete Bash configuration alongside Zsh
-- **Template paths** - Conda, pyenv, and tool paths as configurable templates
-- **Local overrides** - `*.local` files for machine-specific customizations
-- **SSH agent** - Automatic SSH key management for development
-
-### Security
-
-- Comprehensive `.gitignore` to prevent credential leakage
-- No secrets committed to version control
-- Local override files for sensitive configuration
-- Template-based approach for personal data protection
-
-#### 🔒 New Security Features
-
-**Template-Based Configuration**
-- Personal data (names, emails, paths) replaced with placeholders
-- Setup instructions guide users to add their own information
-- Templates prevent accidental commits of sensitive data
-
-**Local Override System**
-- `*.local` files for machine-specific settings (never tracked)
-- Examples: `~/.gitconfig.local`, `~/.npmrc.local`, `~/.zshrc.local`
-- Automatically created by installer for convenience
-
-**Development Environment Safety**
-- VS Code settings exclude workspace-specific configurations
-- NPM configuration excludes authentication tokens
-- Shell paths use configurable templates instead of hardcoded values
-
-## Requirements
-
-### Essential
-
-- `git` - Version control
-- `stow` - Symlink management
-- `zsh` - Shell (optional, bash configs also included)
-- `tmux` - Terminal multiplexer
-
-### macOS Requirements
-
-**macOS users must install these first:**
-
-- **Xcode Command Line Tools** - Required for development tools
-  ```bash
-  xcode-select --install
-  ```
-- **Homebrew** - Package manager for macOS
-  ```bash
-  # Apple Silicon (M1/M2/M3/M4)
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Intel Macs
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ```
-
-### Optional
-
-- `sway` - Wayland compositor
-- `foot` - Terminal emulator (Linux)
-- `ghostty` - Terminal emulator (macOS)
-- `nvm` - Node.js version manager
-- `code` - VS Code editor (for extension installation)
-- `npm` - Node Package Manager (for global packages)
-- Oh My Zsh plugins (installed via setup script)
-- `conda`/`miniforge` - Python environment management
-- `pyenv` - Python version management
-
-## Minimum Version Requirements
-
-To ensure full compatibility with all features in this dotfiles repository, please verify that you meet the following minimum version requirements:
-
-### Core Dependencies
-
-| Tool | Minimum Version | Recommended | Reason | Verification |
-|------|----------------|-------------|---------|--------------|
-| **Git** | 2.23.0 | 2.30+ | Modern commands (git switch, restore), better defaults | `git --version` |
-| **GNU Stow** | 2.2.0 | 2.3+ | Symlink management and conflict detection | `stow --version` |
-| **Zsh** | 5.8 | 5.9 | Oh My Zsh compatibility, modern features | `zsh --version` |
-| **Bash** | 4.0 | 5.0+ | Associative arrays, modern syntax | `bash --version` |
-| **Tmux** | 3.2a | 3.5a | Modern keybindings and features | `tmux -V` |
-
-### Shell and Prompt
-
-| Tool | Minimum Version | Recommended | Reason | Verification |
-|------|----------------|-------------|---------|--------------|
-| **Starship** | 1.10.0 | 1.18+ | Modern prompt features, TOML schema support | `starship --version` |
-| **NVM** | 0.39.0 | v0.40.3 | Node.js version management | `nvm --version` |
-
-### Development Tools
-
-| Tool | Minimum Version | Recommended | Reason | Verification |
-|------|----------------|-------------|---------|--------------|
-| **Python** | 3.8 | 3.10+ | Modern syntax (f-strings, type hints, walrus operator) | `python3 --version` |
-| **Node.js** | 18.0 | 20+ LTS | Current LTS, ES modules, modern features | `node --version` |
-| **Neovim** | 0.8.0 | 0.9+ | Lua API features, lazy.nvim compatibility | `nvim --version` |
-
-### Fonts and UI
-
-| Tool | Minimum Version | Recommended | Reason | Verification |
-|------|----------------|-------------|---------|--------------|
-| **Nerd Fonts** | 3.0.0 | v3.3.0 | Icon compatibility with Starship | Check font version |
-
-### Platform-Specific Requirements
-
-#### macOS
-- **macOS Version**: 12.0 (Monterey) or later
-- **Xcode Command Line Tools**: Latest version for your macOS
-- **Homebrew**: 4.0+ recommended
-
-#### Linux
-- **Kernel**: 5.0+ for modern Wayland support
-- **systemd**: 245+ (if using services)
-- **Package Manager**:
-  - apt (Debian/Ubuntu): Recent version from distro
-  - dnf (Fedora): 4.0+
-  - pacman (Arch): Recent version
-
-### Version Check Commands
-
-Run these commands to verify your environment:
-
-```bash
-# Core tools
-git --version        # Should show 2.23.0+
-stow --version       # Should show 2.2.0+
-zsh --version        # Should show 5.8+
-bash --version       # Should show 4.0+
-tmux -V              # Should show 3.2a+
-
-# Shell and prompt
-starship --version   # Should show 1.10.0+
-nvm --version        # Should show 0.39.0+ (v0.40.3 recommended)
-
-# Development tools
-python3 --version    # Should show 3.8+
-node --version       # Should show 18.0+ (if using Node.js)
-nvim --version       # Should show 0.8.0+ (if using Neovim)
-
-# Fonts
-fc-list | grep -i "iosevka.*nerd"  # Should show Nerd Font fonts
-```
-
-### Why These Versions?
-
-**Git 2.23+**: Introduces `git switch` and `git restore` commands used in aliases and workflows. Version 2.30+ provides better security defaults.
-
-**Zsh 5.8+**: Required for full Oh My Zsh plugin compatibility and modern completion features. Version 5.9 documented in SYSTEM_SETUP.md.
-
-**Bash 4.0+**: Needed for associative arrays and modern shell features used in installation scripts.
-
-**Tmux 3.2a+**: Provides modern keybinding syntax and features used in configuration. Version 3.5a tested and documented.
-
-**Starship 1.10+**: Required for TOML schema features and modern prompt modules used in configuration.
-
-**Python 3.8+**: Minimum for modern Python features including f-strings, walrus operator, and type hints used in scripts.
-
-**Node.js 18+**: Current LTS version with long-term support. Provides ES modules and modern JavaScript features.
-
-**NVM 0.39+**: Modern Node version management. Version v0.40.3 is enforced in setup script.
-
-**Nerd Fonts 3.0+**: Required for icon compatibility with Starship prompt. Version v3.3.0 is enforced in setup script.
-
-**Neovim 0.8+**: Required for modern Lua API features and lazy.nvim plugin manager compatibility.
-
-### Upgrading Components
-
-If your versions are below the minimums:
-
-```bash
-# Update package manager
-sudo apt update && sudo apt upgrade -y     # Debian/Ubuntu
-sudo dnf upgrade -y                        # Fedora
-brew update && brew upgrade                # macOS
-
-# Update specific tools
-brew upgrade git starship tmux zsh         # macOS
-sudo apt install --only-upgrade git tmux zsh  # Ubuntu
-
-# Update NVM (run install script again)
-./scripts/setup-nvm.sh
-
-# Update Nerd Fonts (run install script again)
-./scripts/setup-fonts.sh
-
-# Update Node.js (via NVM)
-nvm install --lts
-nvm use --lts
-
-# Update Python (via system package manager or pyenv)
-sudo apt install python3.10                # Ubuntu
-pyenv install 3.10.13 && pyenv global 3.10.13  # Via pyenv
-```
-
-## Migration Guide
-
-### 🔄 What Changed in Recent Cleanup
-
-If you're upgrading from a previous version:
-
-1. **Prompt System**: Now using Starship exclusively (removed custom prompt conflicts)
-2. **Installation**: New modular installer (`install-new.sh`) recommended
-3. **Performance**: Faster shell startup and better error handling
-4. **Security**: Removed hardcoded IPs and consolidated PATH exports
-5. **Code Quality**: Standardized formatting and removed dead code
-
-### 📋 Migration Steps
-
-```bash
-# 1. Backup current configuration (automatic with new installer)
-cd ~/.dotfiles
-
-# 2. Pull latest changes
-git pull
-
-# 3. Use new modular installer
-./install-new.sh --all
-
-# 4. Restart your shell
-exec zsh
-```
-
-Your existing configurations will be backed up automatically.
-
-## Installation
-
-### 🚀 New Modular Installation (Recommended)
-
-```bash
-cd ~/.dotfiles
-./install-new.sh              # Interactive mode
-./install-new.sh --all        # Install all components
-```
-
-### 📦 Legacy Full Installation
-
-Install all configurations interactively:
-
-```bash
-cd ~/.dotfiles
-./install.sh
-```
-
-### Platform-Specific Package Installation
-
-Install system packages appropriate for your platform:
-
-```bash
-# Install platform-specific packages only
-./install.sh --packages
-
-# Full installation with packages
-./install.sh --all --packages
-```
-
-### Selective Installation
-
-Install specific components only:
-
-```bash
-./install.sh zsh tmux    # Install only zsh and tmux configs
-./install.sh --all       # Install all non-interactively
-```
-
-### macOS (All Macs) Complete Setup
-
-For Apple Silicon (M1/M2/M3/M4) and Intel Macs:
-
-```bash
-# 1. Install Xcode Command Line Tools (if not already installed)
-xcode-select --install
-
-# 2. Install Homebrew for your Mac architecture (if not already installed)
-# Apple Silicon and Intel use same command - auto-detects architecture
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# 3. Clone and install dotfiles
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# 4. Install platform-specific packages and configurations
-./install.sh --all --packages
-
-# 5. Install macOS-specific services (optional)
-./macos/install-uniclip-service.sh
-
-# 6. Reload shell
-exec zsh
-```
-
-**Total setup time: 15-25 minutes**
-
-### Post-Installation
-
-After running the install script, set up additional dependencies:
-
-```bash
-# Install Oh My Zsh and plugins
-./scripts/setup-ohmyzsh.sh
-
-# Install Node Version Manager
-./scripts/setup-nvm.sh
-
-# Install Nerd Fonts
-./scripts/setup-fonts.sh
-
-# Install Tmux Plugin Manager
-./scripts/setup-tmux-plugins.sh
-```
-
-### Change Default Shell
-
-```bash
-chsh -s $(which zsh)
-```
-
-## Starship Prompt Configuration
-
-Custom starship prompt with **Nerd Font icons** optimized for tmux and development workflows:
-
-### Features
-
-- **Compact Format**: Optimized for tmux panes with minimal width usage
-- **Nerd Font Icons**: Professional Git status indicators with 3 switchable styles (Material Design, Font Awesome, Minimalist)
-- **Smart Detection**: SSH/Tmux-aware username and hostname display
-- **Git Integration**: Comprehensive branch, status, and commit hash indicators with visual icons
-- **Language Support**: Python, Node.js, Rust, Go, Java version display
-- **Performance**: Command execution time monitoring
-- **Security**: Sudo privilege indicator with crown emoji
-- **Context Awareness**: Shows Docker context when active
-
-### Configuration Files
-
-- **Main Config**: `starship/starship.toml` → `~/.config/starship.toml`
-- **Local Overrides**: Create `~/.config/starship.toml.local` for machine-specific settings
-- **Test Script**: `nerd-font-test.sh` for verifying Nerd Font icon rendering
-- **Documentation**: `docs/STARSHIP_CONFIGURATION.md` for comprehensive configuration guide
-- **Symlinked**: Automatically managed via GNU Stow during dotfile installation
-
-### Key Modules
-
-```toml
-# Compact format optimized for tmux panes
-format = "$sudo$username$hostname$directory$git_branch$git_status$python$nodejs$rust$golang$java$docker_context$character"
-
-# Show sudo when enabled
-[sudo]
-disabled = false
-symbol = "👑 "
-style = "bold red"
-
-# Git status with intuitive icons
-[git_status]
-stashed = "📦"
-modified = "📝"
-deleted = "🗑️"
-ahead = "⇡$count"
-behind = "⇣$count"
-
-# Language versions (minimal display)
-[python]
-symbol = "🐍 "
-[nodejs]
-symbol = " "
-[rust]
-symbol = "🦀 "
-[golang]
-symbol = "🐹 "
-[java]
-symbol = "☕ "
-```
-
-### Customization Examples
-
-Create `~/.config/starship.toml.local` for personalized settings:
-
-```toml
-# Custom time display
-[time]
-disabled = false
-format = "[🕐 $time]($style) "
-
-# Memory usage monitoring
-[memory_usage]
-disabled = false
-threshold = 75
-format = "[🧠 ${ram_pct}]($style) "
-
-# Kubernetes context (if you use k8s)
-[kubernetes]
-symbol = "☸ "
-disabled = false
-```
-
-### Verification
-
-Test starship configuration after installation:
-
-```bash
-# Check starship version
-starship --version
-
-# Debug prompt rendering
-starship explain
-
-# Test configuration parsing
-starship print-config
-```
-
-## Machine-Specific Configuration
-
-The dotfiles support machine-specific overrides without modifying tracked files:
-
-### Shell Configuration
-
-Create `~/.zshrc.local` or `~/.bashrc.local`:
-
-```bash
-# Machine-specific aliases
-alias vpn='connect-to-work-vpn'
-
-# Machine-specific environment variables
-export WORKSPACE="$HOME/projects"
-```
-
-### Sway Window Manager
-
-Create `~/.config/sway/config.local`:
-
-```bash
-# Machine-specific display configuration
-output HDMI-A-1 scale 2.0
-output DP-1 resolution 1920x1080
-```
-
-These `*.local` files are automatically sourced but never tracked in git.
-
-## 🔍 Health Check System
-
-### Comprehensive Post-Installation Validation
-
-The dotfiles include a comprehensive health check system that validates your installation and provides actionable recommendations:
-
-```bash
-# Run complete health check
-health-check
-
-# Alternative commands
-dotfiles-check
-system-health
-
-# Direct script execution
-./scripts/health-check.sh
-```
-
-### What Gets Checked
-
-- **Shell Environment**: Zsh configuration and cross-platform utilities
-- **Path Resolution**: Dynamic path resolution for all 21 path types
-- **Core Tools**: Essential development tools (git, curl, tmux, starship)
-- **Starship Configuration**: Prompt setup and mode switching
-- **Platform-Specific**: macOS/Linux specific configurations
-- **Symlink Structure**: Proper dotfiles symlink validation
-- **Services**: Background services and system integration
-- **Performance**: Shell startup time and system metrics
-
-### Health Scoring
-
-- **90-100%**: 🟢 EXCELLENT - Optimal configuration
-- **75-89%**: 🟡 GOOD - Minor issues or optional components missing
-- **50-74%**: 🟡 FAIR - Some issues that need attention
-- **0-49%**: 🔴 NEEDS ATTENTION - Critical issues requiring immediate action
-
-For detailed documentation, see [HEALTH_CHECK_SYSTEM.md](docs/HEALTH_CHECK_SYSTEM.md).
-
-## Usage
-
-### Shell Aliases
-
-Common aliases configured in `.oh-my-zsh/custom/aliases.zsh`:
-
-```bash
-# Directory navigation
-..          # cd ..
-...         # cd ../..
-
-# File operations
-ll          # ls -alFh
-la          # ls -A
-
-# Git shortcuts
-gs          # git status
-ga          # git add
-gc          # git commit
-gp          # git push
-gl          # git log --oneline --graph
-
-# System management
-update      # Update and upgrade packages
-cleanup     # Remove unused packages
-
-# Tmux shortcuts
-tls         # List tmux sessions
-ta <name>   # Attach to session
-tn <name>   # New session
-tk <name>   # Kill session
-```
-
-### macOS-Specific Aliases
-
-When running on macOS, additional aliases are automatically available:
-
-```bash
-# File operations
-show <file>          # Open file with default app
-finder                # Open current directory in Finder
-textedit <file>       # Open file in TextEdit
-
-# Homebrew management
-brew-upgrade          # Update and upgrade all Homebrew packages
-brew-clean           # Clean up and check Homebrew health
-brew-list            # List installed formulae
-brew-cask-list       # List installed casks
-
-# System information
-system-info          # Display hardware information
-battery              # Show battery status
-cpu-temp             # Show CPU temperature (requires sudo)
-wifi-scan            # Scan available WiFi networks
-ip-info              # Show local IP addresses
-
-# macOS app shortcuts
-lock                 # Lock screen
-sleep                # Put Mac to sleep
-screensaver          # Start screensaver
-ql <file>            # Quick Look file
-
-# Clipboard management
-clipboard            # Paste from clipboard to terminal
-copy <command>       # Copy command output to clipboard (pipe)
-
-# Development tools
-xcode-info           # Show Xcode path
-simulators           # List iOS simulators
-```
-
-### 🆕 Development Configuration Usage
-
-#### Git Configuration Setup
-
-```bash
-# Update your personal information (required)
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-
-# Add machine-specific settings to ~/.gitconfig.local
-nano ~/.gitconfig.local
-
-# Verify configuration
-git config --global user.name
-git config --global user.email
-```
-
-#### VS Code Configuration
-
-```bash
-# Install all essential extensions
-xargs -a ~/.dotfiles/vscode/extensions.txt code --install-extension
-
-# Install individual extensions
-code --install-extension GitHub.copilot
-code --install-extension ms-vscode.vscode-eslint
-
-# View installed extensions
-code --list-extensions
-
-# Update settings (settings.json is symlinked from dotfiles)
-code --settings
-```
-
-#### NPM Global Packages
-
-```bash
-# Install essential global packages
-xargs -a ~/.dotfiles/npm/global-packages.txt npm install -g
-
-# Install specific categories
-npm install -g typescript nodemon eslint prettier
-
-# Add npm global packages to PATH (add to ~/.zshrc.local)
-export PATH="$HOME/.npm-global/bin:$PATH"
-
-# Update all global packages
-npm update -g
-
-# Check for outdated packages
-npm outdated -g
-```
-
-#### Local Configuration Files
-
-```bash
-# Edit local overrides (machine-specific settings)
-~/.gitconfig.local      # Git personal data and credentials
-~/.npmrc.local          # NPM tokens and registry settings
-~/.zshrc.local          # Custom aliases and functions
-~/.zshenv.local         # Environment variables
-~/.bashrc.local         # Bash-specific customizations
-
-# Reload shell after changes
-exec zsh
-```
-
-### Tmux Key Bindings
-
-Prefix key: `Ctrl-a` (instead of default `Ctrl-b`)
-
-```
-Prefix + |        # Split horizontally
-Prefix + -        # Split vertically
-Prefix + h/j/k/l  # Navigate panes (Vi-style)
-Alt + Arrow Keys  # Navigate panes (no prefix)
-Prefix + r        # Reload configuration
-Prefix + S        # Synchronize panes
-```
-
-### Sway Window Manager
-
-Mod key: `Super/Windows` key
-
-```
-Mod + Return       # Open terminal
-Mod + d            # Application launcher
-Mod + Shift + q    # Close window
-Mod + 1-0          # Switch workspace
-Mod + Shift + 1-0  # Move to workspace
-Mod + f            # Fullscreen
-Mod + r            # Resize mode
-Print              # Screenshot
-```
-
-## Updating
-
-### Pull Latest Changes
-
-```bash
-cd ~/.dotfiles
-git pull
-```
-
-### Re-stow Updated Packages
-
-```bash
-cd ~/.dotfiles
-stow -R zsh tmux    # Restow specific packages
-```
-
-### Update Oh My Zsh
-
-```bash
-omz update
-```
-
-### Update Tmux Plugins
-
-In tmux, press: `Prefix + U`
-
-## Uninstallation
-
-### Remove Specific Package
-
-```bash
-cd ~/.dotfiles
-stow -D zsh    # Remove zsh symlinks
-```
-
-### Remove All Dotfiles
-
-```bash
-cd ~/.dotfiles
-for pkg in */; do
-    stow -D "${pkg%/}"
-done
-```
-
-Your original files will remain in the backup directory created during installation.
-
-## Customization
-
-### Adding New Configurations
-
-1. Create a new package directory:
-   ```bash
-   mkdir -p ~/.dotfiles/vim
-   ```
-
-2. Add your config files:
-   ```bash
-   cp ~/.vimrc ~/.dotfiles/vim/
-   ```
-
-3. Stow the package:
-   ```bash
-   cd ~/.dotfiles
-   stow vim
-   ```
-
-4. Commit to repository:
-   ```bash
-   git add vim/
-   git commit -m "Add vim configuration"
-   git push
-   ```
-
-### Modifying Existing Configs
-
-Since files are symlinked, just edit them normally:
-
-```bash
-vim ~/.zshrc    # Edit the symlinked file
-cd ~/.dotfiles
-git add zsh/.zshrc
-git commit -m "Update zsh config"
-git push
-```
-
-## 🆘 Troubleshooting
-
-For comprehensive troubleshooting information:
-
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - General troubleshooting guides
-- **[macos-setup.md](macos-setup.md)** - Complete macOS setup and configuration
-- **macOS-specific issues**: Apple Silicon, Homebrew paths, Rosetta 2, permissions
-
-### Common Issues
-
-#### Claude Command Not Found After Restart
-
-If the `claude` command works but stops working after restarting your system:
-
-```bash
-# Pull latest changes
-cd ~/.dotfiles
-git pull
-
-# Reinstall dotfiles
-./install.sh --all
-
-# Restart shell
-exec zsh
-```
-
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#claude-command-not-found-after-restart) for detailed explanation.
-
-#### Starship Not Loading
-
-If starship prompt doesn't appear after installation:
-
-```bash
-# Verify starship is installed
-starship --version
-
-# Check if starship is initialized in shell
-echo $STARSHIP_SHELL
-
-# Test starship configuration
-starship explain
-
-# Re-stow starship configuration
-cd ~/.dotfiles
-stow -R starship
-
-# Restart shell
-exec zsh
-```
-
-**Common issues:**
-- Starship not installed: Install via package manager (`brew install starship` or `sudo apt install starship`)
-- Shell not initialized: Starship needs to be initialized in `~/.zshrc` or `~/.bashrc`
-- Configuration error: Run `starship print-config` to validate configuration
-- Symlink broken: Re-stow the starship package from dotfiles directory
-
-#### Stow Conflicts
-
-If stow reports conflicts with existing files:
-
-```bash
-# Backup the conflicting file
-mv ~/.zshrc ~/.zshrc.backup
-
-# Try stowing again
-stow -R zsh
-```
-
-#### Symlinks Not Working
-
-Verify symlinks are created correctly:
-
-```bash
-ls -la ~/  | grep '\->'
-```
-
-You should see symlinks pointing to `~/.dotfiles/`.
-
-#### Shell Not Loading Config
-
-Ensure your shell sources the configuration:
-
-```bash
-# For zsh
-exec zsh
-
-# For bash
-exec bash
-```
-
-#### New Configuration Issues
-
-**Git user information not set:**
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-**NPM global packages not found:**
-```bash
-# Add to PATH in ~/.zshrc.local
-export PATH="$HOME/.npm-global/bin:$PATH"
-exec zsh
-```
-
-**VS Code settings not applying:**
-```bash
-# Check if symlinks exist
-ls -la ~/.config/Code/User/settings.json
-# Reinstall with setup script
-./scripts/setup-new-configs.sh
-```
-
-## Versioning
-
-This project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemVer).
-
-### Current Version
-
-```bash
-# Check current version
-./scripts/version.sh current
-```
-
-The version is tracked in the `VERSION` file and follows the format `MAJOR.MINOR.PATCH`:
-
-- **MAJOR**: Breaking changes that require manual intervention
-- **MINOR**: New features that are backwards-compatible
-- **PATCH**: Bug fixes and minor improvements
-
-### Version Management
-
-For contributors and maintainers:
-
-```bash
-# Bump patch version (bug fixes)
-./scripts/version.sh bump patch
-
-# Bump minor version (new features)
-./scripts/version.sh bump minor
-
-# Bump major version (breaking changes)
-./scripts/version.sh bump major
-
-# Create git tag for current version
-./scripts/version.sh tag
-
-# Validate versioning
-./scripts/version.sh validate
-```
-
-See [CONTRIBUTING.md](CONTRIBUTING.md#semantic-versioning) for detailed versioning guidelines.
-
-### Release History
-
-See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes in each version.
-
-## Documentation
-
-For detailed system setup documentation, see [SYSTEM_SETUP.md](SYSTEM_SETUP.md).
-
-## Backup and Recovery
-
-Important: Your original dotfiles are automatically backed up during installation to:
-
-```
-~/.dotfiles_backup_YYYYMMDD_HHMMSS/
-```
-
-### Restoring from Backup
-
-Use the recovery script to restore dotfiles from any backup:
-
-```bash
-# List all available backups
-./scripts/recover.sh --list
-
-# Restore from the latest backup (interactive)
-./scripts/recover.sh --latest
-
-# Interactive mode - select backup and files to restore
-./scripts/recover.sh --interactive
-
-# Restore from a specific backup
-./scripts/recover.sh --backup ~/.dotfiles_backup_20250115_120000
-
-# Verify backup integrity
-./scripts/recover.sh --verify ~/.dotfiles_backup_20250115_120000
-
-# Preview changes without applying them
-./scripts/recover.sh --latest --dry-run
-
-# Show all options
-./scripts/recover.sh --help
-```
-
-**Safety Features:**
-- Creates a safety backup before restoring
-- Verifies backup integrity before restoration
-- Interactive mode for selective file restoration
-- Dry-run mode to preview changes
-- Confirmation prompts (use --force to skip)
-
-## Package List
-
-Platform-specific package manifests are provided for optimal compatibility:
-
-### Package Files
-
-- `packages.txt` - Linux packages (Debian/Ubuntu/Fedora/Arch)
-- `packages-macos.txt` - macOS packages (Apple Silicon and Intel)
 
 ### Installation
 
 ```bash
-# Platform-specific installation (recommended)
-./install.sh --packages
+# 1. Clone the repository
+git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
 
-# Manual installation
-# Linux (Debian/Ubuntu)
-xargs -a packages.txt sudo apt install -y
+# 2. Run the modular installer
+./install-new.sh --all
 
-# Linux (Fedora/RHEL)
-xargs -a packages.txt sudo dnf install -y
-
-# macOS (Apple Silicon and Intel - both use same packages)
-xargs -a packages-macos.txt brew install
-
-# Alternative: Install macOS packages manually (filtered)
-brew install $(cat packages-macos.txt | grep -v '^#' | grep -v 'sketchybar')
+# 3. Reload your shell
+exec zsh
 ```
 
-**Note:** The macOS package list includes macOS-specific alternatives:
-- Rectangle (window management) instead of Sway
-- Ghostty (terminal) instead of Foot
-- Sketchybar (status bar) instead of Waybar
-- Built-in macOS tools for screenshots and notifications
-- Works on both Apple Silicon and Intel Macs automatically
+**Installation options:**
+- `./install-new.sh` - Interactive installation (recommended for first-time)
+- `./install-new.sh --all` - Install everything automatically
+- `./install-new.sh --packages` - System packages only
+- `./install-new.sh --terminal` - Terminal and shell only
+- `./install-new.sh --dotfiles` - Dotfiles only (assumes packages installed)
 
-## Credits
-
-Inspired by:
-- [GNU Stow documentation](https://www.gnu.org/software/stow/)
-- [mathiasbynens/dotfiles](https://github.com/mathiasbynens/dotfiles)
-- [thoughtbot/dotfiles](https://github.com/thoughtbot/dotfiles)
-- [Gruvbox color scheme](https://github.com/morhetz/gruvbox)
-
-## License
-
-These are personal configuration files. Feel free to use and modify as needed.
+See [Installation Guide](docs/GETTING_STARTED.md) for platform-specific detailed instructions.
 
 ---
 
-**Note:** Remember to update machine-specific settings in `*.local` files after installation on new systems.
+## What's Inside
+
+```
+dotfiles/
+├── zsh/              # Zsh configuration with cross-platform utilities
+├── starship/         # Starship prompt (3 display modes: compact, standard, verbose)
+├── tmux/             # Tmux with clipboard integration and theme
+├── nvim/             # Neovim configuration
+├── git/              # Git config with portable user settings
+├── ghostty/          # Ghostty terminal (macOS)
+├── foot/             # Foot terminal (Linux)
+├── sway/             # Sway window manager (Linux)
+├── scripts/          # Installation, setup, and maintenance scripts
+│   ├── lib/          # Shared utility functions
+│   ├── setup-packages.sh    # System package installation
+│   ├── setup-terminal.sh    # Terminal and shell setup
+│   └── health-check.sh      # Post-installation validation
+└── docs/             # Comprehensive documentation
+```
+
+**Managed with [GNU Stow](https://www.gnu.org/software/stow/)** - Creates symlinks from `~/.dotfiles/*` to `~/`
+
+---
+
+## Key Features
+
+### 🎨 Unified Gruvbox Theme
+- Consistent colors across all tools (terminal, tmux, vim, editor)
+- Dark mode optimized with warm palette
+- Nerd Font icons throughout
+
+### 🔄 Cross-Platform Compatibility
+- **Dynamic path resolution** - No hardcoded paths
+- **Platform detection** - Automatic macOS/Linux adaptation
+- **Unified commands** - Same aliases work everywhere
+- **Portable configs** - Works on any machine
+
+### ⚡ Performance Optimized
+- **Shell startup** - <50ms with lazy loading
+- **Conda lazy-load** - Only initializes when used (saves 100-200ms)
+- **VSCode integration** - Cached for instant startup
+- **Path caching** - Eliminates redundant subprocess calls
+
+### 🛡️ Production Ready
+- **Health checks** - Automatic post-install validation
+- **Backup system** - Automatic backups before changes
+- **Rollback support** - Safe to test and revert
+- **Error handling** - Clear messages and recovery steps
+
+### 🚀 Development Environment
+- Git configuration with portable user settings
+- VS Code integration with extension management
+- NPM global package configuration
+- Python/Conda environment support
+- Docker completions and aliases
+
+See [Features Guide](docs/FEATURES.md) for detailed feature descriptions.
+
+---
+
+## Platform Support
+
+| Platform | Architecture | Terminal | Status |
+|----------|-------------|----------|--------|
+| macOS | Apple Silicon (M1/M2/M3/M4) | Ghostty | ✅ Fully Supported |
+| macOS | Intel x86_64 | Ghostty | ✅ Fully Supported |
+| Linux | x86_64 / ARM64 | Foot | ✅ Fully Supported |
+
+**Tested on:**
+- macOS Sequoia (15.x) - Apple Silicon
+- macOS Sonoma (14.x) - Intel
+- Ubuntu 22.04/24.04 LTS
+- Fedora 38+
+- Arch Linux
+
+**Automatic detection for:**
+- Package managers (Homebrew, apt, dnf, pacman)
+- Homebrew path (`/opt/homebrew` vs `/usr/local`)
+- Desktop environment (Sway, i3, X11, Wayland)
+- Clipboard utilities (pbcopy, wl-copy, xclip)
+
+See [Getting Started Guide](docs/GETTING_STARTED.md) for platform-specific setup instructions.
+
+---
+
+## Installation
+
+### Option 1: Full Installation (Recommended)
+
+```bash
+./install-new.sh --all
+```
+
+Installs:
+1. System packages (Homebrew/apt packages)
+2. Terminal applications (Ghostty/Foot, Starship)
+3. Development tools (Git, tmux, neovim, fzf, ripgrep)
+4. Dotfiles (symlinks all configurations)
+5. Runs health checks
+
+### Option 2: Modular Installation
+
+**Packages only:**
+```bash
+./install-new.sh --packages
+```
+
+**Terminal setup only:**
+```bash
+./install-new.sh --terminal
+```
+
+**Dotfiles only** (assumes packages installed):
+```bash
+./install-new.sh --dotfiles
+```
+
+### Option 3: Interactive Installation
+
+```bash
+./install-new.sh
+```
+
+Prompts you to select which components to install.
+
+### Legacy Installer
+
+The original monolithic installer is preserved for backward compatibility:
+```bash
+./install.sh
+```
+
+### What Gets Installed
+
+See [System Requirements](docs/SYSTEM_REQUIREMENTS.md) for detailed package lists and version requirements.
+
+---
+
+## First Steps After Install
+
+### 1. Configure Git User Info
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+These override the portable defaults in `git/.gitconfig`.
+
+### 2. Set Up Machine-Specific Settings
+
+Create `~/.zshrc.local` for machine-specific shell configuration:
+
+```bash
+# Example: Custom paths
+export PATH="$HOME/my-tools/bin:$PATH"
+
+# Example: API keys
+export OPENAI_API_KEY="your-key-here"
+
+# Example: Custom aliases
+alias work='cd ~/Projects/work'
+```
+
+See [Machine-Specific Configuration](#machine-specific-configuration) for more options.
+
+### 3. Install Optional Tools
+
+**VS Code extensions:**
+```bash
+xargs -a vscode/extensions.txt code --install-extension
+```
+
+**NPM global packages:**
+```bash
+xargs -a npm/global-packages.txt npm install -g
+```
+
+### 4. Run Health Check
+
+```bash
+./scripts/health-check.sh
+```
+
+Verifies all installations and reports any issues.
+
+---
+
+## Quick Reference
+
+### Starship Display Modes
+
+```bash
+starship-compact    # Minimal info (sc)
+starship-standard   # Balanced layout (ss)
+starship-verbose    # Full context (sv)
+starship-mode       # Show current mode (sm)
+```
+
+### Development Environment
+
+```bash
+dev-setup           # Run development environment setup
+dev-install         # Update all development tools
+dev-minimal         # Minimal installation (core + shell + dev-tools)
+dev-status          # Show environment status
+```
+
+### Health & Maintenance
+
+```bash
+health-check        # Run comprehensive health check
+dotfiles-check      # Alias for health check
+system-status       # Display system information
+```
+
+### Uniclip (Clipboard Sync)
+
+```bash
+uniclip-install     # Install Uniclip service
+uniclip-start       # Start Uniclip service
+uniclip-stop        # Stop Uniclip service
+uniclip-status      # Show service status
+clipboard-sync      # Sync clipboard (one-time)
+```
+
+See [Usage Guide](docs/USAGE_GUIDE.md) for complete command reference.
+
+---
+
+## Machine-Specific Configuration
+
+Dotfiles supports machine-specific overrides without modifying tracked files:
+
+### Shell Configuration
+
+**`~/.zshrc.local`** - Sourced at the end of `.zshrc`
+```bash
+# Custom paths
+export PATH="$HOME/bin:$PATH"
+
+# Custom aliases
+alias myproject='cd ~/Projects/myproject'
+
+# Override defaults
+export UNICLIP_SERVER="192.168.1.100:38687"
+```
+
+**`~/.zshenv.local`** - Sourced from `.zshenv`
+**`~/.zprofile.local`** - Sourced from `.zprofile`
+
+### Git Configuration
+
+**`~/.gitconfig.local`** - Automatically included from `git/.gitconfig`
+```ini
+[user]
+    name = Your Name
+    email = your.email@example.com
+
+[github]
+    user = yourusername
+```
+
+### Tmux Configuration
+
+**`~/.tmux.local`** - Sourced from `.tmux.conf`
+```tmux
+# Machine-specific tmux settings
+set -g mouse on
+```
+
+All `*.local` files are gitignored and never tracked.
+
+---
+
+## Updating & Maintenance
+
+### Update Dotfiles
+
+```bash
+cd ~/.dotfiles
+git pull
+stow --restow */  # Re-apply symlinks
+./scripts/health-check.sh  # Verify
+```
+
+### Update System Packages
+
+**macOS:**
+```bash
+brew update && brew upgrade
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update && sudo apt upgrade
+```
+
+### Backup Before Major Changes
+
+```bash
+# Automatic backup during installation
+./install-new.sh  # Creates ~/.dotfiles_backup_YYYYMMDD_HHMMSS
+
+# Manual backup
+cp -r ~/.dotfiles ~/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)
+```
+
+See [Backup & Recovery Guide](docs/BACKUP_RECOVERY.md) for restore procedures.
+
+---
+
+## Troubleshooting
+
+### Installation Issues
+
+**Stow conflicts:**
+```bash
+# Remove conflicting files first
+rm ~/.zshrc  # or mv ~/.zshrc ~/.zshrc.backup
+cd ~/.dotfiles
+stow zsh
+```
+
+**Permission errors:**
+```bash
+# Ensure correct ownership
+sudo chown -R $USER:$USER ~/.dotfiles
+```
+
+### Shell Issues
+
+**Command not found:**
+```bash
+# Reload shell configuration
+exec zsh
+# or
+source ~/.zshrc
+```
+
+**Slow startup:**
+```bash
+# Profile shell startup
+zsh -xv 2>&1 | ts -i '%.s' | tee /tmp/zsh-startup.log
+```
+
+### Path Resolution Issues
+
+```bash
+# Test path resolution
+source ~/.zsh_cross_platform
+resolve_platform_path dotfiles
+```
+
+For more issues, see [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
+
+---
+
+## Documentation
+
+### Core Documentation
+- [Getting Started Guide](docs/GETTING_STARTED.md) - Platform-specific setup instructions
+- [Features Guide](docs/FEATURES.md) - Detailed feature descriptions and usage
+- [Usage Guide](docs/USAGE_GUIDE.md) - Complete command and alias reference
+- [System Requirements](docs/SYSTEM_REQUIREMENTS.md) - Version requirements and package lists
+
+### Configuration Guides
+- [Starship Configuration](docs/STARSHIP_CONFIGURATION.md) - Prompt customization and modes
+- [Cross-Platform Utilities](docs/CROSS_PLATFORM_UTILITIES.md) - Path resolution and platform detection
+- [Health Check System](docs/HEALTH_CHECK_SYSTEM.md) - Post-installation validation
+
+### Maintenance & Development
+- [Backup & Recovery](docs/BACKUP_RECOVERY.md) - Backup procedures and restore steps
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Contributing Guidelines](CONTRIBUTING.md) - Development setup and contribution process
+- [Changelog](CHANGELOG.md) - Version history and migration guides
+
+### Additional Resources
+- [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
+- [Security Policy](SECURITY.md) - Vulnerability reporting
+- [License](LICENSE.md) - MIT License
+- [Third-Party Licenses](THIRD-PARTY-LICENSES.md) - Dependency attributions
+
+---
+
+## Contributing
+
+We welcome contributions! Please see:
+
+- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute
+- [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
+- [Issue Templates](.github/ISSUE_TEMPLATE/) - Report bugs or request features
+- [Pull Request Template](.github/pull_request_template.md) - Submit changes
+
+### Quick Contribution
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`./scripts/health-check.sh`)
+5. Commit (`git commit -m 'Add amazing feature'`)
+6. Push to branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+---
+
+## License
+
+This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.
+
+### Third-Party Software
+
+This repository includes configurations for many open-source tools. See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) for complete attribution and license information.
+
+---
+
+## Acknowledgments
+
+- **[Gruvbox](https://github.com/morhetz/gruvbox)** - Beautiful retro groove color scheme
+- **[Starship](https://starship.rs/)** - The minimal, blazing-fast, and infinitely customizable prompt
+- **[GNU Stow](https://www.gnu.org/software/stow/)** - Symlink farm manager
+- **[Ghostty](https://mitchellh.com/ghostty)** - Fast, native, GPU-accelerated terminal (macOS)
+- **[Foot](https://codeberg.org/dnkl/foot)** - Fast, lightweight Wayland terminal emulator (Linux)
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ for developers who care about their environment</sub>
+</p>
+
+<p align="center">
+  <sub>⭐ Star this repo if you find it useful!</sub>
+</p>

@@ -176,17 +176,6 @@ compinit
 # NOTE: Standard PATH additions (Homebrew, NPM, .local/bin, Pyenv) are now in .zshenv
 # Only application-specific paths are added here
 
-# Add custom project directories to PATH
-# Use cross-platform path resolution where available
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    export PATH="$(resolve_platform_path "uzi"):$PATH"
-    export PATH="$(resolve_platform_path "sdd_workshops"):$PATH"
-else
-    # Fallback to dynamic paths for backward compatibility
-    export PATH="$HOME/AIProjects/ai-workspaces/uzi:$PATH"
-    export PATH="$PATH:$HOME/AIProjects/ai-workspaces/sdd-workshops"
-fi
-
 # Platform-specific configuration (non-PATH)
 case "$(detect_os 2>/dev/null || echo 'unknown')" in
     "macos")
@@ -283,14 +272,6 @@ alias taskmaster='task-master'
 
 # IntelliShell integration removed - using Starship prompt instead
 
-# Video Analysis CLI - use cross-platform path resolution
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    alias video-analysis='$(resolve_platform_path "video_analysis_cli")'
-else
-    # Fallback to dynamic path for backward compatibility
-    alias video-analysis='$HOME/AIProjects/ai-workspaces/sdd-workshops/video-analysis-cli'
-fi
-
 # ==============================================================================
 # Starship Display Mode Functions
 # ==============================================================================
@@ -304,7 +285,7 @@ starship-compact() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to compact configuration
@@ -322,7 +303,7 @@ starship-standard() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to standard configuration
@@ -340,7 +321,7 @@ starship-verbose() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to verbose configuration
@@ -359,7 +340,7 @@ starship-mode() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_config="$HOME/.config/starship/starship.toml"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Check which configuration file is currently symlinked
@@ -404,7 +385,7 @@ if [[ ! -L "$(resolve_platform_path "starship_config" 2>/dev/null || echo "$HOME
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
     ln -sf "$dotfiles_dir/modes/standard.toml" "$starship_dir/starship.toml"
 fi

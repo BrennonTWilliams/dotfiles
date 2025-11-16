@@ -3,7 +3,7 @@
 # Quick Package Manager Validation
 set -euo pipefail
 
-UTILS_FILE="/Users/brennon/AIProjects/ai-workspaces/dotfiles/scripts/lib/utils.sh"
+UTILS_FILE="$(dirname "$0")/../scripts/lib/utils.sh"
 
 echo "=== Quick Package Manager Validation ==="
 

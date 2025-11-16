@@ -23,9 +23,6 @@
     <key>StandardErrorPath</key>
     <string>/tmp/uniclip.error.log</string>
 
-    <key>WorkingDirectory</key>
-    <string>/Users/brennon</string>
-
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>

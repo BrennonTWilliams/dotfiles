@@ -59,7 +59,7 @@ exec zsh
 - **Internet connection** for downloads
 - **Administrator access** for installations
 - **50GB+ free disk space** for development tools
-- **GitHub SSH key configured** for repository access (this is a private repository)
+- **GitHub account** for cloning the repository
 
 ---
 
