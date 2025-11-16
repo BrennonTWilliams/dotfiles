@@ -2,7 +2,7 @@
 
 ## Claude Command Not Found After Restart
 
-**Symptom**: The `claude` command works after running `install.sh --all`, but stops working after restarting the Raspberry Pi.
+**Symptom**: The `claude` command works after running `install-new.sh --all`, but stops working after restarting the Raspberry Pi.
 
 **Root Cause**: The PATH configuration for Claude Code was only in `.zshrc`, which isn't always sourced early enough for GUI applications like Sway or when starting new terminal sessions.
 
@@ -35,7 +35,7 @@ cd ~/dotfiles  # or wherever you cloned the dotfiles
 git pull
 
 # Reinstall with the updated configuration
-./install.sh --all
+./install-new.sh --all
 
 # Restart your shell or reboot to test
 exec zsh
