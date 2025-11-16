@@ -1,8 +1,11 @@
 # Dead, Unused, and Obsolete Code Analysis Report
-**Repository:** dotfiles  
-**Analysis Date:** 2025-11-16  
-**Analysis Level:** Very Thorough  
+**Repository:** dotfiles
+**Analysis Date:** 2025-11-16
+**Analysis Level:** Very Thorough
 **Total Files Analyzed:** 200+
+**Last Updated:** 2025-11-16 (Corrected based on parallel verification analysis)
+
+> **Note:** This report has been corrected based on findings from DEAD_CODE_VERIFICATION_REPORT.md, which performed independent parallel verification of all claims. Key corrections include: accurate function usage counts, TODO/FIXME counts, file counts, and RELEASE_ACTION_PLAN.md status.
 
 ---
 
@@ -43,7 +46,7 @@ This comprehensive analysis identified **37 instances** of dead, unused, or obso
 **Recommendation:** 🗑️ **REMOVE** or **DEPRECATE**
 - Option A: Remove install.sh entirely, rely on install-new.sh
 - Option B: Add deprecation warning to install.sh pointing to install-new.sh
-- Update macos-setup.md line 39 to use install-new.sh
+- Update macos-setup.md lines 39 and 175 to use install-new.sh
 
 **Estimated Impact:** 
 - Removes 737 lines of duplicate code
@@ -60,8 +63,8 @@ This comprehensive analysis identified **37 instances** of dead, unused, or obso
 - `/home/user/dotfiles/starship/gruvbox-rainbow.toml` (differs from modes/)
 - `/home/user/dotfiles/starship/gruvbox-rainbow-test.toml` ⚠️
 
-**Status:** 🟡 LIKELY OBSOLETE - Generated files not gitignored  
-**Last Modified:** 2025-11-16 01:35:09 (all 5 files modified simultaneously)
+**Status:** 🟡 LIKELY OBSOLETE - Generated files not gitignored
+**Last Modified:** 2025-11-16 02:05:39 (all 5 files modified simultaneously)
 
 **Evidence:**
 - `starship/build-configs.sh` builds configs from modular components in `modes/`, `formats/`, and `modules/`
@@ -95,16 +98,17 @@ This comprehensive analysis identified **37 instances** of dead, unused, or obso
 ---
 
 ### 1.3 Obsolete Setup Documentation
-**File:** `/home/user/dotfiles/macos-setup.md`  
-**Status:** 🟡 OUTDATED - References wrong install script  
-**Lines:** 39, and throughout
+**File:** `/home/user/dotfiles/macos-setup.md`
+**Status:** 🟡 OUTDATED - References wrong install script
+**Lines:** 39 and 175
 
 **Evidence:**
 - Line 39: `./install.sh --all --packages` (should be install-new.sh)
+- Line 175: `./install.sh --all --packages` (should be install-new.sh)
 - README.md has migrated to install-new.sh
 
 **Recommendation:** 🔧 **UPDATE**
-- Replace all references to `./install.sh` with `./install-new.sh`
+- Replace references on lines 39 and 175 to `./install-new.sh`
 - Verify other setup instructions are current
 
 **Estimated Impact:**
@@ -116,50 +120,52 @@ This comprehensive analysis identified **37 instances** of dead, unused, or obso
 ## 2. OBSOLETE DOCUMENTATION (Priority: MEDIUM)
 
 ### 2.1 Root-Level Analysis/Report Files
-**Files:** 18 markdown files in repository root  
-**Status:** 🟡 SHOULD BE ARCHIVED - Historical analysis documents
+**Files:** 18 markdown files in repository root
+**Status:** 🟡 17 SHOULD BE ARCHIVED, 1 IS ACTIVE - Historical analysis documents
 
 **Full List:**
-1. `COMPREHENSIVE_ANALYSIS_REPORT.md`
-2. `COMPREHENSIVE_ANALYSIS_REPORT_CORRECTED.md`
-3. `COMPREHENSIVE_ANALYSIS_VERIFICATION_REPORT.md`
-4. `CODE_QUALITY_VERIFICATION_REPORT.md`
-5. `DEPENDENCY_ANALYSIS_VERIFICATION_REPORT.md`
-6. `FUNCTION_DOCUMENTATION_VERIFICATION_REPORT.md`
-7. `HIGH_PRIORITY_ISSUE_3_VERIFICATION_REPORT.md`
-8. `PACKAGE_MANAGER_VALIDATION_REPORT.md`
-9. `CROSS_PLATFORM_VALIDATION_REPORT.md`
-10. `CROSS_PLATFORM_UTILITIES_VALIDATION_REPORT.md`
-11. `COMPREHENSIVE_INTEGRATION_TEST_REPORT.md`
-12. `CLEANUP_REPORT.md`
-13. `CONSERVATIVE_CLEANUP_PLAN.md`
-14. `COMPREHENSIVE_CLEANUP_PLAN.md`
-15. `MISSING_DOTFILES_IMPLEMENTATION_SUMMARY.md`
-16. `LINUX_ADAPTATIONS_SUMMARY.md`
-17. `CACHING_IMPLEMENTATION_SUMMARY.md`
-18. `RELEASE_ACTION_PLAN.md` (may still be active)
+1. `COMPREHENSIVE_ANALYSIS_REPORT.md` - Archive
+2. `COMPREHENSIVE_ANALYSIS_REPORT_CORRECTED.md` - Archive
+3. `COMPREHENSIVE_ANALYSIS_VERIFICATION_REPORT.md` - Archive
+4. `CODE_QUALITY_VERIFICATION_REPORT.md` - Archive
+5. `DEPENDENCY_ANALYSIS_VERIFICATION_REPORT.md` - Archive
+6. `FUNCTION_DOCUMENTATION_VERIFICATION_REPORT.md` - Archive
+7. `HIGH_PRIORITY_ISSUE_3_VERIFICATION_REPORT.md` - Archive
+8. `PACKAGE_MANAGER_VALIDATION_REPORT.md` - Archive
+9. `CROSS_PLATFORM_VALIDATION_REPORT.md` - Archive
+10. `CROSS_PLATFORM_UTILITIES_VALIDATION_REPORT.md` - Archive
+11. `COMPREHENSIVE_INTEGRATION_TEST_REPORT.md` - Archive
+12. `CLEANUP_REPORT.md` - Archive
+13. `CONSERVATIVE_CLEANUP_PLAN.md` - Archive
+14. `COMPREHENSIVE_CLEANUP_PLAN.md` - Archive
+15. `MISSING_DOTFILES_IMPLEMENTATION_SUMMARY.md` - Archive
+16. `LINUX_ADAPTATIONS_SUMMARY.md` - Archive
+17. `CACHING_IMPLEMENTATION_SUMMARY.md` - Archive
+18. `RELEASE_ACTION_PLAN.md` - **⚠️ ACTIVE - DO NOT ARCHIVE** (Status: BLOCKS PUBLIC RELEASE)
 
 **Evidence:**
 - These are historical analysis/verification reports
-- Root directory is cluttered (69 total .md files)
-- docs/reports/ exists for this purpose (9 files there)
+- Root directory is cluttered (35 total .md files)
+- docs/reports/ exists for this purpose (5 files there)
 - Some have duplicate/corrected versions
+- **RELEASE_ACTION_PLAN.md is actively tracking release blockers and must remain in root**
 
 **Why they appear obsolete:**
 - Reports represent point-in-time analysis
 - Many issues have been resolved
 - Corrected versions supersede originals
 
-**Recommendation:** 🗂️ **ARCHIVE**
+**Recommendation:** 🗂️ **ARCHIVE 17 REPORTS**
 - Create `docs/archive/` or `docs/reports/archive/`
-- Move historical reports there
-- Keep RELEASE_ACTION_PLAN.md in root if actively tracking release
+- Move 17 historical reports there
+- **KEEP RELEASE_ACTION_PLAN.md in root** - actively tracking release blockers
 - Update root README.md if it references these
 
 **Estimated Impact:**
-- Reduces root directory clutter (18 → ~5 core docs)
+- Reduces root directory clutter (from 35 to ~18 .md files)
 - Makes repository more navigable
 - Preserves historical context for future reference
+- Maintains visibility of active release planning
 
 ---
 
@@ -225,22 +231,23 @@ email = your.email@example.com
 ---
 
 ### 3.3 TODO/FIXME Count Summary
-**Total Technical Debt Markers:** 151 occurrences across 29 files
+**Total Technical Debt Markers:** 21 occurrences in code files
 
 **Breakdown by Type:**
-- NOTE/Notes: ~140 (mostly documentation)
-- TODO: 2 (git config template + CI workflow)
+- NOTE/Notes: 5 (documentation comments in code)
+- TODO: 1 (git config template - intentional)
 - FIXME: 0
 - HACK: 0
 - DEPRECATED: 7 (documented deprecated features)
 
 **Files with TODO comments:**
 1. `git/.gitconfig` (line 2) - Template placeholder ✅ Keep
-2. `.github/workflows/lint.yml` (lines 118-137) - TODO/FIXME counter ✅ Keep (is a feature)
+
+**Note:** `.github/workflows/lint.yml` (lines 118-137) is a workflow that SEARCHES for TODOs in code - not itself a TODO marker.
 
 **Recommendation:** ✅ **ACCEPTABLE LEVEL**
-- Current TODO count is very low (2 intentional)
-- Most are informative NOTEs, not debt
+- Current TODO count is very low (1 intentional template)
+- NOTEs are informative documentation, not debt
 - Deprecated items are properly documented
 
 **Estimated Impact:** None - technical debt is well-managed
@@ -373,17 +380,21 @@ Analyzed all shell scripts for:
 ✅ `get_available_packages()` - Used in:
 - install.sh (2 calls)
 - install-new.sh (1 call)
-- 4 test files
+- 3 test files (test_basic_integration.sh, test_installation_integration.sh, test_installation_safe.sh)
 
-✅ `check_brew_package_availability()` - Used 22 times across scripts
+✅ `check_brew_package_availability()` - Used 7 times across scripts:
+- install.sh (2 calls)
+- setup-packages.sh (1 call)
+- test_installation_safe.sh (2 calls)
+- test_installation_integration.sh (2 calls)
 
 ✅ `filter_reference_mac_packages()` - Used in:
-- install.sh (1 call)
-- 4 test files
+- install.sh (1 call only)
+- NOT used in test files
 
 ✅ `pre_validate_packages()` - Used in:
 - install.sh (1 call)
-- 5 test files
+- 3 test files (test_basic_integration.sh, test_installation_integration.sh, test_installation_safe.sh)
 
 ✅ Utility functions (from scripts/lib/utils.sh):
 - All sourced and used across multiple scripts
@@ -393,9 +404,9 @@ Analyzed all shell scripts for:
 ### 6.3 Potential Duplicate Functions
 
 ⚠️ **Duplicate OS Detection:**
-- `detect_os()` in `scripts/lib/utils.sh` (comprehensive, 90 lines)
-- `detect_os()` in `install.sh` (simplified, 22 lines)
-- `detect_os()` in `scripts/health-check.sh` (simple wrapper)
+- `detect_os()` in `scripts/lib/utils.sh` (comprehensive, 94 lines)
+- `detect_os()` in `install.sh` (simplified, 23 lines)
+- `detect_os()` in `scripts/health-check.sh` (simple wrapper, 8 lines)
 
 **Context:**
 - install.sh version is simpler fallback
@@ -475,7 +486,7 @@ The following deprecated features are **well-documented** with warnings:
 #### 🟡 MEDIUM Priority (Complete within 1 month)
 
 3. **Archive historical analysis reports**
-   - Move 18 reports to docs/archive/
+   - Move 17 reports to docs/archive/ (exclude RELEASE_ACTION_PLAN.md)
    - Update any references
    - Estimated time: 1 hour
 
@@ -503,8 +514,9 @@ The following deprecated features are **well-documented** with warnings:
 | Functions analyzed | 250+ |
 | Unused functions found | 0 |
 | Obsolete files found | 8 |
-| Obsolete docs found | 18 |
-| TODO items (non-template) | 0 |
+| Obsolete docs to archive | 17 |
+| Active docs to keep | 1 (RELEASE_ACTION_PLAN.md) |
+| TODO items (non-template) | 1 |
 | FIXME items | 0 |
 | HACK items | 0 |
 | Unreachable code blocks | 0 |
@@ -534,16 +546,16 @@ The repository demonstrates:
 ### Impact of Full Cleanup
 
 **Before Cleanup:**
-- 69 markdown files in repository
+- 35 markdown files in repository root
 - 1,023 + 286 = 1,309 lines in install scripts (duplicated functionality)
 - 5 potentially confusing generated .toml files
-- 18 reports cluttering root directory
+- 17 archivable reports + 1 active report (RELEASE_ACTION_PLAN.md) cluttering root directory
 
 **After Cleanup:**
-- ~50 markdown files (26% reduction)
+- ~18 markdown files in root (49% reduction)
 - 286 lines in single install script (78% code reduction)
 - Clear separation of generated vs. source files
-- Organized documentation structure
+- Organized documentation structure with active planning docs visible
 
 **Developer Experience Improvement:** HIGH
 **Maintenance Burden Reduction:** SIGNIFICANT
@@ -556,7 +568,8 @@ The repository demonstrates:
 ### Files with TODO Comments (Non-Informative)
 
 1. `git/.gitconfig:2` - User template (intentional) ✅
-2. `.github/workflows/lint.yml:118-137` - TODO counter feature ✅
+
+**Note:** `.github/workflows/lint.yml` (lines 118-137) is a workflow that searches for TODOs, not itself a TODO marker.
 
 ### Files with "deprecated" References (Properly Documented)
 
@@ -587,10 +600,11 @@ All deprecations have:
 - [ ] `starship/gruvbox-rainbow-test.toml`
 
 ### Archive to docs/archive/
-- [ ] All 18 root-level analysis/report .md files (list in section 2.1)
+- [ ] 17 of the 18 root-level analysis/report .md files (list in section 2.1)
+- [ ] **DO NOT ARCHIVE:** RELEASE_ACTION_PLAN.md (actively tracking release blockers)
 
 ### Update References
-- [ ] `macos-setup.md` - Update install.sh → install-new.sh
+- [ ] `macos-setup.md` - Update lines 39 and 175: install.sh → install-new.sh
 
 ### Optional Reorganization
 - [ ] Move `nerd-font-test.sh` to `scripts/`
