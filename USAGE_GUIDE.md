@@ -203,7 +203,7 @@ Use the provided test script to verify icons display correctly:
 
 ```bash
 cd ~/.dotfiles
-./nerd-font-test.sh
+./scripts/nerd-font-test.sh
 ```
 
 This script shows all three icon styles and helps verify your terminal font supports the chosen Nerd Font icons.
@@ -236,7 +236,7 @@ staged = "✓ "
 
 **Icons not displaying:**
 1. Verify terminal font: `echo $TERM`
-2. Test with script: `./nerd-font-test.sh`
+2. Test with script: `./scripts/nerd-font-test.sh`
 3. Check Ghostty font configuration
 4. Ensure IosevkaTerm Nerd Font is installed
 

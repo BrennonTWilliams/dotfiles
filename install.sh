@@ -917,6 +917,20 @@ EOF
 main() {
     print_banner
 
+    # ==============================================================================
+    # DEPRECATION WARNING
+    # ==============================================================================
+    echo ""
+    echo -e "${YELLOW}${BOLD}⚠️  DEPRECATION WARNING${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}This script (install.sh) is deprecated and will be removed in a future release.${NC}"
+    echo -e "${YELLOW}Please use ${BOLD}install-new.sh${NC}${YELLOW} instead for new installations and updates.${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+    echo -e "${CYAN}Continuing in 3 seconds...${NC}"
+    sleep 3
+    echo ""
+
     # Parse arguments
     local install_all=false
     local no_setup=false

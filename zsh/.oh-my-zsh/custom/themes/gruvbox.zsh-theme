@@ -88,6 +88,9 @@ prompt_end() {
 
 # Context: user@hostname (who am I and where am I)
 prompt_context() {
+  # NOTE: The following code displays username@hostname in the prompt.
+  # It is currently disabled in favor of the OS logo (lines 94-99).
+  # To re-enable: uncomment lines 91-93 and comment out lines 94-99.
   # if [[ "$USER" != "$DEFAULT_USER" || -n "$SSH_CLIENT" ]]; then
     # prompt_segment 237 7 "%(!.%{%F{3}%}.)%n@%m"
   # fi
