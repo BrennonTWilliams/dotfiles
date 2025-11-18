@@ -14,25 +14,16 @@ set -euo pipefail
 # Source utility functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../scripts/lib/utils.sh"
+source "$SCRIPT_DIR/../scripts/lib/service-utils.sh"
 
-# Check if running on Linux
-if [[ "$OSTYPE" != "linux-gnu"* ]]; then
-    error "This script is designed for Linux only"
-fi
-
-# Check if systemd is available
-if ! command -v systemctl &> /dev/null; then
-    error "systemd is not available. This script requires systemd."
-fi
-
-# Check if uniclip is installed
-if ! command -v uniclip &> /dev/null; then
-    error "Uniclip is not installed. Please install it first with your package manager."
-    echo "  - Debian/Ubuntu: sudo apt install uniclip (if available) or build from source"
-    echo "  - Fedora: sudo dnf install uniclip (if available) or build from source"
-    echo "  - Arch: yay -S uniclip (AUR) or build from source"
-    echo "  - Source: https://github.com/elves/uniclip"
-fi
+# Validate platform and dependencies
+require_platform "linux"
+require_systemd
+require_command "uniclip" "Please install it with your package manager:
+  - Debian/Ubuntu: sudo apt install uniclip (if available) or build from source
+  - Fedora: sudo dnf install uniclip (if available) or build from source
+  - Arch: yay -S uniclip (AUR) or build from source
+  - Source: https://github.com/elves/uniclip"
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SERVICE_FILE="$DOTFILES_DIR/linux/uniclip.service"
@@ -42,7 +33,7 @@ SERVICE_NAME="uniclip.service"
 info "Installing Uniclip systemd user service..."
 
 # Create systemd user directory if it doesn't exist
-mkdir -p "$SYSTEMD_USER_DIR"
+ensure_directory "$SYSTEMD_USER_DIR"
 
 # Determine uniclip binary path dynamically
 UNICLIP_PATH=$(which uniclip)
@@ -55,7 +46,7 @@ sed "s|ExecStart=/usr/bin/uniclip|ExecStart=$UNICLIP_PATH|g" "$SERVICE_FILE" > "
 chmod 644 "$SYSTEMD_USER_DIR/$SERVICE_NAME"
 
 # Create logs directory
-mkdir -p "$HOME/.local/share/uniclip"
+ensure_directory "$HOME/.local/share/uniclip"
 
 # Stop existing service (if running)
 if systemctl --user is-enabled "$SERVICE_NAME" &>/dev/null; then
@@ -87,18 +78,11 @@ if systemctl --user is-active "$SERVICE_NAME" &>/dev/null; then
     success "Uniclip service installed and started successfully!"
     info "Service status:"
     systemctl --user status "$SERVICE_NAME" --no-pager -l
-    echo
-    info "Uniclip logs are available at:"
-    echo "  - System logs: journalctl --user -u $SERVICE_NAME"
-    echo "  - Log files: $HOME/.local/share/uniclip/"
-    echo
-    info "To manage the service:"
-    echo "  - Stop:   systemctl --user stop $SERVICE_NAME"
-    echo "  - Start:  systemctl --user start $SERVICE_NAME"
-    echo "  - Restart:systemctl --user restart $SERVICE_NAME"
-    echo "  - Status: systemctl --user status $SERVICE_NAME"
-    echo "  - Disable:systemctl --user disable $SERVICE_NAME"
-    echo "  - Remove: rm $SYSTEMD_USER_DIR/$SERVICE_NAME && systemctl --user daemon-reload"
+
+    # Display log locations and management commands using shared functions
+    display_log_info "systemd" "$SERVICE_NAME" "$HOME/.local/share/uniclip/"
+    display_service_commands "systemd" "$SERVICE_NAME" "$SYSTEMD_USER_DIR"
+
     echo
     warn "Note: Make sure your display server is running. Service includes:"
     echo "  - DISPLAY environment variable for X11"
