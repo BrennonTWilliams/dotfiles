@@ -78,7 +78,7 @@ After the main installation, run these helper scripts:
 
 ```bash
 # Debian/Ubuntu
-xargs -a packages.txt sudo apt install -y
+xargs -a packages-linux.txt sudo apt install -y
 
 # macOS
 xargs -a packages-macos.txt brew install
