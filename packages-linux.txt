@@ -5,10 +5,9 @@
 # development environment. Use this as a reference when setting up a new system.
 #
 # Installation:
-#   - Debian/Ubuntu: xargs -a packages.txt sudo apt install -y
-#   - Fedora/RHEL:   xargs -a packages.txt sudo dnf install -y
-#   - Arch:          xargs -a packages.txt sudo pacman -S --noconfirm
-#   - macOS:         xargs -a packages.txt brew install
+#   - Debian/Ubuntu: xargs -a packages-linux.txt sudo apt install -y
+#   - Fedora/RHEL:   xargs -a packages-linux.txt sudo dnf install -y
+#   - Arch:          xargs -a packages-linux.txt sudo pacman -S --noconfirm
 # ==============================================================================
 
 # ==============================================================================

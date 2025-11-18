@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# Dotfiles Bootstrap Installation Script
+# ⚠️  DEPRECATED - Please use install-new.sh instead
+# ==============================================================================
+# This script has been superseded by install-new.sh which provides:
+# - Modular installation system
+# - Better platform detection
+# - Interactive component selection
+# - Smaller codebase (7.4 KB vs 31 KB)
+#
+# Run: ./install-new.sh
+# ==============================================================================
+
+# ==============================================================================
+# Dotfiles Bootstrap Installation Script (LEGACY)
 # ==============================================================================
 # This script installs dotfiles using GNU Stow for symlink management.
 # It provides safe backups, platform detection, and selective installation.
@@ -397,7 +409,7 @@ get_platform_packages() {
             fi
             ;;
         *)
-            packages_file="$DOTFILES_DIR/packages.txt"
+            packages_file="$DOTFILES_DIR/packages-linux.txt"
             ;;
     esac
 

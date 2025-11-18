@@ -20,7 +20,7 @@ VALIDATION_WARNINGS=0
 # Configuration
 readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly PACKAGES_MACOS="$DOTFILES_DIR/packages-macos.txt"
-readonly PACKAGES_LINUX="$DOTFILES_DIR/packages.txt"  # if exists
+readonly PACKAGES_LINUX="$DOTFILES_DIR/packages-linux.txt"  # if exists
 readonly VALIDATION_REPORT="$DOTFILES_DIR/test_results/package_validation_report_$(date +%Y%m%d_%H%M%S).md"
 
 # Special tap requirements (from package file comments)
@@ -418,7 +418,7 @@ generate_validation_report() {
 **Platform:** macOS $(uname -m)
 **Package Files:**
 - \`packages-macos.txt\` $(test -f "$PACKAGES_MACOS" && echo "✅" || echo "❌")
-- \`packages.txt\` $(test -f "$PACKAGES_LINUX" && echo "✅" || echo "❌ N/A")
+- \`packages-linux.txt\` $(test -f "$PACKAGES_LINUX" && echo "✅" || echo "❌ N/A")
 
 ## Validation Summary
 
@@ -560,12 +560,12 @@ EOF
 
     # Validate Linux packages if they exist
     if [[ -f "$PACKAGES_LINUX" ]]; then
-        echo -e "${BOLD}${BLUE}Validating packages.txt (Linux)...${NC}"
+        echo -e "${BOLD}${BLUE}Validating packages-linux.txt (Linux)...${NC}"
         validate_package_syntax "$PACKAGES_LINUX" "linux"
         validate_no_duplicates "$PACKAGES_LINUX" "linux"
         validate_documentation "$PACKAGES_LINUX" "linux"
     else
-        log_info "packages.txt not found - only validating macOS packages"
+        log_info "packages-linux.txt not found - only validating macOS packages"
     fi
 
     # Generate reports

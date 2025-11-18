@@ -1,7 +1,7 @@
 # ==============================================================================
-# Bren Light Theme for Ghostty
+# Gruvbox Light Custom Theme for Ghostty
 # ==============================================================================
-# High contrast light theme companion to bren-dark
+# High contrast light theme companion to gruvbox-dark-custom
 # Features bright background with dark text and vibrant accent colors
 # ==============================================================================
 
@@ -49,9 +49,9 @@ background-blur = 0
 
 # ==============================================================================
 # Theme Characteristics:
-# - Light theme companion to bren-dark
+# - Light theme companion to gruvbox-dark-custom
 # - Clean white background with dark text for daytime use
-# - Consistent orange accent (#d65d0e) for brand continuity
+# - Consistent orange accent (#d65d0e) for Gruvbox continuity
 # - Muted colors for reduced eye strain in bright environments
-# - Maintains bren theme aesthetic with professional appearance
+# - Professional appearance with Gruvbox aesthetic
 # ==============================================================================
