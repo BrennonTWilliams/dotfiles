@@ -4,35 +4,39 @@ This directory contains NPM configuration files and global package lists managed
 
 ## Files
 
-- `.npmrc` - NPM configuration with development settings
 - `global-packages.txt` - Essential global NPM packages
-- `.stowrc` - Stow configuration
+- `README.md` - This documentation
+
+**Note:** This module does not include a `.npmrc` file. NPM configuration is typically machine-specific and may contain sensitive information (registry tokens, proxy settings). Create your own `~/.npmrc` as needed.
 
 ## Setup
 
-1. Stow the NPM configuration:
-   ```bash
-   cd ~/.dotfiles
-   stow npm
-   ```
-
-2. Create global npm directory (if not exists):
+1. Create global npm directory (recommended to avoid permission issues):
    ```bash
    mkdir -p ~/.npm-global
+   npm config set prefix '~/.npm-global'
    ```
 
-3. Add to shell PATH (add to your `~/.zshrc` or `~/.bashrc`):
+2. Add to shell PATH (add to your `~/.zshrc` or `~/.bashrc`):
    ```bash
    export PATH="$HOME/.npm-global/bin:$PATH"
    ```
 
-4. Install essential global packages:
+3. Install essential global packages:
    ```bash
    # Install all recommended packages
    xargs -a ~/.dotfiles/npm/global-packages.txt npm install -g
 
    # Or install selectively based on your needs
    npm install -g npm typescript nodemon eslint prettier
+   ```
+
+4. (Optional) Create your own `.npmrc`:
+   ```bash
+   # Set global prefix
+   npm config set prefix '~/.npm-global'
+
+   # This creates ~/.npmrc automatically
    ```
 
 ## Configuration

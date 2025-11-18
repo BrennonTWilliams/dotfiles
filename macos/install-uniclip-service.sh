@@ -14,16 +14,11 @@ set -euo pipefail
 # Source utility functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../scripts/lib/utils.sh"
+source "$SCRIPT_DIR/../scripts/lib/service-utils.sh"
 
-# Check if running on macOS
-if [[ "$OSTYPE" != "darwin"* ]]; then
-    error "This script is designed for macOS only"
-fi
-
-# Check if uniclip is installed
-if ! command -v uniclip &> /dev/null; then
-    error "Uniclip is not installed. Please install it first with: brew install uniclip"
-fi
+# Validate platform and dependencies
+require_platform "macos"
+require_command "uniclip" "Please install it first with: brew install uniclip"
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PLIST_FILE="$DOTFILES_DIR/macos/com.uniclip.plist"
@@ -33,7 +28,7 @@ SERVICE_NAME="com.uniclip"
 info "Installing Uniclip launchd service..."
 
 # Create LaunchAgents directory if it doesn't exist
-mkdir -p "$LAUNCHD_DIR"
+ensure_directory "$LAUNCHD_DIR"
 
 # Copy plist file to LaunchAgents directory
 cp "$PLIST_FILE" "$LAUNCHD_DIR/"
@@ -61,16 +56,10 @@ if launchctl list | grep -q "$SERVICE_NAME"; then
     success "Uniclip service installed and started successfully!"
     info "Service status:"
     launchctl list | grep "$SERVICE_NAME"
-    echo
-    info "Uniclip logs are available at:"
-    echo "  - Standard output: /tmp/uniclip.log"
-    echo "  - Error output: /tmp/uniclip.error.log"
-    echo
-    info "To manage the service:"
-    echo "  - Stop:  launchctl stop $SERVICE_NAME"
-    echo "  - Start: launchctl start $SERVICE_NAME"
-    echo "  - Restart: launchctl unload $LAUNCHD_DIR/$SERVICE_NAME.plist && launchctl load $LAUNCHD_DIR/$SERVICE_NAME.plist"
-    echo "  - Remove: launchctl unload $LAUNCHD_DIR/$SERVICE_NAME.plist && rm $LAUNCHD_DIR/$SERVICE_NAME.plist"
+
+    # Display log locations and management commands using shared functions
+    display_log_info "launchd" "uniclip" ""
+    display_service_commands "launchd" "$SERVICE_NAME" "$LAUNCHD_DIR"
 else
     error "Failed to start Uniclip service. Check logs for details."
 fi
