@@ -11,12 +11,12 @@ This directory contains a build system for generating Starship configurations fr
 ```
 starship/
   build-configs.sh       # Build script to assemble configurations
-  formats/               # Format string configurations for each mode
+  formats/               # Source: Format string configurations for each mode
     compact-format.toml
     standard-format.toml
     verbose-format.toml
     gruvbox-rainbow-format.toml
-  modules/               # Shared module configurations
+  modules/               # Source: Shared module configurations
     core-base.toml       # Character prompt (never overridden)
     core-modules.toml    # Core prompt modules
     core-overridable.toml # Core modules that may be overridden
@@ -26,15 +26,16 @@ starship/
     system-modules.toml   # System info (memory, battery, etc.)
     base-modules.toml     # Status and IP modules
     github-modules.toml   # GitHub integration
-  modes/                 # Mode-specific overrides and generated configs
-    compact.toml         # Generated compact config
+  modes/                 # Source: Mode-specific override configurations
     compact-overrides.toml
-    standard.toml        # Generated standard config
     standard-overrides.toml
-    verbose.toml         # Generated verbose config
     verbose-overrides.toml
-    gruvbox-rainbow.toml # Generated gruvbox-rainbow config
     gruvbox-rainbow-overrides.toml
+  .config/starship/      # Generated: Output directory (gitignored)
+    compact.toml         # Generated compact config
+    standard.toml        # Generated standard config
+    verbose.toml         # Generated verbose config
+    gruvbox-rainbow.toml # Generated gruvbox-rainbow config
 ```
 
 ## Available Modes
@@ -82,7 +83,7 @@ The build script performs these steps for each mode:
 4. **Add shared modules** - Include all modules from `modules/`, filtering overridden ones
 5. **Apply overrides** - Add mode-specific customizations from `modes/*-overrides.toml`
 6. **Validate TOML** - Check syntax using Python if available
-7. **Install to modes/** - Copy generated config to `modes/` directory
+7. **Output to .config/starship/** - Save generated config to output directory
 
 ## Using Starship
 
@@ -105,7 +106,7 @@ The build script performs these steps for each mode:
 
 3. Create symlink to desired mode:
    ```bash
-   ln -sf ~/.dotfiles/starship/modes/standard.toml ~/.config/starship.toml
+   ln -sf ~/.dotfiles/starship/.config/starship/standard.toml ~/.config/starship.toml
    ```
 
 4. Add to your shell rc file:
@@ -131,7 +132,7 @@ starship-gruvbox-rainbow # Switch to gruvbox-rainbow mode
 Or manually update the symlink:
 
 ```bash
-ln -sf ~/.dotfiles/starship/modes/verbose.toml ~/.config/starship.toml
+ln -sf ~/.dotfiles/starship/.config/starship/verbose.toml ~/.config/starship.toml
 ```
 
 ## Customization
