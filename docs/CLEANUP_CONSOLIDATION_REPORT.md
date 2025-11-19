@@ -1,7 +1,7 @@
 # Dotfiles Cleanup & Consolidation Report
 
 **Generated:** 2025-11-18
-**Repository Version:** 1.0.0
+**Repository Version:** 1.1.0
 **Analysis Type:** Comprehensive cleanup and organization review
 
 ---
