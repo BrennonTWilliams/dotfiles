@@ -157,17 +157,17 @@ For convenience, these aliases are available:
 # Check current mode
 $ starship-mode
 📋 Current mode: STANDARD (current multi-line layout)
-Active configuration: /Users/brennon/AIProjects/ai-workspaces/dotfiles/starship/modes/standard.toml
+Active configuration: ~/dotfiles/starship/modes/standard.toml
 
 # Switch to compact mode for focused work
 $ starship-compact
 🚀 Starship mode: COMPACT (minimal information)
-Configuration: /Users/brennon/AIProjects/ai-workspaces/dotfiles/starship/modes/compact.toml
+Configuration: ~/dotfiles/starship/modes/compact.toml
 
 # Switch to verbose mode for debugging
 $ sv
 📊 Starship mode: VERBOSE (full context with all details)
-Configuration: /Users/brennon/AIProjects/ai-workspaces/dotfiles/starship/modes/verbose.toml
+Configuration: ~/dotfiles/starship/modes/verbose.toml
 ```
 
 ### Configuration File Structure

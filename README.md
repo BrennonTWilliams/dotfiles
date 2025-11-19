@@ -232,13 +232,6 @@ Installs:
 
 Prompts you to select which components to install.
 
-### Legacy Installer
-
-The original monolithic installer is preserved for backward compatibility:
-```bash
-./install.sh
-```
-
 ### What Gets Installed
 
 See [System Requirements](docs/SYSTEM_REQUIREMENTS.md) for detailed package lists and version requirements.
