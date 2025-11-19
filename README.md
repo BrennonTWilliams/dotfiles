@@ -488,7 +488,7 @@ For more issues, see [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
 - [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
 - [Security Policy](SECURITY.md) - Vulnerability reporting
 - [License](LICENSE.md) - MIT License
-- [Third-Party Licenses](THIRD-PARTY-LICENSES.md) - Dependency attributions
+- [Third-Party Licenses](docs/THIRD-PARTY-LICENSES.md) - Dependency attributions
 
 ---
 
@@ -519,7 +519,7 @@ This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) fo
 
 ### Third-Party Software
 
-This repository includes configurations for many open-source tools. See [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) for complete attribution and license information.
+This repository includes configurations for many open-source tools. See [THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md) for complete attribution and license information.
 
 ---
 
