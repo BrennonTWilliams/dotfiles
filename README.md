@@ -1060,7 +1060,22 @@ ls -la ~/.config/Code/User/settings.json
 
 ## Documentation
 
-For detailed system setup documentation, see [SYSTEM_SETUP.md](SYSTEM_SETUP.md).
+### System Setup & Configuration
+
+- **[System Setup Guide](SYSTEM_SETUP.md)** - Detailed system setup and configuration
+- **[Usage Guide](USAGE_GUIDE.md)** - Comprehensive usage instructions
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Testing Guide](TESTING.md)** - Validation and testing procedures
+- **[Contributing Guide](CONTRIBUTING.md)** - Contribution guidelines
+
+### Component-Specific Guides
+
+- **[Ghostty Configuration](ghostty/README.md)** - Terminal emulator setup and customization
+- **[Ghostty Finder Integration](docs/GHOSTTY_FINDER_INTEGRATION.md)** - macOS Finder integration setup
+- **[Ghostty Troubleshooting](docs/GHOSTTY_TROUBLESHOOTING.md)** - Ghostty-specific troubleshooting
+- **[Starship Configuration](docs/STARSHIP_CONFIGURATION.md)** - Prompt customization
+- **[Neovim Configuration](neovim/README.md)** - Editor setup and plugins
+- **[Git Configuration](git/README.md)** - Git aliases and customization
 
 ## Backup
 

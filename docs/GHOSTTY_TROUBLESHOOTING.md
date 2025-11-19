@@ -481,6 +481,71 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
    # Should output: test
    ```
 
+### Finder Integration Not Working
+
+**Problem**: Finder Services or Quick Actions for Ghostty don't appear or work
+
+**Solutions**:
+1. **Verify Services Are Installed**:
+   ```bash
+   # Check for Quick Actions
+   ls -la ~/Library/Services/ | grep -i ghostty
+
+   # Rebuild services database
+   /System/Library/CoreServices/pbs -flush
+   killall Finder
+   ```
+
+2. **Check Permissions**:
+   ```bash
+   # Required permissions:
+   # System Settings → Privacy & Security → Automation
+   # → Enable: Finder → Ghostty
+
+   # System Settings → Privacy & Security → Accessibility
+   # → Add and enable Ghostty
+   ```
+
+3. **Install Quick Actions**:
+   ```bash
+   # Install from dotfiles
+   ./ghostty/automator/install-quick-actions.sh
+
+   # Verify installation
+   ./ghostty/automator/install-quick-actions.sh --verify
+   ```
+
+4. **Test Finder Service**:
+   - In Finder, right-click on a folder
+   - Navigate to Services (or Quick Actions)
+   - Look for "New Ghostty Window Here"
+   - If not found, restart Finder and try again
+
+5. **Keyboard Shortcut Not Working**:
+   ```bash
+   # Assign in System Settings:
+   # Keyboard → Keyboard Shortcuts → Services
+   # → Files and Folders → New Ghostty Window Here
+   # → Click and assign ⌘⌥T or similar
+
+   # Important: Use service manually once first
+   # Then keyboard shortcut should work
+   ```
+
+6. **Wrong Directory Opens**:
+   ```bash
+   # Check Ghostty config
+   grep "working-directory" ~/.config/ghostty/config
+
+   # Comment out if set to static path:
+   # working-directory = /Users/brennon
+
+   # Ensure directory inheritance is enabled:
+   window-inherit-working-directory = true
+   ```
+
+**See Also**: [Finder Integration Guide](./GHOSTTY_FINDER_INTEGRATION.md) for comprehensive setup instructions
+
 ---
 
 ## Testing and Validation

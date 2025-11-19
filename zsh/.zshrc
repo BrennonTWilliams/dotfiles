@@ -31,15 +31,24 @@ alias clipboard-sync='uniclip 192.168.1.24:38687'
 # ==============================================================================
 
 # Set terminal title for current command and directory
-preexec() {
+# Using add-zsh-hook to avoid conflicts with Starship and other prompt systems
+autoload -Uz add-zsh-hook
+
+# Function to set title before command execution
+_set_title_preexec() {
     # Set terminal title to "directory: command"
     print -Pn "\e]0;%~: $1\a"
 }
 
-precmd() {
+# Function to set title after command completion
+_set_title_precmd() {
     # Set title to current directory when command finishes
     print -Pn "\e]0;%~\a"
 }
+
+# Register hooks (allows multiple functions to use precmd/preexec)
+add-zsh-hook preexec _set_title_preexec
+add-zsh-hook precmd _set_title_precmd
 
 # Python environment management
 # Using conda for Python environment management

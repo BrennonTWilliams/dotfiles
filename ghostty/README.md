@@ -21,6 +21,7 @@ This directory contains Ghostty terminal emulator configuration optimized for ma
 - CoreText font rendering optimization
 - SwiftUI native interface
 - Proper handling of macOS-specific features
+- **Finder integration** - Open terminal from any folder (see [Finder Integration](#finder-integration))
 
 ### ⌨️ Keybinding Strategy
 - **Ghostty-native keybindings** with proven syntax
@@ -40,8 +41,14 @@ This directory contains Ghostty terminal emulator configuration optimized for ma
 ghostty/
 ├── .config/
 │   └── ghostty/
-│       └── config      # Main configuration file
-└── README.md            # This file
+│       └── config           # Main configuration file
+├── automator/               # Finder integration Quick Actions
+│   ├── *.workflow/          # Automator workflow bundles
+│   ├── install-quick-actions.sh  # Installation script
+│   └── README.md            # Automator documentation
+├── completions/
+│   └── _ghostty             # Zsh completions
+└── README.md                # This file
 ```
 
 ## Installation
@@ -139,6 +146,71 @@ This Ghostty configuration is designed to work seamlessly with:
 - **Tmux configuration** (`.tmux.conf`) - Matching colors, keybindings
 - **macOS aliases** - Native clipboard and system integration
 - **Development tools** - Git, fzf, ripgrep integration
+
+## Finder Integration
+
+Open Ghostty terminal windows directly from Finder with multiple integration options.
+
+### Built-in Finder Services
+
+Ghostty includes native macOS Services for Finder integration:
+
+**Quick Access:**
+1. Right-click on any folder in Finder
+2. Navigate to **Services** → **"New Ghostty Window Here"**
+3. Terminal opens at the selected location
+
+**Keyboard Shortcuts:**
+Assign shortcuts in System Settings → Keyboard → Keyboard Shortcuts → Services:
+- Recommended: `⌘⌥T` for "New Ghostty Window Here"
+- Alternative: `⌘⌥⇧T` for "New Ghostty Tab Here"
+
+### Automator Quick Actions
+
+Custom Quick Actions for enhanced workflow:
+
+**Installation:**
+```bash
+# Install Quick Actions
+./ghostty/automator/install-quick-actions.sh
+
+# Verify installation
+./ghostty/automator/install-quick-actions.sh --verify
+```
+
+**Features:**
+- Right-click context menu integration
+- Finder toolbar button support
+- Customizable keyboard shortcuts
+- Touch Bar support (if available)
+
+### Third-Party Integration
+
+**OpenInTerminal App:**
+Professional Finder toolbar integration with multi-terminal support.
+
+```bash
+# Install via Homebrew
+brew install --cask openinterminal
+
+# Configure in app preferences:
+# - Set Ghostty as default terminal
+# - Assign global keyboard shortcut
+# - Add to Finder toolbar
+```
+
+### Comprehensive Guide
+
+For complete setup instructions, troubleshooting, and advanced configuration:
+
+**→ See:** [**Finder Integration Guide**](../docs/GHOSTTY_FINDER_INTEGRATION.md)
+
+This comprehensive guide includes:
+- Detailed setup instructions for all integration methods
+- Keyboard shortcut configuration
+- Permission troubleshooting
+- Custom workflow examples
+- Comparison of integration options
 
 ## Troubleshooting
 
