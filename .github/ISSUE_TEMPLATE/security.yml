@@ -1,0 +1,26 @@
+name: Security Vulnerability
+description: Report a security vulnerability (DO NOT use for non-security issues)
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## STOP - Please Read
+
+        **For security vulnerabilities, please DO NOT use this public issue template.**
+
+        Instead, report security vulnerabilities privately using GitHub's Security Advisory feature:
+
+        **[Report a Security Vulnerability](https://github.com/BrennonTWilliams/dotfiles/security/advisories/new)**
+
+        This ensures the vulnerability is not publicly disclosed before a fix is available.
+
+        See our [Security Policy](https://github.com/BrennonTWilliams/dotfiles/blob/main/SECURITY.md) for details.
+
+        ---
+
+        ## Non-Security Issues
+
+        If this is **not** a security vulnerability, please use:
+        - [Bug Report](https://github.com/BrennonTWilliams/dotfiles/issues/new?template=bug_report.md)
+        - [Feature Request](https://github.com/BrennonTWilliams/dotfiles/issues/new?template=feature_request.md)
