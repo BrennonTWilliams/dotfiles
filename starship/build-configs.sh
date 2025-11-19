@@ -72,8 +72,9 @@ filter_module_file() {
     done
 
     # Filter out excluded sections
+    # Note: Pattern matches TOML sections [name] but not shell conditionals [[
     awk -v pattern="$exclude_pattern" '
-    /^[[:space:]]*\[/ {
+    /^[[:space:]]*\[[a-zA-Z_]/ {
         if ($0 ~ pattern) {
             skip = 1
             next
