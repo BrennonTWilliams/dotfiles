@@ -6,17 +6,20 @@
 
 # Gruvbox-rainbow format string - colorful single-line layout
 format = """
-[](color_a1)$os$shell[](color_a1:bg=color_b1)$directory[](color_b1:bg=color_c1)$git_branch[](color_c1:bg=color_d1)$git_status[](color_d1:bg=color_e1)$nodejs$python$golang$rust$java[](color_e1:bg=color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
+[](color_a1)$os$shell[](fg:color_a1 bg:color_b1)$directory[](fg:color_b1 bg:color_c1)$git_branch[](fg:color_c1 bg:color_d1)$git_status[](fg:color_d1 bg:color_e1)$nodejs$python$golang$rust$java[](fg:color_e1 bg:color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
 
 # Alternative format with more module visibility
 # format = """
-# [](color_a1)$custom.github_username$hostname[](color_a1:bg=color_b1)$directory[](color_b1:bg=color_c1)$git_branch[](color_c1:bg=color_d1)$git_status[](color_d1:bg=color_e1)$nodejs$python$golang$rust$java[](color_e1:bg=color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
+# [](color_a1)$custom.github_username$hostname[](fg:color_a1 bg:color_b1)$directory[](fg:color_b1 bg:color_c1)$git_branch[](fg:color_c1 bg:color_d1)$git_status[](fg:color_d1 bg:color_e1)$nodejs$python$golang$rust$java[](fg:color_e1 bg:color_f1)$docker_context$terraform$kubernetes[](color_f1) $character"""
 
 # Blank line between prompts
 add_newline = false
 
 # Command timeout
 command_timeout = 1000
+
+# Activate the gruvbox_rainbow palette
+palette = "gruvbox_rainbow"
 
 # Gruvbox-rainbow color palette
 [palettes.gruvbox_rainbow]

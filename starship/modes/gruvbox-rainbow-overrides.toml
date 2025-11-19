@@ -3,45 +3,50 @@
 # ===================================
 # Gruvbox-rainbow preset specific customizations
 # Optimized for IosevkaTerm Nerd Font
+#
+# Color scheme (rainbow gradient):
+# - color_a1 (red):    OS, Shell
+# - color_b1 (orange): Directory
+# - color_c1 (yellow): Git Branch
+# - color_d1 (green):  Git Status
+# - color_e1 (aqua):   Languages
+# - color_f1 (teal):   Containers
 
-# Use the gruvbox_rainbow color scheme
-# Note: palette setting disabled to avoid Starship parsing warnings
-
-# OS module
+# OS module - Segment 1 (red background)
 [os]
-format = "[ $symbol]($style)"
-style = "color_a1"
+format = "[ $symbol ]($style)"
+style = "bg:color_a1 fg:color_fg0"
 disabled = false
 
 [os.symbols]
-Alpine = ""
-Amazon = ""
-Android = ""
-Arch = ""
-Artix = ""
-CentOS = ""
-Debian = ""
-Fedora = ""
-FreeBSD = ""
-Gentoo = ""
-Linux = ""
-Macos = ""
-Manjaro = ""
-Mint = ""
-NixOS = ""
-OpenBSD = ""
-openSUSE = ""
-Pop = ""
-Raspbian = ""
-Redhat = ""
-RedHatEnterprise = ""
-Solus = ""
-SUSE = ""
-Ubuntu = ""
-Unknown = ""
-Windows = ""
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = ""
+Artix = ""
+CentOS = ""
+Debian = ""
+Fedora = ""
+FreeBSD = ""
+Gentoo = ""
+Linux = ""
+Macos = ""
+Manjaro = ""
+Mint = ""
+NixOS = ""
+OpenBSD = ""
+openSUSE = ""
+Pop = ""
+Raspbian = ""
+Redhat = ""
+RedHatEnterprise = ""
+Solus = ""
+SUSE = ""
+Ubuntu = ""
+Unknown = ""
+Windows = ""
 
-# Shell module
+# Shell module - Segment 1 (red background)
 [shell]
 bash_indicator = "bash"
 fish_indicator = "fish"
@@ -52,14 +57,85 @@ elvish_indicator = "esh"
 tcsh_indicator = "tsh"
 nu_indicator = "nu"
 cmd_indicator = "cmd"
-unknown_indicator = "mystery shell"
-format = "[$indicator]($style)"
-style = "color_a1"
+unknown_indicator = "?"
+format = "[ $indicator ]($style)"
+style = "bg:color_a1 fg:color_fg0"
 disabled = false
 
-# Note: directory, git_branch, and git_status modules are defined in core-overridable.toml
-# and will use the gruvbox_rainbow palette colors automatically
+# Directory module - Segment 2 (orange background)
+[directory]
+format = "[ $path ]($style)"
+style = "bg:color_b1 fg:color_fg0"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = true
+read_only = " 󰌾"
+read_only_style = "bg:color_b1 fg:color_fg0"
+home_symbol = "󰋜 "
 
-# Note: All modules inherit Nerd Font symbols from base modules
-# Style can be overridden here if needed for gruvbox colors
+# Git branch module - Segment 3 (yellow background)
+[git_branch]
+format = "[[ $symbol $branch ](bg:color_c1 fg:color_fg0)]($style)"
+symbol = ""
+style = "bg:color_c1"
+truncation_length = 20
+truncation_symbol = "…"
 
+# Git status module - Segment 4 (green background)
+[git_status]
+format = "[[($all_status$ahead_behind )](bg:color_d1 fg:color_fg0)]($style)"
+style = "bg:color_d1"
+conflicted = "!"
+ahead = "↑"
+behind = "↓"
+diverged = "⚡"
+up_to_date = "✓"
+untracked = "?"
+stashed = "⚑"
+modified = "•"
+staged = "++"
+renamed = "→"
+deleted = "×"
+
+# Language modules - Segment 5 (aqua background)
+[nodejs]
+format = "[[ $symbol($version) ](bg:color_e1 fg:color_fg0)]($style)"
+symbol = " "
+style = "bg:color_e1"
+
+[python]
+format = "[[ $symbol($version) ](bg:color_e1 fg:color_fg0)]($style)"
+symbol = " "
+style = "bg:color_e1"
+
+[golang]
+format = "[[ $symbol($version) ](bg:color_e1 fg:color_fg0)]($style)"
+symbol = " "
+style = "bg:color_e1"
+
+[rust]
+format = "[[ $symbol($version) ](bg:color_e1 fg:color_fg0)]($style)"
+symbol = "󱘗 "
+style = "bg:color_e1"
+
+[java]
+format = "[[ $symbol($version) ](bg:color_e1 fg:color_fg0)]($style)"
+symbol = " "
+style = "bg:color_e1"
+
+# Container modules - Segment 6 (teal background)
+[docker_context]
+format = "[[ $symbol$context ](bg:color_f1 fg:color_fg0)]($style)"
+symbol = "󰡨 "
+style = "bg:color_f1"
+
+[terraform]
+format = "[[ $symbol$workspace ](bg:color_f1 fg:color_fg0)]($style)"
+symbol = "󰔱 "
+style = "bg:color_f1"
+
+[kubernetes]
+format = '[[ $symbol$context ](bg:color_f1 fg:color_fg0)]($style)'
+symbol = "󱃾 "
+style = "bg:color_f1"
+disabled = false

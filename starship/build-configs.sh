@@ -62,20 +62,36 @@ filter_module_file() {
         return 0
     fi
 
-    # Create a pattern to match excluded modules
-    local exclude_pattern=""
+    # Create a list of excluded module names (space-separated)
+    local exclude_list=""
     for module in "${exclude_modules[@]}"; do
-        if [[ -n "$exclude_pattern" ]]; then
-            exclude_pattern="$exclude_pattern|"
-        fi
-        exclude_pattern="$exclude_pattern^\\[$module\\]"
+        exclude_list="$exclude_list $module"
     done
 
-    # Filter out excluded sections
-    # Note: Pattern matches TOML sections [name] but not shell conditionals [[
-    awk -v pattern="$exclude_pattern" '
+    # Filter out excluded sections using AWK
+    # Uses string matching instead of regex to avoid escaping issues
+    awk -v excludes="$exclude_list" '
+    BEGIN {
+        # Build associative array of excluded modules
+        n = split(excludes, arr, " ")
+        for (i = 1; i <= n; i++) {
+            if (arr[i] != "") excluded[arr[i]] = 1
+        }
+        skip = 0
+    }
     /^[[:space:]]*\[[a-zA-Z_]/ {
-        if ($0 ~ pattern) {
+        # Extract module name from [module] or [module.subkey]
+        # Remove leading whitespace and brackets
+        line = $0
+        gsub(/^[[:space:]]*\[/, "", line)
+        gsub(/\].*$/, "", line)
+        module_name = line
+
+        # Get base module name (before any dot)
+        split(module_name, parts, ".")
+        base_name = parts[1]
+
+        if (base_name in excluded) {
             skip = 1
             next
         } else {
