@@ -10,33 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025-11-19 - Repository Cleanup & Consolidation Release
 
 ### Added
-- **Style Guide**: Comprehensive style guide (`STYLE_GUIDE.md`) for consistent code formatting
-- **Module Documentation**: Added README files for tmux, bash, foot, and sway modules
-- **Package Management Documentation**: New `docs/PACKAGE_MANAGEMENT.md` explaining package files
-- **Tests Documentation**: Added `tests/README.md` with test suite inventory
-- **Shared Utilities**: Created `scripts/lib/service-utils.sh` for cross-platform service management
+- **Starship Build System**: New modular build system with source/output separation
+  - Source files in `starship/src/` (formats, modes, modules)
+  - Generated configs output to `starship/output/`
+  - Clear separation between editable sources and built artifacts
 
 ### Changed
 - **Repository Organization**: Reduced root markdown files from 19 to 7 essential files
+  - Kept: README.md, CONTRIBUTING.md, CHANGELOG.md, LICENSE.md, CODE_OF_CONDUCT.md, SECURITY.md, TROUBLESHOOTING.md
 - **Documentation Structure**: Moved supplementary docs to `docs/` directory
-  - USAGE_GUIDE.md, SYSTEM_SETUP.md, macos-setup.md, TESTING.md, SHELLCHECK_SETUP.md
-- **Theme Naming**: Standardized Ghostty themes
+  - USAGE_GUIDE.md, SYSTEM_SETUP.md, MACOS_SETUP.md, TESTING.md, SHELLCHECK_SETUP.md
+  - STYLE-GUIDE.md, THIRD-PARTY-LICENSES.md, SEMANTIC_VERSIONING.md
+- **Theme Naming**: Standardized Ghostty themes for generic use
   - Renamed `bren-dark` to `gruvbox-dark-custom`
   - Renamed `bren-light` to `gruvbox-light-custom`
-- **Package Files**: Renamed `packages.txt` to `packages-linux.txt` for clarity
-- **Installation Scripts**: Consolidated platform-specific service installation code
-- **Archive Cleanup**: Consolidated 17 archive reports to 5-8 essential historical docs
+- **Ghostty Config**: Removed hardcoded user paths, now uses defaults
 
 ### Removed
 - **Deprecated Scripts**: Removed legacy `install.sh` (superseded by `install-new.sh`)
-- **Redundant Documentation**: Merged `README-Mac-Reference.md` content into SYSTEM_SETUP.md
-- **Duplicate Reports**: Cleaned up duplicate analysis and verification reports
+  - 72% code reduction (1037 lines → 286 lines in new installer)
+- **Archive Directory**: Removed `docs/archive/` containing 21 outdated reports with personal information
+- **Personal Information**: Cleaned hardcoded paths from configs and documentation
 
-### Improved
-- **Code Quality**: Repository quality score improved from 88/100 to 96/100
-- **Maintainability**: Clear separation between source and generated files
-- **.gitignore**: Added patterns for starship generated TOML files and local config overrides
-- **Cross-Platform Support**: Unified service utilities for macOS and Linux
+### Fixed
+- **Starship Build Script**: Fixed TOML section pattern matching in `build-configs.sh`
+
+### Security
+- **Privacy Cleanup**: Removed all personal email addresses and hardcoded user paths
+- **Release Ready**: Repository prepared for public release with no PII exposure
 
 ## [1.0.0] - 2025-11-15
 

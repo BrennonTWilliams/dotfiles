@@ -5,7 +5,7 @@
 
 ## Overview
 
-This document outlines the dotfiles and configuration files present on your system (`/Users/brennon`) that are currently not tracked in this dotfiles repository. The analysis identified several categories of missing configurations that may be worth considering for inclusion.
+This document outlines the dotfiles and configuration files present on your system (`$HOME`) that are currently not tracked in this dotfiles repository. The analysis identified several categories of missing configurations that may be worth considering for inclusion.
 
 ## Current Repository Coverage
 

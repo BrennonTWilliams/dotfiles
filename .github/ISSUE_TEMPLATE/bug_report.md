@@ -23,7 +23,7 @@ What actually happened?
 - OS: [macOS 14.5 / Ubuntu 22.04 / etc.]
 - Architecture: [Intel x86_64 / Apple Silicon ARM64]
 - Shell: [zsh 5.9 / bash 5.1]
-- Installation method: [install.sh / install-new.sh]
+- Installation method: [install-new.sh / manual stow]
 
 ## Additional Context
 Any other relevant information, logs, or screenshots.

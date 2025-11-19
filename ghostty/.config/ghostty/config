@@ -149,8 +149,9 @@ copy-on-select = true
 # Shell command for new terminals
 command = /bin/zsh
 
-# Working directory - always start in home directory (/Users/brennon)
-working-directory = /Users/brennon
+# Working directory - start in home directory
+# Defaults to $HOME if not specified
+# working-directory = ~
 
 # Terminal type
 term = xterm-256color
