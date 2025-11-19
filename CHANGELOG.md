@@ -5,7 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2025-11-05] - Starship Nerd Font Enhancement Release
+## [Unreleased]
+
+## [1.1.0] - 2025-11-19 - Repository Cleanup & Consolidation Release
+
+### Added
+- **Starship Build System**: New modular build system with source/output separation
+  - Source files in `starship/src/` (formats, modes, modules)
+  - Generated configs output to `starship/output/`
+  - Clear separation between editable sources and built artifacts
+
+### Changed
+- **Repository Organization**: Reduced root markdown files from 19 to 7 essential files
+  - Kept: README.md, CONTRIBUTING.md, CHANGELOG.md, LICENSE.md, CODE_OF_CONDUCT.md, SECURITY.md, TROUBLESHOOTING.md
+- **Documentation Structure**: Moved supplementary docs to `docs/` directory
+  - USAGE_GUIDE.md, SYSTEM_SETUP.md, MACOS_SETUP.md, TESTING.md, SHELLCHECK_SETUP.md
+  - STYLE-GUIDE.md, THIRD-PARTY-LICENSES.md, SEMANTIC_VERSIONING.md
+- **Theme Naming**: Standardized Ghostty themes for generic use
+  - Renamed `bren-dark` to `gruvbox-dark-custom`
+  - Renamed `bren-light` to `gruvbox-light-custom`
+- **Ghostty Config**: Removed hardcoded user paths, now uses defaults
+
+### Removed
+- **Deprecated Scripts**: Removed legacy `install.sh` (superseded by `install-new.sh`)
+  - 72% code reduction (1037 lines → 286 lines in new installer)
+- **Archive Directory**: Removed `docs/archive/` containing 21 outdated reports with personal information
+- **Personal Information**: Cleaned hardcoded paths from configs and documentation
+
+### Fixed
+- **Starship Build Script**: Fixed TOML section pattern matching in `build-configs.sh`
+
+### Security
+- **Privacy Cleanup**: Removed all personal email addresses and hardcoded user paths
+- **Release Ready**: Repository prepared for public release with no PII exposure
+
+## [1.0.0] - 2025-11-15
+
+### Added
+- **Semantic Versioning**: Implemented proper semantic versioning system
+  - VERSION file tracking current version
+  - Automated version management script (`scripts/version.sh`)
+  - Version bump, tagging, and CHANGELOG update automation
+  - Versioning documentation in CONTRIBUTING.md
+- **Version Display**: Added version information to install script
+
+### Changed
+- **CHANGELOG Format**: Converted from date-based releases to semantic versioning
+  - Previous releases mapped to pre-1.0.0 development history
+  - Unreleased section for tracking ongoing changes
+
+## [0.4.0] - 2025-11-05 - Starship Nerd Font Enhancement Release
 
 ### Added
 - **Starship Nerd Font Icons**: Replaced emoji Git status symbols with professional Nerd Font icons
@@ -31,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2025-10-30] - Multi-Wave Implementation Release
+## [0.3.0] - 2025-10-30 - Multi-Wave Implementation Release
 
 ### Added
 - **Comprehensive macOS Support**: Full Apple Silicon (M1/M2/M3/M4) and Intel Mac optimization
@@ -66,7 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Integration Testing**: Comprehensive end-to-end installation and configuration validation
 - **Performance Validation**: Verified setup times and resource usage optimization
 
-## [2025-10-29] - Infrastructure Enhancement
+## [0.2.0] - 2025-10-29 - Infrastructure Enhancement
 
 ### Added
 - **PATH Configuration**: Centralized environment configuration
@@ -77,7 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Usage Documentation**: Enhanced daily workflow guidance
 - **Repository References**: Updated GitHub username and repository URLs
 
-## [2025-10-28] - Documentation Foundation
+## [0.1.1] - 2025-10-28 - Documentation Foundation
 
 ### Added
 - **Usage Guide**: Comprehensive daily usage documentation
@@ -87,7 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **Repository Configuration**: Corrected GitHub username in project files
 
-## [2025-10-27] - Initial Release
+## [0.1.0] - 2025-10-27 - Initial Release
 
 ### Added
 - **Base Dotfiles**: Initial system configuration files
@@ -153,8 +202,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 For support, please:
 1. Check the [Troubleshooting Guide](TROUBLESHOOTING.md)
-2. Contact the maintainer directly (this is a private repository)
-3. Create a new issue with detailed information about your environment and problem
+2. Create a new issue with detailed information about your environment and problem
+3. Contact the maintainer directly if needed
 
 ## Contributing
 

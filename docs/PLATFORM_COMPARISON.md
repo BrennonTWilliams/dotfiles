@@ -475,7 +475,8 @@ ln -sf ~/dotfiles/zsh/.zshenv ~/.zshenv
 ln -sf ~/dotfiles/zsh/.zsh_cross_platform ~/.zsh_cross_platform
 
 # Cross-platform tools
-ln -sf ~/dotfiles/starship/starship.toml ~/.config/starship.toml
+# Starship uses mode files - link to your preferred mode
+ln -sf ~/dotfiles/starship/modes/standard.toml ~/.config/starship.toml
 ln -sf ~/dotfiles/neovim ~/.config/nvim
 ln -sf ~/dotfiles/tmux/.tmux.conf ~/.tmux.conf
 ```

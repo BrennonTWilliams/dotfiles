@@ -18,7 +18,9 @@ fi
 
 # Aliases
 alias tre='eza -T'
-alias clipboard-sync='uniclip 192.168.1.24:38687'
+# Clipboard sync - uses UNICLIP_SERVER environment variable
+# Set UNICLIP_SERVER in ~/.zshenv or ~/.zshrc.local (e.g., export UNICLIP_SERVER="192.168.1.24:38687")
+alias clipboard-sync='uniclip ${UNICLIP_SERVER:-localhost:53168}'
 
 # ==============================================================================
 # Starship Prompt Configuration
@@ -55,63 +57,114 @@ add-zsh-hook precmd _set_title_precmd
 
 # export PATH="$(resolve_platform_path "conda_bin"):$PATH"  # commented out by conda initialize
 
-# Docker CLI completions - use cross-platform path resolution
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    local docker_completions="$(resolve_platform_path "docker_completions")"
-    if [ -d "$docker_completions" ]; then
-        fpath=($docker_completions $fpath)
+# ==============================================================================
+# VSCode Shell Integration (Optimized)
+# ==============================================================================
+# Performance: 10-30ms baseline, optimized to <5ms with caching
+# Only loads when running in VSCode terminal ($TERM_PROGRAM == "vscode")
+if [[ "$TERM_PROGRAM" == "vscode" ]]; then
+    # Cache directory for shell integration paths
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+    local vscode_cache="$cache_dir/vscode_integration_path"
+    local vscode_integration=""
+
+    # Try to load from cache first (avoids spawning 'code' process)
+    if [[ -f "$vscode_cache" && -r "$vscode_cache" ]]; then
+        vscode_integration="$(<"$vscode_cache")"
+        # Verify cached path is still valid
+        if [[ ! -f "$vscode_integration" ]]; then
+            vscode_integration=""
+            rm -f "$vscode_cache" 2>/dev/null
+        fi
     fi
-else
-    # Fallback to hardcoded path if cross-platform utilities not available
-    if [ -d "$HOME/.docker/completions" ]; then
-        fpath=($HOME/.docker/completions $fpath)
+
+    # If cache miss or invalid, fetch and cache the path
+    if [[ -z "$vscode_integration" ]] && command -v code >/dev/null 2>&1; then
+        vscode_integration="$(code --locate-shell-integration-path zsh 2>/dev/null)"
+        if [[ -n "$vscode_integration" && -f "$vscode_integration" ]]; then
+            mkdir -p "$cache_dir" 2>/dev/null
+            echo "$vscode_integration" > "$vscode_cache" 2>/dev/null
+        fi
     fi
+
+    # Source the integration if available
+    [[ -n "$vscode_integration" && -f "$vscode_integration" ]] && . "$vscode_integration"
+
+    unset vscode_integration vscode_cache cache_dir
 fi
 
-[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+# >>> conda initialize (lazy-loaded) >>>
+# !! Lazy-loading wrapper for conda - saves 100-200ms on shell startup !!
+# Conda will be initialized only when first used
+#
+# This replaces the standard synchronous conda init that runs on every shell startup.
+# Instead, we create a placeholder function that initializes conda on first use.
 
-# Initialize completions system (do this only once, at the end of the file)
-autoload -Uz compinit
-compinit
+# Initialize conda when first used
+__conda_lazy_init() {
+    # Remove the placeholder function to avoid recursion
+    unfunction conda 2>/dev/null
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-# Use cross-platform path resolution for conda
+    # Use cross-platform path resolution for conda
+    if command -v resolve_platform_path >/dev/null 2>&1; then
+        local conda_bin="$(resolve_platform_path "conda_bin")"
+        __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+    else
+        # Fallback to dynamic paths for backward compatibility
+        local conda_bin="${HOME}/miniforge3/bin"
+        if [ -d "$conda_bin" ]; then
+            __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+        fi
+    fi
+
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if command -v resolve_platform_path >/dev/null 2>&1; then
+            local conda_profile="$(resolve_platform_path "conda_profile")"
+            local conda_bin="$(resolve_platform_path "conda_bin")"
+            if [ -f "$conda_profile" ]; then
+                . "$conda_profile"
+            else
+                export PATH="$conda_bin:$PATH"
+            fi
+        else
+            # Fallback to dynamic paths for backward compatibility
+            local conda_root="${HOME}/miniforge3"
+            local conda_profile="$conda_root/etc/profile.d/conda.sh"
+            local conda_bin="$conda_root/bin"
+            if [ -f "$conda_profile" ]; then
+                . "$conda_profile"
+            else
+                export PATH="$conda_bin:$PATH"
+            fi
+        fi
+    fi
+    unset __conda_setup
+
+    # Clean up the lazy init function
+    unfunction __conda_lazy_init
+}
+
+# Create a placeholder conda function that initializes on first use
+conda() {
+    __conda_lazy_init
+    # Call the real conda command with all arguments
+    conda "$@"
+}
+
+# Ensure conda bin is in PATH for other tools that might need it
 if command -v resolve_platform_path >/dev/null 2>&1; then
     local conda_bin="$(resolve_platform_path "conda_bin")"
-    __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+    export PATH="$conda_bin:$PATH"
 else
     # Fallback to dynamic paths for backward compatibility
     local conda_bin="${HOME}/miniforge3/bin"
     if [ -d "$conda_bin" ]; then
-        __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+        export PATH="$conda_bin:$PATH"
     fi
 fi
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local conda_profile="$(resolve_platform_path "conda_profile")"
-        local conda_bin="$(resolve_platform_path "conda_bin")"
-        if [ -f "$conda_profile" ]; then
-            . "$conda_profile"
-        else
-            export PATH="$conda_bin:$PATH"
-        fi
-    else
-        # Fallback to dynamic paths for backward compatibility
-        local conda_root="${HOME}/miniforge3"
-        local conda_profile="$conda_root/etc/profile.d/conda.sh"
-        local conda_bin="$conda_root/bin"
-        if [ -f "$conda_profile" ]; then
-            . "$conda_profile"
-        else
-            export PATH="$conda_bin:$PATH"
-        fi
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+# <<< conda initialize (lazy-loaded) <<<
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 # Use cross-platform path resolution for Docker completions
@@ -129,47 +182,94 @@ compinit
 # ==============================================================================
 # PATH Configuration
 # ==============================================================================
+# NOTE: Standard PATH additions (Homebrew, NPM, .local/bin, Pyenv) are now in .zshenv
+# Only application-specific paths are added here
 
-# Add custom directories to PATH (consolidated from multiple locations)
-# Use cross-platform path resolution where available
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    export PATH="$(resolve_platform_path "uzi"):$PATH"
-    export PATH="$(resolve_platform_path "sdd_workshops"):$PATH"
-    export PATH="$(resolve_platform_path "npm_global_bin"):$PATH"
-else
-    # Fallback to dynamic paths for backward compatibility
-    export PATH="$HOME/AIProjects/ai-workspaces/uzi:$PATH"
-    export PATH="$PATH:$HOME/AIProjects/ai-workspaces/sdd-workshops"
-    export PATH="$HOME/.npm-global/bin:$PATH"
-fi
-
-# Common paths that work across platforms
-export PATH="$HOME/.local/bin:$PATH"
-
-# Platform-specific paths
+# Platform-specific configuration (non-PATH)
 case "$(detect_os 2>/dev/null || echo 'unknown')" in
     "macos")
-        export PATH="/opt/homebrew/bin:$PATH"
         # Library path for microsandbox (macOS only)
         export DYLD_LIBRARY_PATH="$(resolve_platform_path "local_lib" 2>/dev/null || echo "$HOME/.local/lib"):$DYLD_LIBRARY_PATH"
         ;;
     "linux")
-        # Add Linux-specific paths here if needed
-        # For example: export PATH="$HOME/.linuxbrew/bin:$PATH"
+        # Add Linux-specific configuration here if needed
         ;;
 esac
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
-# z - jump around
-. ~/.local/share/z/z.sh
+# >>> z - jump around (lazy-loaded) >>>
+# !! Lazy-loading wrapper for z - saves 5-15ms on shell startup !!
+# Z will be initialized only when first used
+#
+# This replaces the standard synchronous z init that runs on every shell startup.
+# Instead, we create a placeholder function that initializes z on first use.
+
+# Initialize z when first used
+__z_lazy_init() {
+    # Remove the placeholder function to avoid recursion
+    unfunction z 2>/dev/null
+
+    # Source the z script
+    if [[ -f ~/.local/share/z/z.sh ]]; then
+        . ~/.local/share/z/z.sh
+    else
+        echo "Warning: z.sh not found at ~/.local/share/z/z.sh"
+        return 1
+    fi
+
+    # Clean up the lazy init function
+    unfunction __z_lazy_init
+}
+
+# Create a placeholder z function that initializes on first use
+z() {
+    __z_lazy_init
+    # Call the real z command with all arguments
+    z "$@"
+}
+# <<< z - jump around (lazy-loaded) <<<
 
 alias breath='zenta now --quick'
 alias breathe='zenta now'
 alias reflect='zenta reflect'
 
-[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+# ==============================================================================
+# Kiro Shell Integration (Optimized)
+# ==============================================================================
+# Performance: 10-30ms baseline, optimized to <5ms with caching
+# Only loads when running in Kiro terminal ($TERM_PROGRAM == "kiro")
+if [[ "$TERM_PROGRAM" == "kiro" ]]; then
+    # Cache directory for shell integration paths
+    local cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+    local kiro_cache="$cache_dir/kiro_integration_path"
+    local kiro_integration=""
+
+    # Try to load from cache first (avoids spawning 'kiro' process)
+    if [[ -f "$kiro_cache" && -r "$kiro_cache" ]]; then
+        kiro_integration="$(<"$kiro_cache")"
+        # Verify cached path is still valid
+        if [[ ! -f "$kiro_integration" ]]; then
+            kiro_integration=""
+            rm -f "$kiro_cache" 2>/dev/null
+        fi
+    fi
+
+    # If cache miss or invalid, fetch and cache the path
+    if [[ -z "$kiro_integration" ]] && command -v kiro >/dev/null 2>&1; then
+        kiro_integration="$(kiro --locate-shell-integration-path zsh 2>/dev/null)"
+        if [[ -n "$kiro_integration" && -f "$kiro_integration" ]]; then
+            mkdir -p "$cache_dir" 2>/dev/null
+            echo "$kiro_integration" > "$kiro_cache" 2>/dev/null
+        fi
+    fi
+
+    # Source the integration if available
+    [[ -n "$kiro_integration" && -f "$kiro_integration" ]] && . "$kiro_integration"
+
+    unset kiro_integration kiro_cache cache_dir
+fi
 
 
 
@@ -180,14 +280,6 @@ alias tm='task-master'
 alias taskmaster='task-master'
 
 # IntelliShell integration removed - using Starship prompt instead
-
-# Video Analysis CLI - use cross-platform path resolution
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    alias video-analysis='$(resolve_platform_path "video_analysis_cli")'
-else
-    # Fallback to dynamic path for backward compatibility
-    alias video-analysis='$HOME/AIProjects/ai-workspaces/sdd-workshops/video-analysis-cli'
-fi
 
 # ==============================================================================
 # Starship Display Mode Functions
@@ -202,7 +294,7 @@ starship-compact() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to compact configuration
@@ -220,7 +312,7 @@ starship-standard() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to standard configuration
@@ -238,7 +330,7 @@ starship-verbose() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Create symlink to verbose configuration
@@ -257,7 +349,7 @@ starship-mode() {
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_config="$HOME/.config/starship/starship.toml"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
 
     # Check which configuration file is currently symlinked
@@ -302,7 +394,7 @@ if [[ ! -L "$(resolve_platform_path "starship_config" 2>/dev/null || echo "$HOME
     else
         # Fallback to hardcoded paths for backward compatibility
         local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/AIProjects/ai-workspaces/dotfiles/starship"
+        local dotfiles_dir="$HOME/.dotfiles/starship"
     fi
     ln -sf "$dotfiles_dir/modes/standard.toml" "$starship_dir/starship.toml"
 fi

@@ -7,7 +7,7 @@
 # Works on Debian/Ubuntu-based systems including Raspberry Pi OS
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 # Source utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -44,6 +44,24 @@ install_pip() {
             if ! command_exists python3; then
                 brew install python3
             fi
+            ;;
+        zypper)
+            sudo zypper install -y python3-pip python3-virtualenv
+            ;;
+        xbps)
+            sudo xbps-install -y python3-pip python3-virtualenv
+            ;;
+        apk)
+            sudo apk add --no-cache python3 py3-pip py3-virtualenv
+            ;;
+        emerge)
+            sudo emerge dev-python/pip
+            ;;
+        eopkg)
+            sudo eopkg install -y python3 pip
+            ;;
+        swupd)
+            sudo swupd bundle-add python3-basic
             ;;
         *)
             error "Unknown package manager. Trying ensurepip fallback..."

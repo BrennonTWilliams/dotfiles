@@ -4,24 +4,11 @@
 #
 # The standard load order is: .zshenv → .zprofile → .zshrc
 # .zprofile is loaded only in login shells, not for every new terminal.
-
-# Homebrew setup
-# Check for both Apple Silicon and Intel locations
-if [ -x "/opt/homebrew/bin/brew" ]; then
-  # Apple Silicon Mac
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x "/usr/local/bin/brew" ]; then
-  # Intel Mac
-  eval "$(/usr/local/bin/brew shellenv)"
-elif command -v brew >/dev/null 2>&1; then
-  # If brew is in PATH but not in the standard locations
-  eval "$(brew shellenv)"
-fi
+#
+# NOTE: PATH modifications have been moved to .zshenv to prevent duplication
 
 # Python Environment Setup
-# Configure pyenv if installed
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# Configure pyenv if installed (PATH already set in .zshenv)
 if command -v pyenv >/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
@@ -36,8 +23,7 @@ if [ -z "$SSH_AUTH_SOCK" ] || ! [ -e "$SSH_AUTH_SOCK" ]; then
    fi
 
    # Check for a currently running instance of the agent
-   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
-   if [ "$RUNNING_AGENT" = "0" ]; then
+   if ! pgrep -f 'ssh-agent -s' > /dev/null 2>&1; then
         # Launch a new instance of the agent
         ssh-agent -s &> "$HOME/.ssh/ssh-agent"
    fi
@@ -50,12 +36,6 @@ if [ -z "$SSH_AUTH_SOCK" ] || ! [ -e "$SSH_AUTH_SOCK" ]; then
            ssh-add > /dev/null 2>&1
        fi
    fi
-fi
-
-# NPM Global Packages Path
-# Add npm global packages to PATH if the directory exists
-if [ -d "$HOME/.npm-global" ]; then
-    export PATH="$HOME/.npm-global/bin:$PATH"
 fi
 
 # Load local overrides

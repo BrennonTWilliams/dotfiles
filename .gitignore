@@ -242,6 +242,22 @@ build/
 *.egg-info/
 
 # ==============================================================================
+# BACKUP FILES
+# ==============================================================================
+
+# Starship configuration backups
+starship/backups/
+
+# ==============================================================================
+# GENERATED CONFIGURATION FILES
+# ==============================================================================
+
+# Starship generated configs (built by build-configs.sh)
+# Source files are in starship/formats/, starship/modules/, starship/modes/
+# Generated output goes to starship/.config/starship/
+starship/.config/starship/
+
+# ==============================================================================
 # EXCEPTIONS (files to track despite matching patterns above)
 # ==============================================================================
 

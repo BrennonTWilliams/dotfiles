@@ -1,0 +1,81 @@
+# ==============================================================================
+# GitLab CI Configuration for ShellCheck
+# ==============================================================================
+# This file provides ShellCheck integration for GitLab CI/CD
+#
+# To use this configuration:
+# 1. Include it in your main .gitlab-ci.yml:
+#    include:
+#      - local: '.gitlab-ci-shellcheck.yml'
+#
+# 2. Or copy the shellcheck job to your .gitlab-ci.yml file
+# ==============================================================================
+
+stages:
+  - test
+
+shellcheck:
+  stage: test
+  image: koalaman/shellcheck-alpine:stable
+
+  # Install bash for our run-shellcheck.sh script
+  before_script:
+    - apk add --no-cache bash
+
+  script:
+    - echo "Running ShellCheck analysis..."
+    - chmod +x scripts/run-shellcheck.sh
+    - ./scripts/run-shellcheck.sh --summary
+
+  # Only run on merge requests and main branch
+  only:
+    - merge_requests
+    - main
+    - master
+
+  # Run on shell script changes
+  rules:
+    - changes:
+        - "**/*.sh"
+        - install.sh
+        - scripts/**/*
+        - .shellcheckrc
+        - .gitlab-ci-shellcheck.yml
+
+  # Allow failure for now (remove this to make it mandatory)
+  allow_failure: false
+
+  # Cache ShellCheck results
+  cache:
+    key: shellcheck-cache
+    paths:
+      - .shellcheck-cache/
+
+  # Create artifacts on failure
+  artifacts:
+    when: on_failure
+    paths:
+      - shellcheck-results.txt
+    expire_in: 1 week
+
+# Alternative job using Ubuntu image
+shellcheck-ubuntu:
+  stage: test
+  image: ubuntu:latest
+
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y shellcheck
+
+  script:
+    - shellcheck --version
+    - chmod +x scripts/run-shellcheck.sh
+    - ./scripts/run-shellcheck.sh --summary | tee shellcheck-results.txt
+
+  # Only run manually or on schedule
+  when: manual
+
+  artifacts:
+    paths:
+      - shellcheck-results.txt
+    expire_in: 1 week

@@ -6,6 +6,7 @@ Thank you for your interest in contributing to this dotfiles project! This docum
 
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
+- [Semantic Versioning](#semantic-versioning)
 - [Testing](#testing)
 - [Documentation](#documentation)
 - [Code Standards](#code-standards)
@@ -19,7 +20,6 @@ Thank you for your interest in contributing to this dotfiles project! This docum
 
 - **Git**: Version control system
 - **GitHub Account**: For submitting pull requests
-- **SSH Key configured**: This is a private repository, requires SSH access
 - **Shell Environment**: Zsh or Bash (recommended)
 - **Text Editor**: Your preferred editor with shell script support
 
@@ -39,11 +39,16 @@ Thank you for your interest in contributing to this dotfiles project! This docum
 
 3. **Set Up Development Environment**
    ```bash
-   # Install development dependencies (if any)
-   ./install.sh --development
+   # Quick development setup (recommended for contributors)
+   # Note: install-new.sh does not have a --development flag.
+   # Use --dotfiles for selective installation or interactive mode:
+   ./install-new.sh --dotfiles
 
-   # Set up pre-commit hooks (if configured)
-   ./scripts/setup-dev.sh
+   # Or install dotfiles interactively
+   ./install-new.sh
+
+   # Or use the advanced setup script for custom configurations
+   ./scripts/setup-dev-env
    ```
 
 ## Development Workflow
@@ -98,8 +103,168 @@ git checkout -b fix/issue-description
 ./tests/test_installation.sh
 
 # Manual testing
-./install.sh --dry-run
+# Note: install-new.sh does not have a --dry-run flag.
+# Review the script or use the interactive mode to select specific components:
+# ./install-new.sh
+# For now, review code changes manually before running installation.
 ```
+
+## Semantic Versioning
+
+This project follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemVer).
+
+### Version Format
+
+Versions are formatted as `MAJOR.MINOR.PATCH`:
+
+- **MAJOR**: Incremented for incompatible changes (breaking changes)
+- **MINOR**: Incremented for backwards-compatible new features
+- **PATCH**: Incremented for backwards-compatible bug fixes
+
+### When to Bump Versions
+
+#### Major Version (Breaking Changes)
+Increment when you make incompatible changes:
+- Removing or renaming configuration files
+- Changing installation script behavior in non-backwards-compatible ways
+- Removing or changing public script interfaces
+- Requiring new system dependencies
+
+**Example**: `1.5.3` → `2.0.0`
+
+#### Minor Version (New Features)
+Increment when you add functionality in a backwards-compatible manner:
+- Adding new configuration files
+- Adding new setup scripts
+- Adding new optional features
+- Adding new platform support
+
+**Example**: `1.5.3` → `1.6.0`
+
+#### Patch Version (Bug Fixes)
+Increment when you make backwards-compatible bug fixes:
+- Fixing installation bugs
+- Correcting configuration errors
+- Updating documentation
+- Fixing typos
+
+**Example**: `1.5.3` → `1.5.4`
+
+### Version Management Workflow
+
+#### 1. Check Current Version
+
+```bash
+./scripts/version.sh current
+```
+
+#### 2. Make Your Changes
+
+Make your code changes and update the `[Unreleased]` section in `CHANGELOG.md`:
+
+```markdown
+## [Unreleased]
+
+### Added
+- New feature description
+
+### Fixed
+- Bug fix description
+```
+
+#### 3. Bump the Version
+
+Choose the appropriate bump type based on your changes:
+
+```bash
+# For breaking changes
+./scripts/version.sh bump major
+
+# For new features
+./scripts/version.sh bump minor
+
+# For bug fixes
+./scripts/version.sh bump patch
+```
+
+This will:
+- Update the `VERSION` file
+- Convert `[Unreleased]` section to versioned release in `CHANGELOG.md`
+- Create a new `[Unreleased]` section
+
+#### 4. Review Changes
+
+Review the updated `VERSION` file and `CHANGELOG.md`:
+
+```bash
+git diff VERSION CHANGELOG.md
+```
+
+Edit `CHANGELOG.md` if needed to improve release notes.
+
+#### 5. Commit Version Changes
+
+```bash
+git add VERSION CHANGELOG.md
+git commit -m "Bump version to $(cat VERSION)"
+```
+
+#### 6. Create Git Tag
+
+```bash
+./scripts/version.sh tag
+```
+
+This creates an annotated git tag (e.g., `v1.2.3`).
+
+#### 7. Push Changes and Tags
+
+```bash
+git push
+git push --tags
+```
+
+### Version Management Script
+
+The `scripts/version.sh` script provides these commands:
+
+```bash
+# Show current version
+./scripts/version.sh current
+
+# Bump version
+./scripts/version.sh bump major|minor|patch
+
+# Create git tag for current version
+./scripts/version.sh tag
+
+# Validate VERSION file and CHANGELOG
+./scripts/version.sh validate
+
+# Show help
+./scripts/version.sh help
+```
+
+### CHANGELOG Guidelines
+
+Follow the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format:
+
+- **Added**: New features
+- **Changed**: Changes to existing functionality
+- **Deprecated**: Soon-to-be-removed features
+- **Removed**: Removed features
+- **Fixed**: Bug fixes
+- **Security**: Security vulnerability fixes
+
+### Pre-Release Versions
+
+For pre-release versions (alpha, beta, rc), append the identifier:
+
+- `1.0.0-alpha.1` - Alpha release
+- `1.0.0-beta.1` - Beta release
+- `1.0.0-rc.1` - Release candidate
+
+Update the `VERSION` file manually for pre-releases.
 
 ## Testing
 
@@ -357,7 +522,10 @@ fi
 ```bash
 # Enable debug mode
 set -x  # Enable debug tracing
-./install.sh --debug
+# Note: install-new.sh does not have a --debug flag.
+# For debugging, use 'set -x' before running the script or edit the script
+# to add debug output as needed:
+# bash -x ./install-new.sh
 
 # Test specific components
 ./tests/test_component.sh --verbose

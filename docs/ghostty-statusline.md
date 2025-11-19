@@ -149,7 +149,7 @@ This works with Ghostty's native titlebar integration.
 ## Files Modified
 
 - `ghostty/.config/ghostty/config`: Added tab bar, resize overlays, keybindings
-- `ghostty/.config/ghostty/themes/bren-dark`: Enhanced colors for statusline
+- `ghostty/.config/ghostty/themes/gruvbox-dark-custom`: Enhanced colors for statusline
 - `zsh/.zshrc`: Added comprehensive statusline functions and prompt
 
 Reload your shell or restart Ghostty to see all changes take effect.

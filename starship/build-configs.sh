@@ -11,30 +11,26 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-# Configuration files directory
-CONFIG_DIR="$HOME/.config"
+# Source utility functions
+source "$SCRIPT_DIR/../scripts/lib/utils.sh"
+
+# Output directory for generated configs (separate from source files)
+OUTPUT_DIR="$SCRIPT_DIR/.config/starship"
 
 # Modes to build
 MODES=("compact" "standard" "verbose" "gruvbox-rainbow")
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Logging functions
+# Create aliases for logging functions to match this script's naming convention
 log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    info "$1"
 }
 
 log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    success "$1"
 }
 
 log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    warn "$1"
 }
 
 log_error() {
@@ -76,8 +72,9 @@ filter_module_file() {
     done
 
     # Filter out excluded sections
+    # Note: Pattern matches TOML sections [name] but not shell conditionals [[
     awk -v pattern="$exclude_pattern" '
-    /^[[:space:]]*\[/ {
+    /^[[:space:]]*\[[a-zA-Z_]/ {
         if ($0 ~ pattern) {
             skip = 1
             next
@@ -92,7 +89,7 @@ filter_module_file() {
 # Function to build a single configuration
 build_config() {
     local mode="$1"
-    local output_file="${mode}.toml"
+    local output_file="$OUTPUT_DIR/${mode}.toml"
 
     log_info "Building $mode configuration..."
 
@@ -189,7 +186,7 @@ EOF
 
     # Move temporary file to final location
     mv "$temp_file" "$output_file"
-    log_success "  Built $output_file"
+    log_success "  Built .config/starship/${mode}.toml"
 }
 
 # Function to validate configuration file
@@ -219,15 +216,14 @@ except Exception as e:
     fi
 }
 
-# Function to install configuration
-install_config() {
+# Function to verify configuration was built
+verify_config() {
     local mode="$1"
-    local config_file="${mode}.toml"
+    local config_file="$OUTPUT_DIR/${mode}.toml"
 
     if [[ -f "$config_file" ]]; then
-        log_info "Installing $config_file to modes/ directory..."
-        cp "$config_file" "modes/$config_file"
-        log_success "  Installed modes/$config_file"
+        log_success "  Verified .config/starship/${mode}.toml"
+        return 0
     else
         log_error "  Configuration file not found: $config_file"
         return 1
@@ -238,7 +234,7 @@ install_config() {
 build_all() {
     log_info "Starting Starship configuration build..."
 
-    # Check if required directories exist
+    # Check if required source directories exist
     for dir in formats modules modes; do
         if [[ ! -d "$dir" ]]; then
             log_error "Required directory not found: $dir"
@@ -246,14 +242,20 @@ build_all() {
         fi
     done
 
+    # Create output directory if it doesn't exist
+    if [[ ! -d "$OUTPUT_DIR" ]]; then
+        log_info "Creating output directory: .config/starship/"
+        mkdir -p "$OUTPUT_DIR"
+    fi
+
     # Build each mode
     local built_configs=()
     for mode in "${MODES[@]}"; do
         echo ""
         log_info "Building configuration for mode: $mode"
         if build_config "$mode"; then
-            validate_config "${mode}.toml"
-            install_config "$mode"
+            validate_config "$OUTPUT_DIR/${mode}.toml"
+            verify_config "$mode"
             built_configs+=("${mode}.toml")
         else
             log_error "Failed to build $mode configuration"
@@ -266,12 +268,9 @@ build_all() {
 
     # Show summary
     echo ""
-    echo "Generated files:"
+    echo "Generated files in .config/starship/:"
     for config in "${built_configs[@]}"; do
         echo "  - $config"
-        if [[ -f "modes/$config" ]]; then
-            echo "    → modes/$config"
-        fi
     done
 
     echo ""
@@ -282,21 +281,21 @@ build_all() {
     echo "  starship-gruvbox-rainbow # Switch to gruvbox-rainbow mode"
     echo ""
     log_info "Or manually update the symlink:"
-    echo "  ln -sf \$(pwd)/modes/compact.toml   ~/.config/starship.toml"
-    echo "  ln -sf \$(pwd)/modes/standard.toml  ~/.config/starship.toml"
-    echo "  ln -sf \$(pwd)/modes/verbose.toml   ~/.config/starship.toml"
-    echo "  ln -sf \$(pwd)/modes/gruvbox-rainbow.toml ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/.config/starship/compact.toml   ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/.config/starship/standard.toml  ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/.config/starship/verbose.toml   ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/.config/starship/gruvbox-rainbow.toml ~/.config/starship.toml"
 }
 
 # Function to clean old configurations
 clean() {
-    log_info "Cleaning old generated configurations..."
+    log_info "Cleaning generated configurations from .config/starship/..."
 
     for mode in "${MODES[@]}"; do
-        local config_file="${mode}.toml"
+        local config_file="$OUTPUT_DIR/${mode}.toml"
         if [[ -f "$config_file" ]]; then
             rm "$config_file"
-            log_info "  Removed $config_file"
+            log_info "  Removed .config/starship/${mode}.toml"
         fi
     done
 

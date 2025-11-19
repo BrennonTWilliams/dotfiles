@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Basic Integration Test - Focused testing without complex timing/measurement
-set -e
+set -euo pipefail
 
 # Configuration
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

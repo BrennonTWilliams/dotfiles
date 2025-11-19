@@ -6,6 +6,8 @@
 # Handles terminal configuration, fonts, and shell setup
 # ==============================================================================
 
+set -euo pipefail
+
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"

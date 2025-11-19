@@ -6,7 +6,7 @@
 # Comprehensive testing of installation scripts and cross-platform functionality
 # ==============================================================================
 
-set -e
+set -euo pipefail
 
 # Test configuration
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -337,8 +337,8 @@ test_error_handling() {
 
     # Test with non-existent package file
     local original_packages
-    if [[ -f "$DOTFILES_DIR/packages.txt" ]]; then
-        mv "$DOTFILES_DIR/packages.txt" "$DOTFILES_DIR/packages.txt.bak"
+    if [[ -f "$DOTFILES_DIR/packages-linux.txt" ]]; then
+        mv "$DOTFILES_DIR/packages-linux.txt" "$DOTFILES_DIR/packages-linux.txt.bak"
         original_packages="moved"
     fi
 
@@ -351,7 +351,7 @@ test_error_handling() {
 
     # Restore original file
     if [[ "$original_packages" == "moved" ]]; then
-        mv "$DOTFILES_DIR/packages.txt.bak" "$DOTFILES_DIR/packages.txt"
+        mv "$DOTFILES_DIR/packages-linux.txt.bak" "$DOTFILES_DIR/packages-linux.txt"
     fi
 
     # Test permission error handling

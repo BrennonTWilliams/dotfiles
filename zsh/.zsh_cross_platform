@@ -68,149 +68,203 @@ detect_terminal() {
 }
 
 # ==============================================================================
-# Dynamic Path Resolution System
+# Dynamic Path Resolution System with Caching
 # ==============================================================================
+
+# Cache for resolved paths - using associative array for O(1) lookups
+typeset -gA _PLATFORM_PATH_CACHE
+
+# Cache for platform detection results to avoid repeated subprocess calls
+typeset -g _CACHED_OS=""
+typeset -g _CACHED_USERNAME=""
+typeset -g _CACHED_USER_HOME=""
 
 # Get user's home directory in a cross-platform way
 get_user_home() {
-    # Force use of capitalized home directory for consistency
-    echo "/Users/Brennon"
+    # Use the standard HOME environment variable for portability
+    echo "$HOME"
 }
 
-# Get user's username in a cross-platform way
+# Get user's username in a cross-platform way (with caching)
 get_username() {
-    if command -v whoami >/dev/null 2>&1; then
-        whoami
-    elif [[ -n "$USER" ]]; then
-        echo "$USER"
-    elif [[ -n "$USERNAME" ]]; then
-        echo "$USERNAME"
-    else
-        echo "user"  # Safe fallback
+    if [[ -n "$_CACHED_USERNAME" ]]; then
+        echo "$_CACHED_USERNAME"
+        return
     fi
+
+    if command -v whoami >/dev/null 2>&1; then
+        _CACHED_USERNAME=$(whoami)
+    elif [[ -n "$USER" ]]; then
+        _CACHED_USERNAME="$USER"
+    elif [[ -n "$USERNAME" ]]; then
+        _CACHED_USERNAME="$USERNAME"
+    else
+        _CACHED_USERNAME="user"  # Safe fallback
+    fi
+    echo "$_CACHED_USERNAME"
 }
 
-# Resolve platform-specific paths dynamically
+# Cached OS detection
+_get_cached_os() {
+    if [[ -n "$_CACHED_OS" ]]; then
+        echo "$_CACHED_OS"
+        return
+    fi
+
+    _CACHED_OS=$(detect_os)
+    echo "$_CACHED_OS"
+}
+
+# Cached home directory
+_get_cached_home() {
+    if [[ -n "$_CACHED_USER_HOME" ]]; then
+        echo "$_CACHED_USER_HOME"
+        return
+    fi
+
+    _CACHED_USER_HOME=$(get_user_home)
+    echo "$_CACHED_USER_HOME"
+}
+
+# Resolve platform-specific paths dynamically with caching
 resolve_platform_path() {
     local path_type="$1"
+
+    # Check cache first - this eliminates all subprocess calls for cached paths
+    if [[ -n "${_PLATFORM_PATH_CACHE[$path_type]}" ]]; then
+        echo "${_PLATFORM_PATH_CACHE[$path_type]}"
+        return
+    fi
+
+    # Resolve the path (only happens once per path_type)
     local username="$(get_username)"
-    local user_home="$(get_user_home)"
-    local os="$(detect_os)"
+    local user_home="$(_get_cached_home)"
+    local os="$(_get_cached_os)"
+    local resolved_path=""
 
     case "$path_type" in
-        "ai_projects")
-            case "$os" in
-                "macos") echo "/Users/$username/AIProjects" ;;
-                "linux") echo "$user_home/AIProjects" ;;
-                *) echo "$user_home/AIProjects" ;;
-            esac
-            ;;
-        "ai_workspaces")
-            echo "$(resolve_platform_path "ai_projects")/ai-workspaces"
-            ;;
         "dotfiles")
-            echo "$(resolve_platform_path "ai_workspaces")/dotfiles"
+            # Standard dotfiles location (users can override in .zshrc.local)
+            resolved_path="$user_home/.dotfiles"
             ;;
         "conda_root")
             case "$os" in
-                "macos") echo "$user_home/miniforge3" ;;
-                "linux") echo "$user_home/miniforge3" ;;
-                *) echo "$user_home/miniforge3" ;;
+                "macos") resolved_path="$user_home/miniforge3" ;;
+                "linux") resolved_path="$user_home/miniforge3" ;;
+                *) resolved_path="$user_home/miniforge3" ;;
             esac
             ;;
         "conda_bin")
             local conda_root="$(resolve_platform_path "conda_root")"
-            echo "$conda_root/bin"
+            resolved_path="$conda_root/bin"
             ;;
         "conda_profile")
             local conda_root="$(resolve_platform_path "conda_root")"
-            echo "$conda_root/etc/profile.d/conda.sh"
+            resolved_path="$conda_root/etc/profile.d/conda.sh"
             ;;
         "docker_completions")
             case "$os" in
-                "macos") echo "/Users/$username/.docker/completions" ;;
-                "linux") echo "$user_home/.docker/completions" ;;
-                *) echo "$user_home/.docker/completions" ;;
+                "macos") resolved_path="/Users/$username/.docker/completions" ;;
+                "linux") resolved_path="$user_home/.docker/completions" ;;
+                *) resolved_path="$user_home/.docker/completions" ;;
             esac
             ;;
-        "uzi")
-            echo "$(resolve_platform_path "ai_workspaces")/uzi"
-            ;;
-        "sdd_workshops")
-            echo "$(resolve_platform_path "ai_workspaces")/sdd-workshops"
-            ;;
-        "video_analysis_cli")
-            echo "$(resolve_platform_path "sdd_workshops")/video-analysis-cli"
-            ;;
         "npm_global")
-            echo "$user_home/.npm-global"
+            resolved_path="$user_home/.npm-global"
             ;;
         "npm_global_bin")
-            echo "$(resolve_platform_path "npm_global")/bin"
+            resolved_path="$(resolve_platform_path "npm_global")/bin"
             ;;
         "local_lib")
             case "$os" in
-                "macos") echo "$user_home/.local/lib" ;;
-                "linux") echo "$user_home/.local/lib" ;;
-                *) echo "$user_home/.local/lib" ;;
+                "macos") resolved_path="$user_home/.local/lib" ;;
+                "linux") resolved_path="$user_home/.local/lib" ;;
+                *) resolved_path="$user_home/.local/lib" ;;
             esac
             ;;
         "starship_config")
-            echo "$user_home/.config/starship"
+            resolved_path="$user_home/.config/starship"
             ;;
         "vscode_config")
             case "$os" in
-                "macos") echo "$user_home/Library/Application Support/Code/User" ;;
-                "linux") echo "$user_home/.config/Code/User" ;;
-                *) echo "$user_home/.config/Code/User" ;;
+                "macos") resolved_path="$user_home/Library/Application Support/Code/User" ;;
+                "linux") resolved_path="$user_home/.config/Code/User" ;;
+                *) resolved_path="$user_home/.config/Code/User" ;;
             esac
             ;;
         "gitconfig")
-            echo "$user_home/.gitconfig"
+            resolved_path="$user_home/.gitconfig"
             ;;
         "npmrc")
-            echo "$user_home/.npmrc"
+            resolved_path="$user_home/.npmrc"
             ;;
         "ssh_dir")
-            echo "$user_home/.ssh"
+            resolved_path="$user_home/.ssh"
             ;;
         "tmux_local")
-            echo "$user_home/.tmux.local"
+            resolved_path="$user_home/.tmux.local"
             ;;
         "zshrc_local")
-            echo "$user_home/.zshrc.local"
+            resolved_path="$user_home/.zshrc.local"
             ;;
         "zshenv_local")
-            echo "$user_home/.zshenv.local"
+            resolved_path="$user_home/.zshenv.local"
             ;;
         "zprofile_local")
-            echo "$user_home/.zprofile.local"
+            resolved_path="$user_home/.zprofile.local"
             ;;
         "bashrc_local")
-            echo "$user_home/.bashrc.local"
+            resolved_path="$user_home/.bashrc.local"
             ;;
         "bash_profile_local")
-            echo "$user_home/.bash_profile.local"
+            resolved_path="$user_home/.bash_profile.local"
             ;;
         "gitconfig_local")
-            echo "$user_home/.gitconfig.local"
+            resolved_path="$user_home/.gitconfig.local"
             ;;
         "npmrc_local")
-            echo "$user_home/.npmrc.local"
+            resolved_path="$user_home/.npmrc.local"
             ;;
         *)
             echo "❌ Unknown path type: $path_type" >&2
             return 1
             ;;
     esac
+
+    # Cache the resolved path for future lookups
+    _PLATFORM_PATH_CACHE[$path_type]="$resolved_path"
+    echo "$resolved_path"
+}
+
+# Pre-populate cache with commonly used paths for optimal performance
+# This eliminates subprocess calls during shell initialization
+_init_path_cache() {
+    # Pre-resolve the most frequently accessed paths
+    # These are typically called multiple times in .zshrc
+    local common_paths=(
+        "docker_completions"
+        "conda_bin"
+        "conda_profile"
+        "conda_root"
+        "npm_global_bin"
+        "starship_config"
+        "dotfiles"
+        "local_lib"
+    )
+
+    # Resolve each path once to populate cache
+    for path_type in "${common_paths[@]}"; do
+        resolve_platform_path "$path_type" >/dev/null 2>&1
+    done
 }
 
 # Export path resolution functions for use in other scripts
 # Note: Functions are automatically available in the current shell context
 
-# Set commonly used environment variables
-export AI_PROJECTS_DIR="$(resolve_platform_path "ai_projects")"
-export AI_WORKSPACES_DIR="$(resolve_platform_path "ai_workspaces")"
+# Initialize the path cache immediately for maximum performance
+_init_path_cache
+
+# Set commonly used environment variables (these will now use cached values)
 export DOTFILES_DIR="$(resolve_platform_path "dotfiles")"
 export CONDA_ROOT="$(resolve_platform_path "conda_root")"
 export CONDA_BIN="$(resolve_platform_path "conda_bin")"

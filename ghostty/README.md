@@ -56,7 +56,7 @@ ghostty/
 The Ghostty configuration is installed automatically when running:
 
 ```bash
-./install.sh --all --packages
+./install-new.sh --all --packages
 ```
 
 Or install Ghostty specifically:
@@ -65,8 +65,8 @@ Or install Ghostty specifically:
 # Install Ghostty via Homebrew
 brew install --cask ghostty
 
-# Install dotfiles configuration
-./install.sh ghostty
+# Stow the Ghostty configuration
+stow ghostty
 ```
 
 ## Key Features

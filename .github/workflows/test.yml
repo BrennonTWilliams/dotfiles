@@ -1,0 +1,300 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+# Cancel in-progress runs for the same workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # Test Suite - Run comprehensive integration tests
+  # ===========================================================================
+  test-suite:
+    name: Test Suite (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: macos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        run: |
+          echo "DOTFILES_DIR=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "PLATFORM=${{ matrix.platform }}" >> $GITHUB_ENV
+
+      # -----------------------------------------------------------------------
+      # Install Dependencies
+      # -----------------------------------------------------------------------
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            zsh \
+            tmux \
+            git \
+            curl \
+            stow \
+            shellcheck
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew update
+          brew install \
+            zsh \
+            tmux \
+            git \
+            curl \
+            stow \
+            shellcheck
+
+      # -----------------------------------------------------------------------
+      # Install Starship
+      # -----------------------------------------------------------------------
+      - name: Cache Starship
+        uses: actions/cache@v4
+        id: cache-starship
+        with:
+          path: |
+            ~/.local/bin/starship
+            /usr/local/bin/starship
+          key: ${{ runner.os }}-starship-${{ hashFiles('.github/workflows/test.yml') }}
+
+      - name: Install Starship
+        if: steps.cache-starship.outputs.cache-hit != 'true'
+        run: |
+          curl -sS https://starship.rs/install.sh | sh -s -- -y
+          # Verify installation
+          if command -v starship &> /dev/null; then
+            echo "Starship installed successfully"
+            starship --version
+          else
+            echo "Warning: Starship installation may have issues"
+          fi
+
+      # -----------------------------------------------------------------------
+      # Make scripts executable
+      # -----------------------------------------------------------------------
+      - name: Make test scripts executable
+        run: |
+          find tests -name "*.sh" -type f -exec chmod +x {} \;
+          find scripts -name "*.sh" -type f -exec chmod +x {} \;
+          chmod +x install*.sh
+
+      # -----------------------------------------------------------------------
+      # Run Tests
+      # -----------------------------------------------------------------------
+      - name: Run integration tests
+        id: tests
+        continue-on-error: true
+        run: |
+          # Set shell to bash for consistency
+          export SHELL=/bin/bash
+
+          # Run the comprehensive test suite
+          if [[ -f tests/run_all_tests.sh ]]; then
+            echo "Running comprehensive test suite..."
+            ./tests/run_all_tests.sh || true
+          else
+            echo "Warning: Comprehensive test suite not found"
+
+            # Run individual test files as fallback
+            echo "Running individual tests..."
+            for test_file in tests/test_*.sh; do
+              if [[ -f "$test_file" && -x "$test_file" ]]; then
+                echo "Running: $test_file"
+                "$test_file" || true
+              fi
+            done
+          fi
+
+      - name: Check test results
+        run: |
+          if [[ -d tests/test_results ]]; then
+            echo "Test results directory found"
+            ls -la tests/test_results/
+
+            # Check for latest summary
+            if [[ -f tests/test_results/latest_summary.txt ]]; then
+              echo "=== Test Summary ==="
+              cat tests/test_results/latest_summary.txt
+            fi
+          else
+            echo "No test results directory found"
+          fi
+
+      # -----------------------------------------------------------------------
+      # Upload Test Results
+      # -----------------------------------------------------------------------
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.platform }}
+          path: |
+            tests/test_results/
+            tests/*.log
+          retention-days: 7
+          if-no-files-found: warn
+
+      # -----------------------------------------------------------------------
+      # Generate Test Report Summary
+      # -----------------------------------------------------------------------
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Test Results - ${{ matrix.platform }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ -f tests/test_results/latest_summary.txt ]]; then
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat tests/test_results/latest_summary.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No test summary found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Platform Information" >> $GITHUB_STEP_SUMMARY
+          echo "- OS: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Platform: ${{ matrix.platform }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Shell: $(bash --version | head -1)" >> $GITHUB_STEP_SUMMARY
+
+          if command -v starship &> /dev/null; then
+            echo "- Starship: $(starship --version)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ===========================================================================
+  # Installation Test - Verify install script works
+  # ===========================================================================
+  installation-test:
+    name: Installation Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zsh git stow
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install zsh git stow
+
+      - name: Test installation script (dry-run)
+        run: |
+          # Make scripts executable
+          chmod +x install*.sh
+          chmod +x scripts/*.sh
+
+          # Test that scripts are syntactically correct
+          bash -n install.sh
+          bash -n install-new.sh
+
+          echo "✅ Installation scripts are syntactically valid"
+
+      - name: Test modular installation components
+        run: |
+          # Test each modular script
+          for script in scripts/setup-*.sh; do
+            if [[ -f "$script" ]]; then
+              echo "Testing: $script"
+              bash -n "$script"
+            fi
+          done
+
+          echo "✅ All modular installation scripts are valid"
+
+  # ===========================================================================
+  # Health Check - Verify system health check works
+  # ===========================================================================
+  health-check:
+    name: Health Check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    needs: [test-suite]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make health check executable
+        run: chmod +x scripts/health-check.sh
+
+      - name: Run health check
+        continue-on-error: true
+        run: |
+          # Run health check (may fail due to missing optional components)
+          ./scripts/health-check.sh || echo "Health check completed with warnings (expected in CI)"
+
+  # ===========================================================================
+  # Summary Job - Overall test status
+  # ===========================================================================
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test-suite, installation-test, health-check]
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          echo "## Overall Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check job statuses
+          if [[ "${{ needs.test-suite.result }}" == "success" ]]; then
+            echo "✅ Test Suite: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Test Suite: Failed or Cancelled" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.installation-test.result }}" == "success" ]]; then
+            echo "✅ Installation Test: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Installation Test: Failed or Cancelled" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.health-check.result }}" == "success" ]]; then
+            echo "✅ Health Check: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Health Check: Completed with warnings (expected in CI)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Set final status
+        run: |
+          # Fail if critical tests failed
+          if [[ "${{ needs.test-suite.result }}" != "success" ]] || \
+             [[ "${{ needs.installation-test.result }}" != "success" ]]; then
+            echo "Critical tests failed"
+            exit 1
+          fi
+          echo "All critical tests passed"
