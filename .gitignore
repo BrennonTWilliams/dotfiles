@@ -252,12 +252,10 @@ starship/backups/
 # GENERATED CONFIGURATION FILES
 # ==============================================================================
 
-# Starship configs (auto-generated from modes/ directory by build-configs.sh)
-starship/compact.toml
-starship/standard.toml
-starship/verbose.toml
-starship/gruvbox-rainbow.toml
-starship/gruvbox-rainbow-test.toml
+# Starship generated configs (built by build-configs.sh)
+# Source files are in starship/formats/, starship/modules/, starship/modes/
+# Generated output goes to starship/.config/starship/
+starship/.config/starship/
 
 # ==============================================================================
 # EXCEPTIONS (files to track despite matching patterns above)
