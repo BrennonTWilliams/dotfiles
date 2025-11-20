@@ -1,0 +1,554 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Gruvbox Theme Snippet for Obsidian
+   ═══════════════════════════════════════════════════════════════════
+
+   Color Palette Sources:
+   - Primary: Ghostty gruvbox-dark-custom theme
+   - Accents: Starship gruvbox-rainbow configuration
+   - Standard: Authentic gruvbox palette (morhetz/gruvbox)
+
+   Font Configuration:
+   - Body/Headings: Inter (SemiBold for headings)
+   - Code blocks: IosevkaTerm Nerd Font (matches terminal)
+   - UI elements: Inter
+   - Fallbacks: System fonts (San Francisco, Segoe UI, Roboto)
+
+   Features:
+   - Dark and light mode support
+   - Rainbow gradient headings (h1-h6) matching Starship prompt
+   - Inter font for readable prose, IosevkaTerm for code
+   - Optimized syntax highlighting for markdown
+   - Deep backgrounds from Ghostty for reduced eye strain
+
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────
+   Color Variable Definitions
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ▸ Ghostty Dark Theme Colors */
+  --gb-dark0-hard:      #1d2021;  /* Ghostty background */
+  --gb-dark0:           #282828;
+  --gb-dark0-soft:      #32302f;
+  --gb-dark1:           #3c3836;
+  --gb-dark2:           #504945;
+  --gb-dark3:           #665c54;
+  --gb-dark4:           #7c6f64;
+
+  --gb-gray:            #928374;  /* Ghostty palette 8 */
+  --gb-gray-dark:       #a89984;  /* Ghostty palette 7 */
+
+  --gb-light0-hard:     #f9f5d7;
+  --gb-light0:          #fbf1c7;
+  --gb-light0-soft:     #f2e5bc;
+  --gb-light1:          #ebdbb2;  /* Ghostty foreground */
+  --gb-light2:          #d5c4a1;
+  --gb-light3:          #bdae93;
+  --gb-light4:          #a89984;
+
+  /* ▸ Starship Rainbow Accent Colors */
+  --gb-red:             #cc241d;  /* Starship color_red */
+  --gb-red-bright:      #fb4934;  /* Ghostty palette 9 */
+  --gb-orange:          #d65d0e;  /* Starship color_orange */
+  --gb-orange-bright:   #fe8019;
+  --gb-yellow:          #d79921;  /* Starship color_yellow, Ghostty selection-fg */
+  --gb-yellow-bright:   #fabd2f;  /* Ghostty palette 11 */
+  --gb-green:           #98971a;  /* Starship color_green */
+  --gb-green-bright:    #b8bb26;  /* Ghostty palette 10 */
+  --gb-aqua:            #458588;  /* Starship color_aqua, Ghostty selection-bg */
+  --gb-aqua-bright:     #8ec07c;  /* Ghostty palette 14 */
+  --gb-blue:            #83a598;  /* Starship color_blue */
+  --gb-blue-bright:     #83a598;
+  --gb-purple:          #b16286;  /* Starship color_purple */
+  --gb-purple-bright:   #d3869b;  /* Ghostty palette 13 */
+  --gb-cyan:            #689d6a;  /* Ghostty palette 6 */
+  --gb-cyan-bright:     #8ec07c;
+
+  /* ▸ Spacing and Layout */
+  --gb-radius:          6px;
+  --gb-spacing:         8px;
+
+  /* ▸ Font Family Definitions */
+  --font-text:          "Inter", -apple-system, BlinkMacSystemFont,
+                        "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+                        "Cantarell", "Helvetica Neue", sans-serif;
+
+  --font-interface:     "Inter", -apple-system, BlinkMacSystemFont,
+                        "Segoe UI", "Roboto", sans-serif;
+
+  --font-monospace:     "IosevkaTerm Nerd Font", "JetBrains Mono",
+                        "Fira Code", "Consolas", "Monaco",
+                        "Courier New", monospace;
+
+  /* ▸ Font Weights (Inter) */
+  --font-weight-normal:    400;  /* Regular body text */
+  --font-weight-semibold:  600;  /* Headings for emphasis */
+  --font-weight-bold:      700;  /* Strong emphasis */
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   DARK MODE - Primary Color Scheme
+   ─────────────────────────────────────────────────────────────────── */
+
+.theme-dark {
+  /* ▸ Background Colors (from Ghostty) */
+  --background-primary:              var(--gb-dark0);
+  --background-primary-alt:          var(--gb-dark0-hard);
+  --background-secondary:            var(--gb-dark0-hard);
+  --background-secondary-alt:        var(--gb-dark1);
+  --background-modifier-border:      var(--gb-dark2);
+  --background-modifier-border-hover: var(--gb-dark3);
+  --background-modifier-border-focus: var(--gb-yellow);
+  --background-modifier-error-hover: var(--gb-red);
+  --background-modifier-error:       var(--gb-red);
+  --background-modifier-success:     var(--gb-green);
+  --background-modifier-cover:       rgba(29, 32, 33, 0.8);
+
+  /* ▸ Interactive States */
+  --interactive-normal:              var(--gb-dark1);
+  --interactive-hover:               var(--gb-dark2);
+  --interactive-accent:              var(--gb-yellow);
+  --interactive-accent-hover:        var(--gb-yellow-bright);
+  --interactive-accent-rgb:          215, 153, 33;
+  --interactive-success:             var(--gb-green);
+
+  /* ▸ Text Colors (from Ghostty) */
+  --text-normal:                     var(--gb-light1);
+  --text-muted:                      var(--gb-light3);
+  --text-faint:                      var(--gb-dark4);
+  --text-error:                      var(--gb-red-bright);
+  --text-error-hover:                var(--gb-red);
+  --text-highlight-bg:               var(--gb-yellow);
+  --text-highlight-bg-active:        var(--gb-orange);
+  --text-accent:                     var(--gb-yellow);
+  --text-accent-hover:               var(--gb-yellow-bright);
+  --text-on-accent:                  var(--gb-dark0-hard);
+  --text-selection:                  rgba(69, 133, 136, 0.5);
+
+  /* ▸ Heading Colors (Starship Rainbow Gradient) */
+  --h1-color:                        var(--gb-red-bright);
+  --h2-color:                        var(--gb-orange-bright);
+  --h3-color:                        var(--gb-yellow-bright);
+  --h4-color:                        var(--gb-green-bright);
+  --h5-color:                        var(--gb-aqua-bright);
+  --h6-color:                        var(--gb-purple-bright);
+
+  /* ▸ Link Colors */
+  --link-color:                      var(--gb-blue);
+  --link-color-hover:                var(--gb-blue-bright);
+  --link-external-color:             var(--gb-purple);
+  --link-external-color-hover:       var(--gb-purple-bright);
+  --link-unresolved-color:           var(--gb-gray);
+  --link-unresolved-opacity:         0.7;
+
+  /* ▸ Code Syntax Highlighting */
+  --code-normal:                     var(--gb-green);
+  --code-background:                 var(--gb-dark0-hard);
+  --code-comment:                    var(--gb-gray);
+  --code-function:                   var(--gb-yellow);
+  --code-important:                  var(--gb-orange);
+  --code-keyword:                    var(--gb-red);
+  --code-operator:                   var(--gb-light1);
+  --code-property:                   var(--gb-aqua);
+  --code-punctuation:                var(--gb-light3);
+  --code-string:                     var(--gb-green);
+  --code-tag:                        var(--gb-aqua);
+  --code-value:                      var(--gb-purple);
+
+  /* ▸ Tags and Metadata */
+  --tag-color:                       var(--gb-aqua);
+  --tag-background:                  var(--gb-dark1);
+  --tag-color-hover:                 var(--gb-aqua-bright);
+  --tag-background-hover:            var(--gb-dark2);
+
+  /* ▸ Graph View */
+  --graph-line:                      var(--gb-dark3);
+  --graph-node:                      var(--gb-yellow);
+  --graph-node-unresolved:           var(--gb-gray);
+  --graph-node-tag:                  var(--gb-aqua);
+  --graph-node-attachment:           var(--gb-green);
+
+  /* ▸ Status Bar and UI Elements */
+  --titlebar-background:             var(--gb-dark0-hard);
+  --titlebar-background-focused:     var(--gb-dark0);
+  --status-bar-background:           var(--gb-dark0-hard);
+  --tab-background-active:           var(--gb-dark0);
+  --tab-text-color-active:           var(--gb-yellow);
+
+  /* ▸ Scrollbars */
+  --scrollbar-bg:                    var(--gb-dark0-hard);
+  --scrollbar-thumb-bg:              var(--gb-dark3);
+  --scrollbar-active-thumb-bg:       var(--gb-dark4);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   LIGHT MODE - Inverted Color Scheme
+   ─────────────────────────────────────────────────────────────────── */
+
+.theme-light {
+  /* ▸ Background Colors (inverted) */
+  --background-primary:              var(--gb-light0);
+  --background-primary-alt:          var(--gb-light0-hard);
+  --background-secondary:            var(--gb-light0-hard);
+  --background-secondary-alt:        var(--gb-light1);
+  --background-modifier-border:      var(--gb-light2);
+  --background-modifier-border-hover: var(--gb-light3);
+  --background-modifier-border-focus: #b57614;
+  --background-modifier-error-hover: #9d0006;
+  --background-modifier-error:       #cc241d;
+  --background-modifier-success:     #79740e;
+  --background-modifier-cover:       rgba(249, 245, 215, 0.8);
+
+  /* ▸ Interactive States */
+  --interactive-normal:              var(--gb-light1);
+  --interactive-hover:               var(--gb-light2);
+  --interactive-accent:              #b57614;
+  --interactive-accent-hover:        #d65d0e;
+  --interactive-accent-rgb:          181, 118, 20;
+  --interactive-success:             #79740e;
+
+  /* ▸ Text Colors (inverted) */
+  --text-normal:                     var(--gb-dark1);
+  --text-muted:                      var(--gb-dark3);
+  --text-faint:                      var(--gb-light4);
+  --text-error:                      #9d0006;
+  --text-error-hover:                #cc241d;
+  --text-highlight-bg:               #d79921;
+  --text-highlight-bg-active:        #d65d0e;
+  --text-accent:                     #b57614;
+  --text-accent-hover:               #d65d0e;
+  --text-on-accent:                  var(--gb-light0-hard);
+  --text-selection:                  rgba(215, 153, 33, 0.3);
+
+  /* ▸ Heading Colors (darker for light mode) */
+  --h1-color:                        #9d0006;
+  --h2-color:                        #af3a03;
+  --h3-color:                        #b57614;
+  --h4-color:                        #79740e;
+  --h5-color:                        #076678;
+  --h6-color:                        #8f3f71;
+
+  /* ▸ Link Colors */
+  --link-color:                      #076678;
+  --link-color-hover:                #458588;
+  --link-external-color:             #8f3f71;
+  --link-external-color-hover:       #b16286;
+  --link-unresolved-color:           var(--gb-gray);
+  --link-unresolved-opacity:         0.7;
+
+  /* ▸ Code Syntax Highlighting */
+  --code-normal:                     #79740e;
+  --code-background:                 var(--gb-light1);
+  --code-comment:                    var(--gb-gray);
+  --code-function:                   #b57614;
+  --code-important:                  #af3a03;
+  --code-keyword:                    #9d0006;
+  --code-operator:                   var(--gb-dark1);
+  --code-property:                   #076678;
+  --code-punctuation:                var(--gb-dark3);
+  --code-string:                     #79740e;
+  --code-tag:                        #427b58;
+  --code-value:                      #8f3f71;
+
+  /* ▸ Tags and Metadata */
+  --tag-color:                       #076678;
+  --tag-background:                  var(--gb-light1);
+  --tag-color-hover:                 #458588;
+  --tag-background-hover:            var(--gb-light2);
+
+  /* ▸ Graph View */
+  --graph-line:                      var(--gb-light3);
+  --graph-node:                      #b57614;
+  --graph-node-unresolved:           var(--gb-gray);
+  --graph-node-tag:                  #076678;
+  --graph-node-attachment:           #79740e;
+
+  /* ▸ Status Bar and UI Elements */
+  --titlebar-background:             var(--gb-light0-hard);
+  --titlebar-background-focused:     var(--gb-light0);
+  --status-bar-background:           var(--gb-light0-hard);
+  --tab-background-active:           var(--gb-light0);
+  --tab-text-color-active:           #b57614;
+
+  /* ▸ Scrollbars */
+  --scrollbar-bg:                    var(--gb-light0-hard);
+  --scrollbar-thumb-bg:              var(--gb-light3);
+  --scrollbar-active-thumb-bg:       var(--gb-light4);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Font Configuration
+   ─────────────────────────────────────────────────────────────────── */
+
+/* ▸ Body Text - Inter Font (Reading Mode) */
+.markdown-preview-view,
+.markdown-rendered {
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-normal);
+}
+
+/* ▸ Body Text - Inter Font (Edit Mode - CM6) */
+.markdown-source-view.mod-cm6 .cm-content {
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-normal);
+}
+
+/* ▸ Headings - Inter Font with SemiBold Weight (Reading Mode) */
+.markdown-preview-view h1,
+.markdown-preview-view h2,
+.markdown-preview-view h3,
+.markdown-preview-view h4,
+.markdown-preview-view h5,
+.markdown-preview-view h6 {
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ▸ Headings - Inter Font with SemiBold Weight (Edit Mode - CM6) */
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6,
+.HyperMD-header {
+  font-family: var(--font-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ▸ UI Elements - Inter Font */
+.nav-header,
+.nav-folder-title,
+.nav-file-title,
+.tree-item-self,
+.modal,
+.menu,
+.setting-item,
+.setting-item-name,
+.setting-item-description,
+.titlebar,
+.titlebar-text,
+.status-bar,
+.status-bar-item {
+  font-family: var(--font-interface);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   Enhanced UI Elements
+   ─────────────────────────────────────────────────────────────────── */
+
+/* ▸ Code Blocks - IosevkaTerm Nerd Font (Reading Mode) */
+.markdown-source-view pre,
+.markdown-preview-view pre,
+.markdown-rendered pre {
+  font-family: var(--font-monospace);
+  background-color: var(--code-background);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--gb-radius);
+  padding: var(--gb-spacing);
+}
+
+.markdown-preview-view pre code,
+.markdown-rendered pre code {
+  font-family: var(--font-monospace);
+}
+
+/* ▸ Code Blocks - IosevkaTerm Nerd Font (Edit Mode - CM6) */
+.cm-s-obsidian pre.HyperMD-codeblock,
+.HyperMD-codeblock,
+.cm-line.HyperMD-codeblock,
+.markdown-source-view.mod-cm6 .HyperMD-codeblock,
+.markdown-source-view.mod-cm6 .cm-line.HyperMD-codeblock {
+  font-family: var(--font-monospace);
+}
+
+/* ▸ Inline Code - IosevkaTerm Nerd Font (Reading Mode) */
+.markdown-preview-view code:not(pre code),
+.markdown-rendered code:not(pre code) {
+  font-family: var(--font-monospace);
+  background-color: var(--code-background);
+  color: var(--code-normal);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* ▸ Inline Code - IosevkaTerm Nerd Font (Edit Mode - CM6) */
+.cm-s-obsidian span.cm-inline-code,
+.cm-inline-code {
+  font-family: var(--font-monospace);
+}
+
+/* ▸ Properties/Frontmatter - IosevkaTerm Nerd Font */
+.frontmatter-container,
+.metadata-container,
+.cm-hmd-frontmatter {
+  font-family: var(--font-monospace);
+}
+
+/* ▸ Active File Highlight in Sidebar */
+.nav-file-title.is-active,
+.tree-item-self.is-active {
+  background-color: var(--interactive-hover);
+  color: var(--text-accent);
+  font-weight: 600;
+}
+
+/* ▸ Hover States for Files */
+.nav-file-title:hover,
+.tree-item-self:hover {
+  background-color: var(--interactive-normal);
+}
+
+/* ▸ Blockquotes */
+blockquote {
+  border-left: 4px solid var(--gb-aqua);
+  background-color: var(--background-primary-alt);
+  padding: var(--gb-spacing);
+  margin: var(--gb-spacing) 0;
+  border-radius: 0 var(--gb-radius) var(--gb-radius) 0;
+}
+
+/* ▸ Horizontal Rules */
+hr {
+  border-color: var(--background-modifier-border);
+  border-width: 2px;
+  margin: calc(var(--gb-spacing) * 2) 0;
+}
+
+/* ▸ Tables */
+table {
+  border-collapse: collapse;
+}
+
+table thead {
+  background-color: var(--background-secondary);
+  border-bottom: 2px solid var(--background-modifier-border);
+}
+
+table th,
+table td {
+  border: 1px solid var(--background-modifier-border);
+  padding: var(--gb-spacing);
+}
+
+table tr:hover {
+  background-color: var(--interactive-normal);
+}
+
+/* ▸ Task Lists */
+.task-list-item-checkbox {
+  appearance: none;
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid var(--gb-aqua);
+  border-radius: 3px;
+  margin-right: 0.5em;
+  cursor: pointer;
+}
+
+.task-list-item-checkbox:checked {
+  background-color: var(--gb-green);
+  border-color: var(--gb-green);
+  position: relative;
+}
+
+.task-list-item-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  color: var(--gb-dark0-hard);
+  font-size: 1em;
+  left: 2px;
+  top: -2px;
+}
+
+/* ▸ Heading Indicators in Editor (Nerd Font glyphs) */
+.cm-header-1::before { content: ' '; color: var(--h1-color); }
+.cm-header-2::before { content: ' '; color: var(--h2-color); }
+.cm-header-3::before { content: ' '; color: var(--h3-color); }
+.cm-header-4::before { content: ' '; color: var(--h4-color); }
+.cm-header-5::before { content: ' '; color: var(--h5-color); }
+.cm-header-6::before { content: ' '; color: var(--h6-color); }
+
+/* ▸ Tag Pills */
+.tag {
+  background-color: var(--tag-background);
+  color: var(--tag-color);
+  border-radius: calc(var(--gb-radius) * 2);
+  padding: 2px 8px;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.tag:hover {
+  background-color: var(--tag-background-hover);
+  color: var(--tag-color-hover);
+}
+
+/* ▸ Callouts/Admonitions Enhancement */
+.callout {
+  border-radius: var(--gb-radius);
+  border-left-width: 4px;
+}
+
+.callout[data-callout="note"] {
+  border-left-color: var(--gb-blue);
+}
+
+.callout[data-callout="tip"] {
+  border-left-color: var(--gb-green);
+}
+
+.callout[data-callout="warning"] {
+  border-left-color: var(--gb-yellow);
+}
+
+.callout[data-callout="danger"],
+.callout[data-callout="error"] {
+  border-left-color: var(--gb-red);
+}
+
+.callout[data-callout="important"] {
+  border-left-color: var(--gb-purple);
+}
+
+/* ▸ Search Highlights */
+.search-result-file-matched-text {
+  background-color: var(--text-highlight-bg);
+  color: var(--text-on-accent);
+  border-radius: 2px;
+  padding: 1px 2px;
+}
+
+/* ▸ Graph View Customization */
+.graph-view.color-fill-unresolved {
+  color: var(--graph-node-unresolved);
+  opacity: 0.6;
+}
+
+.graph-view.color-fill-tag {
+  color: var(--graph-node-tag);
+}
+
+.graph-view.color-fill-attachment {
+  color: var(--graph-node-attachment);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Theme Notes:
+
+   ▸ Color Sources:
+     - Ghostty gruvbox-dark-custom: Core backgrounds and foregrounds
+     - Starship gruvbox-rainbow: Heading colors and UI accents
+     - Standard gruvbox: Fallback and light mode colors
+
+   ▸ Customization:
+     - Modify :root variables to adjust colors globally
+     - Heading colors follow Starship rainbow gradient pattern
+     - Syntax highlighting optimized for markdown and code
+
+   ▸ Font Recommendations:
+     - Editor: IosevkaTerm Nerd Font, JetBrains Mono
+     - UI: System default or Inter, SF Pro
+
+   ═══════════════════════════════════════════════════════════════════ */
