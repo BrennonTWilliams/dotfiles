@@ -252,10 +252,9 @@ starship/backups/
 # GENERATED CONFIGURATION FILES
 # ==============================================================================
 
-# Starship generated configs (built by build-configs.sh)
+# Starship configs - tracking for portability
 # Source files are in starship/formats/, starship/modules/, starship/modes/
-# Generated output goes to starship/.config/starship/
-starship/.config/starship/
+# Generated output in starship/.config/starship/ is now tracked
 
 # ==============================================================================
 # EXCEPTIONS (files to track despite matching patterns above)
