@@ -55,7 +55,7 @@ truncation_symbol = "…"
 
 # Git Status module
 [git_status]
-format = "([\\[$all_status$ahead_behind\\]]($style) )"
+format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style) )"
 style = "bold red"
 conflicted = "!"
 ahead = "↑"

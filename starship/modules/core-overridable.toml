@@ -47,7 +47,7 @@ truncation_symbol = "…"
 
 # Git status module
 [git_status]
-format = "([\\[$all_status$ahead_behind\\]]($style) )"
+format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style) )"
 style = "bold red"  # Will be overridden by gruvbox_rainbow palette if active
 conflicted = "!"
 ahead = "↑"
