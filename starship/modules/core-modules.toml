@@ -29,7 +29,7 @@ trim_at = "."
 [shlvl]
 disabled = false
 format = "[$symbol]($style) "
-symbol = "↕️ "
+symbol = "[](bold) "
 threshold = 2
 repeat = true
 style = "bold yellow"
@@ -41,14 +41,14 @@ truncation_symbol = "…/"
 truncate_to_repo = true
 format = "[$path]($style)[$read_only]($read_only_style) "
 style = "bold cyan"
-read_only = " 🔒"
+read_only = "[ ](bold)"
 read_only_style = "red"
-home_symbol = "🏠 "
+home_symbol = "[](bold) "
 
 # Git branch module
 [git_branch]
 format = "[$symbol$branch]($style) "
-symbol = "🌱 "
+symbol = "[](bold) "
 style = "bold purple"
 truncation_length = 20
 truncation_symbol = "…"
@@ -57,14 +57,14 @@ truncation_symbol = "…"
 [git_status]
 format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style) )"
 style = "bold red"
-conflicted = "!"
-ahead = "↑"
-behind = "↓"
-diverged = "⚡"
-up_to_date = "✓"
-untracked = "?"
-stashed = "⚑"
-modified = "•"
-staged = "[++($count)](green)"
-renamed = "→"
-deleted = "×"
+conflicted = "[!](bold)"
+ahead = "[↑](bold)"
+behind = "[↓](bold)"
+diverged = "[⚡](bold)"
+up_to_date = "[✓](bold)"
+untracked = "[?](bold)"
+stashed = "[⚑](bold)"
+modified = "[•](bold)"
+staged = "[++($count)](bold green)"
+renamed = "[→](bold)"
+deleted = "[×](bold)"

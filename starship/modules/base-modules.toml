@@ -6,7 +6,7 @@
 # Command status module
 [status]
 format = "[$symbol$status]($style) "
-symbol = "❌"
+symbol = "[❌](bold)"
 success_symbol = ""
 style = "bold red"
 disabled = false
