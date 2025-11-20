@@ -60,35 +60,15 @@ disabled = true
 disabled = true
 
 # Custom modules - disable all for compact mode
-[custom.terminal]
-disabled = true
-
-[custom.macos]
-disabled = true
-
-[custom.linux]
-disabled = true
-
-[custom.sway]
-disabled = true
-
-[custom.tmux]
-disabled = true
-
-[custom.ghostty]
-disabled = true
-
-[custom.foot]
-disabled = true
-
-[custom.git_commit]
-disabled = true
-
-[custom.aws_profile]
-disabled = true
-
-[custom.memory]
-disabled = true
-
-[custom.github_status]
-disabled = true
+# Using dotted key syntax to avoid duplicate table declarations
+custom.terminal.disabled = true
+custom.macos.disabled = true
+custom.linux.disabled = true
+custom.sway.disabled = true
+custom.tmux.disabled = true
+custom.ghostty.disabled = true
+custom.foot.disabled = true
+custom.git_commit.disabled = true
+custom.aws_profile.disabled = true
+custom.memory.disabled = true
+custom.github_status.disabled = true
