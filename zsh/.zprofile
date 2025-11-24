@@ -10,10 +10,8 @@
 # ==============================================================================
 # BRENENTECH Logo Display
 # ==============================================================================
-# Display custom CLI logo on login shells only
-if [[ -f ~/.config/brenentech/logo.sh ]]; then
-    source ~/.config/brenentech/logo.sh
-fi
+# Logo display moved to .zshrc (runs for all interactive shells, not just login)
+# See .zshrc lines 19-25
 
 # Python Environment Setup
 # Configure pyenv if installed (PATH already set in .zshenv)

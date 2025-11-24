@@ -16,6 +16,14 @@ if ! command -v resolve_platform_path >/dev/null 2>&1; then
     echo "⚠️  Warning: Cross-platform utilities not loaded. Path resolution may not work correctly."
 fi
 
+# ==============================================================================
+# BRENENTECH Logo Display
+# ==============================================================================
+# Display custom CLI logo for interactive shells
+if [[ -f ~/.config/brenentech/logo.sh ]]; then
+    source ~/.config/brenentech/logo.sh
+fi
+
 # Aliases
 alias tre='eza -T'
 # Clipboard sync - uses UNICLIP_SERVER environment variable
