@@ -150,7 +150,7 @@ symbol = " "
 style = "bold blue"
 impure_msg = "impure"
 pure_msg = "pure"
-unknown_msg = ""
+unknown_msg = "unknown"
 # ===================================
 # Platform-Specific Modules Configuration
 # ===================================
@@ -277,8 +277,8 @@ when = "true"
 # Command status module
 [status]
 format = "[$symbol$status]($style) "
-symbol = "❌"
-success_symbol = ""
+symbol = "[❌](bold)"
+success_symbol = "[](bold green)"
 style = "bold red"
 disabled = false
 map_symbol = true
@@ -438,7 +438,7 @@ truncation_symbol = "…"
 
 # Git status module
 [git_status]
-format = "([\\[$all_status$ahead_behind\\]]($style) )"
+format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style) )"
 style = "bold red"  # Will be overridden by gruvbox_rainbow palette if active
 conflicted = "!"
 ahead = "↑"

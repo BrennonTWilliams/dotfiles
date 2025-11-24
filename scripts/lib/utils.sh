@@ -60,6 +60,93 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
+# Get installed version of a command
+get_installed_version() {
+    local cmd="$1"
+    case "$cmd" in
+        git) git --version 2>/dev/null | awk '{print $3}' ;;
+        curl) curl --version 2>/dev/null | head -1 | awk '{print $2}' ;;
+        wget) wget --version 2>/dev/null | head -1 | awk '{print $3}' ;;
+        zsh) zsh --version 2>/dev/null | awk '{print $2}' ;;
+        bash) bash --version 2>/dev/null | head -1 | awk '{print $4}' ;;
+        tmux) tmux -V 2>/dev/null | awk '{print $2}' ;;
+        python3) python3 --version 2>/dev/null | awk '{print $2}' ;;
+        brew) brew --version 2>/dev/null | head -1 | awk '{print $2}' ;;
+        stow) stow --version 2>/dev/null | head -1 | awk '{print $4}' ;;
+        delta) delta --version 2>/dev/null | awk '{print $2}' ;;
+        fzf) fzf --version 2>/dev/null | awk '{print $1}' ;;
+        starship) starship --version 2>/dev/null | awk '{print $2}' ;;
+        *) echo "unknown" ;;
+    esac
+}
+
+# Get available version of a package from repositories
+get_package_version() {
+    local pkg="$1"
+    local manager="${PKG_MANAGER:-unknown}"
+    local version=""
+
+    case "$manager" in
+        brew)
+            # Homebrew: get version from brew info JSON
+            version=$(brew info --json=v2 "$pkg" 2>/dev/null | \
+                grep -o '"stable": "[^"]*"' | head -1 | sed 's/"stable": "\([^"]*\)"/\1/')
+            ;;
+        apt)
+            # APT: get candidate version
+            version=$(apt-cache policy "$pkg" 2>/dev/null | \
+                grep "Candidate:" | awk '{print $2}')
+            ;;
+        dnf|yum)
+            # DNF/YUM: get available version
+            version=$($manager info "$pkg" 2>/dev/null | \
+                grep "^Version" | head -1 | awk '{print $3}')
+            ;;
+        pacman)
+            # Pacman: get version from -Si
+            version=$(pacman -Si "$pkg" 2>/dev/null | \
+                grep "^Version" | awk '{print $3}')
+            ;;
+        zypper)
+            # Zypper: get available version
+            version=$(zypper info "$pkg" 2>/dev/null | \
+                grep "^Version:" | awk '{print $2}')
+            ;;
+        xbps)
+            # XBPS: get version from remote query
+            version=$(xbps-query -R -S "$pkg" 2>/dev/null | \
+                grep "^$pkg-" | awk -F'-' '{print $2}')
+            ;;
+        apk)
+            # APK: get version
+            version=$(apk info "$pkg" 2>/dev/null | \
+                grep "^$pkg-" | cut -d'-' -f2)
+            ;;
+        emerge)
+            # Emerge: get version from search
+            version=$(emerge --search "$pkg" 2>/dev/null | \
+                grep "Latest version available:" | awk '{print $4}')
+            ;;
+        eopkg)
+            # Eopkg: get available version
+            version=$(eopkg info "$pkg" 2>/dev/null | \
+                grep "^Version:" | awk '{print $2}')
+            ;;
+        swupd)
+            # Swupd bundles don't have traditional versions
+            version="bundle"
+            ;;
+        *)
+            version=""
+            ;;
+    esac
+
+    # Clean up version string (remove architecture, release info, etc.)
+    version=$(echo "$version" | sed 's/-.*//' | sed 's/+.*//' | sed 's/:.*//')
+
+    echo "$version"
+}
+
 # Detect operating system and Linux distribution with enhanced support
 detect_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
@@ -396,6 +483,12 @@ stow_package() {
     local package="$1"
     local target_dir="${2:-$HOME}"
     local backup_dir="$3"
+
+    # Check if in preview/dry-run mode
+    if [ "${PREVIEW_MODE:-false}" = true ] || [ "${DRY_RUN:-false}" = true ]; then
+        info "[PREVIEW] Would stow $package to $target_dir"
+        return 0
+    fi
 
     info "Stowing $package..."
 

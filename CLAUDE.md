@@ -1,0 +1,1 @@
+- Never use emojis. Instead, use font glyphs, icons, ASCII/Unicode Art, or SVGs (if relevant)

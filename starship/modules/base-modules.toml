@@ -7,7 +7,7 @@
 [status]
 format = "[$symbol$status]($style) "
 symbol = "[❌](bold)"
-success_symbol = ""
+success_symbol = "[](bold green)"
 style = "bold red"
 disabled = false
 map_symbol = true

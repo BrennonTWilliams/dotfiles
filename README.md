@@ -38,6 +38,8 @@ cd ~/.dotfiles
 |---------|-----------|------------------|
 | **Cross-Platform** | ✅ macOS + Linux with auto-detection | ❌ Usually single-platform |
 | **Installation** | Modular installer with rollback | ⚠️ Monolithic script |
+| **Conflict Resolution** | ✅ Interactive + auto-resolve modes | ❌ Overwrites blindly |
+| **Preview Mode** | ✅ Dry-run before installing | ❌ No preview capability |
 | **Health Checks** | Post-install validation system | ❌ No verification |
 | **Path Management** | Dynamic resolution (13 paths) | ❌ Hardcoded paths |
 | **Theme Consistency** | Unified Gruvbox everywhere | ⚠️ Inconsistent colors |
@@ -102,6 +104,23 @@ exec zsh
 - `./install-new.sh --packages` - System packages only
 - `./install-new.sh --terminal` - Terminal and shell only
 - `./install-new.sh --dotfiles` - Dotfiles only (assumes packages installed)
+- `./install-new.sh --check-deps` - Check system dependencies without installing
+- `./install-new.sh --preview --all` - **Preview changes without installing** (dry-run mode)
+
+**Preview mode** lets you see what would be installed before making changes:
+```bash
+./install-new.sh --preview --all          # Preview complete installation
+./install-new.sh --preview --packages     # Preview package installations
+./install-new.sh --preview --dotfiles     # Preview symlink creation
+./install-new.sh --preview --all --verbose # Detailed preview output
+```
+
+**Conflict resolution** handles existing dotfiles intelligently:
+```bash
+./install-new.sh --dotfiles                          # Interactive prompts (default)
+./install-new.sh --dotfiles --auto-resolve=overwrite # Auto-backup and replace
+./install-new.sh --dotfiles --auto-resolve=keep-existing # Keep your files
+```
 
 See [Installation Guide](docs/GETTING_STARTED.md) for platform-specific detailed instructions.
 
@@ -151,8 +170,11 @@ dotfiles/
 - **Path caching** - Eliminates redundant subprocess calls
 
 ### 🛡️ Production Ready
+- **Dependency validation** - Pre-flight checks with auto-fix options
+- **Conflict resolution** - Interactive prompts or auto-resolve strategies
+- **Intelligent merging** - Automatically merge .gitconfig, .zshrc, etc.
 - **Health checks** - Automatic post-install validation
-- **Backup system** - Automatic backups before changes
+- **Backup system** - Automatic backups with metadata
 - **Rollback support** - Safe to test and revert
 - **Error handling** - Clear messages and recovery steps
 

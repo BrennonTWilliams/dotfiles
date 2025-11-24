@@ -7,6 +7,14 @@
 #
 # NOTE: PATH modifications have been moved to .zshenv to prevent duplication
 
+# ==============================================================================
+# BRENENTECH Logo Display
+# ==============================================================================
+# Display custom CLI logo on login shells only
+if [[ -f ~/.config/brenentech/logo.sh ]]; then
+    source ~/.config/brenentech/logo.sh
+fi
+
 # Python Environment Setup
 # Configure pyenv if installed (PATH already set in .zshenv)
 if command -v pyenv >/dev/null 2>&1; then

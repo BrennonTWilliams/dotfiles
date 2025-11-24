@@ -104,7 +104,7 @@ symbol = " "
 style = "bold blue"
 impure_msg = "impure"
 pure_msg = "pure"
-unknown_msg = ""
+unknown_msg = "unknown"
 
 # ===================================
 # Platform-Specific Modules Configuration
@@ -379,12 +379,12 @@ style = "bold yellow"
 
 # Character configuration
 [character]
-success_symbol = "[❯](green)"
-error_symbol = "[❯](red)"
-vimcmd_symbol = "[❮](green)"
-vimcmd_replace_one_symbol = "[❮](purple)"
-vimcmd_replace_symbol = "[❮](purple)"
-vimcmd_visual_symbol = "[❮](yellow)"
+success_symbol = "[❯](color_green)"
+error_symbol = "[❯](color_red)"
+vimcmd_symbol = "[❮](color_green)"
+vimcmd_replace_one_symbol = "[❮](color_purple)"
+vimcmd_replace_symbol = "[❮](color_purple)"
+vimcmd_visual_symbol = "[❮](color_yellow)"
 
 # OS module
 [os]
@@ -455,7 +455,7 @@ truncation_symbol = "…"
 
 # Git status module
 [git_status]
-format = "([\\[$all_status$ahead_behind\\]]($style))"
+format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style))"
 style = "bg:color_yellow fg:color_bg1"
 conflicted = "!"
 ahead = "↑"
@@ -539,6 +539,7 @@ style = "bg:color_aqua fg:color_bg1"
 disabled = false
 detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
 detect_folders = []
+detect_extensions = ["yaml", "yml"]
 
 # Background jobs
 [jobs]

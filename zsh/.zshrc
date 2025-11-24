@@ -236,6 +236,48 @@ alias breathe='zenta now'
 alias reflect='zenta reflect'
 
 # ==============================================================================
+# BRENENTECH Logo Functions
+# ==============================================================================
+
+# Toggle logo display on/off (persistent)
+logo-toggle() {
+    local state_file="$HOME/.config/brenentech/.logo_enabled"
+
+    if [[ -f "$state_file" ]]; then
+        rm "$state_file"
+        echo "▸ BRENENTECH logo disabled (will not show on next login)"
+    else
+        touch "$state_file"
+        echo "▸ BRENENTECH logo enabled (will show on next login)"
+    fi
+}
+
+# Display logo manually (bypasses state check)
+logo-show() {
+    local logo_script="$HOME/.config/brenentech/logo.sh"
+
+    if [[ -f "$logo_script" ]]; then
+        # Temporarily create state file if it doesn't exist
+        local state_file="$HOME/.config/brenentech/.logo_enabled"
+        local had_state=false
+        [[ -f "$state_file" ]] && had_state=true
+
+        # Ensure state file exists for display
+        touch "$state_file"
+
+        # Source the logo script
+        source "$logo_script"
+
+        # Restore original state
+        if ! $had_state; then
+            rm "$state_file"
+        fi
+    else
+        echo "✗ Logo script not found at: $logo_script"
+    fi
+}
+
+# ==============================================================================
 # Kiro Shell Integration (Optimized)
 # ==============================================================================
 # Performance: 10-30ms baseline, optimized to <5ms with caching
