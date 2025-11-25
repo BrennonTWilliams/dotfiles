@@ -195,8 +195,8 @@ _animate_logo() {
     local num_elements=12  # Total circuit elements (0-11)
     local wave_start=-3    # Start wave off-screen for smooth entry
     local wave_end=$((num_elements + 4))  # End wave off-screen for smooth exit
-    local circuit_frame_delay=0.08  # 80ms per frame for circuit
-    local text_frame_delay=0.04     # 40ms per frame for text (faster to match pace)
+    local circuit_frame_delay=0.04  # 40ms per frame for circuit (2x faster)
+    local text_frame_delay=0.02     # 20ms per frame for text (2x faster)
 
     # === PHASE 1: Circuit flow animation (tagline hidden) ===
     # Note: Wave starts at -3, so first frames will be dim (normal color)

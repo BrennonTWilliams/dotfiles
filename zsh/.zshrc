@@ -25,6 +25,11 @@ if [[ -f ~/.config/brenentech/logo.sh ]]; then
 fi
 
 # Aliases
+# Source custom aliases from oh-my-zsh custom directory
+if [[ -f ~/AIProjects/ai-workspaces/dotfiles/zsh/.oh-my-zsh/custom/aliases.zsh ]]; then
+    source ~/AIProjects/ai-workspaces/dotfiles/zsh/.oh-my-zsh/custom/aliases.zsh
+fi
+
 alias tre='eza -T'
 # Clipboard sync - uses UNICLIP_SERVER environment variable
 # Set UNICLIP_SERVER in ~/.zshenv or ~/.zshrc.local (e.g., export UNICLIP_SERVER="192.168.1.24:38687")
