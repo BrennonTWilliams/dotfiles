@@ -1,40 +1,69 @@
-# BRENENTECH CLI Configuration
+# Custom CLI Branding
 
-This directory contains BRENENTECH-branded CLI elements and configurations.
+This directory contains customizable CLI branding elements. By default, the logo display is **disabled** - users can enable it if desired.
 
 ## Structure
 
 ```
 brenentech/
-├── .config/brenentech/     # Runtime configuration files
-│   ├── logo.sh             # Animated logo display script
-│   └── colors.sh           # Gruvbox color palette definitions
-└── assets/                 # Logo design files
-    ├── brenentech-cli-logo.txt        # Simple circuit-board style logo
-    └── brenentech-logo-unicode.txt    # Large ASCII art version
+└── .config/brenentech/     # Runtime configuration files
+    ├── logo.sh             # Animated logo display script
+    └── colors.sh           # Gruvbox color palette definitions
 ```
 
 ## Installation
 
-The `.config/brenentech/` directory should be symlinked to `~/.config/brenentech/`:
+The `.config/brenentech/` directory is symlinked automatically during dotfiles installation:
 
 ```bash
-ln -sf "$(pwd)/brenentech/.config/brenentech" ~/.config/brenentech
+stow brenentech  # Creates ~/.config/brenentech/
+```
+
+## Enabling Logo Display
+
+The logo is **disabled by default**. To enable it:
+
+### Option 1: Environment Variable (Recommended)
+
+Add to your `~/.zshrc.local`:
+
+```bash
+export DOTFILES_LOGO_ENABLED=true
+```
+
+### Option 2: State File
+
+Create the state file:
+
+```bash
+touch ~/.config/brenentech/.logo_enabled
 ```
 
 ## Usage
 
-The logo is automatically displayed on shell startup via `.zprofile` if enabled.
-
 ### Commands
 
-- `logo-on` - Enable logo display on startup
-- `logo-off` - Disable logo display on startup
-- `logo-show` - Display logo immediately (bypasses state check)
+- `logo-toggle` - Toggle logo display on/off for future sessions
+- `logo-show` - Display logo immediately (one-time, doesn't change settings)
 
-### Logo Design
+### Skip Conditions
 
-The circuit-board style logo represents a technical, AI-focused brand:
+The logo automatically skips display in:
+- SSH sessions
+- tmux sessions
+- screen sessions
+
+## Customization
+
+This branding is provided as an example. Feel free to:
+
+1. **Replace the logo** - Edit `logo.sh` with your own design
+2. **Change colors** - Modify `colors.sh` to match your theme
+3. **Remove entirely** - Delete the `brenentech/` directory if not needed
+
+### Logo Design Example
+
+The included circuit-board style logo:
 
 ```
 ○──● B R E N E N
@@ -47,4 +76,4 @@ The circuit-board style logo represents a technical, AI-focused brand:
 Features:
 - Circuit node symbols (○, ●) with pulse animation
 - Gruvbox color palette matching Starship theme
-- Tagline reflecting AI/technology focus
+- Customizable tagline

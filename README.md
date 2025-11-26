@@ -321,6 +321,24 @@ starship-verbose    # Full context (sv)
 starship-mode       # Show current mode (sm)
 ```
 
+### Custom Logo (Opt-in)
+
+The logo display is **disabled by default**. To enable:
+
+```bash
+# Add to ~/.zshrc.local
+export DOTFILES_LOGO_ENABLED=true
+```
+
+Commands:
+```bash
+logo-toggle         # Enable/disable login logo animation
+logo-show           # Display logo manually
+```
+
+Logo automatically skips display in SSH sessions, tmux, and screen.
+See [brenentech/README.md](brenentech/README.md) for customization.
+
 ### Development Environment
 
 ```bash

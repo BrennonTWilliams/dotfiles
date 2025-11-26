@@ -157,6 +157,9 @@ node_modules/
 .claude/statsig/
 .claude/settings.local.json
 
+# Claude documentation artifacts (development only)
+claudedocs/
+
 # ==============================================================================
 # LOGS & DEBUG FILES
 # ==============================================================================

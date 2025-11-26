@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# shellcheck source-path=SCRIPTDIR
+# shellcheck source=scripts/lib/utils.sh
+# shellcheck source=scripts/lib/conflict-resolution.sh
+# Variables BOLD, NC, CYAN, OS are defined in sourced utils.sh
+# shellcheck disable=SC2154
 
 # ==============================================================================
 # Dotfiles Bootstrap Installation Script (Modular)
@@ -68,7 +73,8 @@ export -f get_available_packages
 install_dotfiles() {
     section "Installing Dotfiles"
 
-    local packages=($(get_available_packages))
+    local packages=()
+    read -ra packages <<< "$(get_available_packages)"
     local available_packages="${packages[*]}"
 
     if [ -z "$available_packages" ]; then
@@ -157,6 +163,9 @@ run_preview_mode() {
             ;;
         terminal)
             preview_shell_setup
+            ;;
+        *)
+            warn "Unknown preview mode: $mode"
             ;;
     esac
 
@@ -248,6 +257,12 @@ EOF
 3. Configure your terminal emulator as needed
 EOF
             ;;
+        *)
+            cat << 'EOF'
+1. Restart your terminal or run: source ~/.zshrc
+2. Install tmux plugins: Prefix + I
+EOF
+            ;;
     esac
 
     if [ "$BACKUP_CREATED" = true ]; then
@@ -331,7 +346,7 @@ interactive_mode() {
     echo "5) Exit"
     echo
 
-    read -p "Enter your choice (1-5): " choice
+    read -rp "Enter your choice (1-5): " choice
 
     case $choice in
         1)
@@ -446,7 +461,10 @@ main() {
                 run_preview_mode "dotfiles"
                 ;;
             --check-deps)
-                "$SCRIPT_DIR/scripts/preflight-check.sh" false
+                "${SCRIPT_DIR}/scripts/preflight-check.sh" false
+                ;;
+            *)
+                error "Unknown action: $action"
                 ;;
         esac
     else
@@ -465,8 +483,11 @@ main() {
                 create_local_configs
                 ;;
             --check-deps)
-                "$SCRIPT_DIR/scripts/preflight-check.sh" true
+                "${SCRIPT_DIR}/scripts/preflight-check.sh" true
                 exit $?
+                ;;
+            *)
+                error "Unknown action: $action"
                 ;;
         esac
     fi

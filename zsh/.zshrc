@@ -17,10 +17,11 @@ if ! command -v resolve_platform_path >/dev/null 2>&1; then
 fi
 
 # ==============================================================================
-# BRENENTECH Logo Display
+# Custom Logo Display (Opt-in)
 # ==============================================================================
 # Display custom CLI logo for interactive shells
-if [[ -f ~/.config/brenentech/logo.sh ]]; then
+# To enable: export DOTFILES_LOGO_ENABLED=true in ~/.zshrc.local
+if [[ "${DOTFILES_LOGO_ENABLED:-false}" == "true" ]] && [[ -f ~/.config/brenentech/logo.sh ]]; then
     source ~/.config/brenentech/logo.sh
 fi
 
