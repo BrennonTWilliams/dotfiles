@@ -136,13 +136,6 @@ alias serve='python3 -m http.server'
 alias ports='netstat -tulanp'
 ```
 
-**Safety Nets:**
-```zsh
-alias rm='rm -i'    # Confirm before delete
-alias cp='cp -i'    # Confirm before overwrite
-alias mv='mv -i'    # Confirm before overwrite
-```
-
 **Custom Functions:**
 ```zsh
 mkcd() {          # Create and enter directory
