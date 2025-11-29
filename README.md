@@ -1,10 +1,5 @@
 # Dotfiles
 
-[![Test Suite](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/test.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/test.yml)
-[![ShellCheck](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/shellcheck.yml)
-[![Starship Config](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/starship-validation.yml)
-[![Code Quality](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml/badge.svg)](https://github.com/BrennonTWilliams/dotfiles/actions/workflows/lint.yml)
-
 > A production-ready, cross-platform dotfiles repository with modular installation, comprehensive health checks, and unified Gruvbox theming across macOS and Linux environments.
 
 ---
