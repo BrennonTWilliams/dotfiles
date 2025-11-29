@@ -6,12 +6,13 @@ This guide provides detailed instructions for managing your dotfiles across mult
 
 1. [First-Time Setup on New Machine](#first-time-setup-on-new-machine)
 2. [Daily Workflow](#daily-workflow)
-3. [Starship Prompt Customization](#starship-prompt-customization)
-4. [Updating Configurations](#updating-configurations)
-5. [Syncing Across Machines](#syncing-across-machines)
-6. [Linux Uniclip Service](#linux-uniclip-service)
-7. [Security Best Practices](#security-best-practices)
-8. [Troubleshooting](#troubleshooting)
+3. [Shell Abbreviations (zsh-abbr)](#shell-abbreviations-zsh-abbr)
+4. [Starship Prompt Customization](#starship-prompt-customization)
+5. [Updating Configurations](#updating-configurations)
+6. [Syncing Across Machines](#syncing-across-machines)
+7. [Linux Uniclip Service](#linux-uniclip-service)
+8. [Security Best Practices](#security-best-practices)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -156,6 +157,69 @@ git add -A
 git commit -m "Update shell and tmux configs"
 git push
 ```
+
+---
+
+## Shell Abbreviations (zsh-abbr)
+
+The dotfiles support [zsh-abbr](https://zsh-abbr.olets.dev/) for expandable abbreviations. Unlike aliases, abbreviations expand to their full command when you press Space or Enter, showing the actual command in your history.
+
+### Abbreviation Modes
+
+Toggle via `DOTFILES_ABBR_MODE` environment variable in `~/.zshenv.local`:
+
+| Mode | Behavior |
+|------|----------|
+| `alias` | Traditional aliases only (default, backward compatible) |
+| `abbr` | zsh-abbr abbreviations only (requires zsh-abbr installed) |
+| `both` | Both systems active (for transition/testing) |
+
+### Setup
+
+```bash
+# Install zsh-abbr (optional, only needed for abbr/both modes)
+brew install olets/tap/zsh-abbr
+
+# Enable abbreviations in ~/.zshenv.local
+export DOTFILES_ABBR_MODE="abbr"
+```
+
+### How It Works
+
+**With aliases (`gs`):**
+```
+$ gs<Enter>
+# Runs: gs (shows as 'gs' in history)
+```
+
+**With abbreviations (`gs`):**
+```
+$ gs<Space>
+# Expands to: git status (shows as 'git status' in history)
+```
+
+### Module Structure
+
+```
+zsh/
+├── functions/       # Always loaded (mkcd, qfind, nvim-keys, etc.)
+├── aliases/         # Always loaded (safety: rm -i, cp -i, mv -i)
+│   ├── safety.zsh   # Destructive command safeguards
+│   └── extras.zsh   # Aliases for non-abbr mode fallback
+└── abbreviations/   # Loaded in abbr/both modes
+    ├── git.zsh      # gs, ga, gc, gp, gl, gd, gco, gb
+    ├── navigation.zsh # .., ..., ....
+    ├── tmux.zsh     # tls, ta, tn, tk
+    └── ...
+```
+
+### Known Conflicts
+
+Some abbreviations conflict with system commands:
+- `gs` - Conflicts with Ghostscript (`/opt/homebrew/bin/gs`)
+- `cc` - Conflicts with C compiler (`/usr/bin/cc`)
+
+zsh-abbr will show warnings but these shortcuts still work in `alias` or `both` mode.
 
 ---
 

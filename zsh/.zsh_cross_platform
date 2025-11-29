@@ -5,6 +5,19 @@
 # Provides consistent utilities across macOS and Linux/Sway environments
 # Detects platform, handles platform-specific commands, and abstracts differences
 
+# Early return for non-zsh shells (bash compatibility)
+# Provide minimal detect_os function for bash scripts that source this file
+if [[ -z "$ZSH_VERSION" ]]; then
+    detect_os() {
+        case "$(uname -s)" in
+            Darwin*)    echo "macos" ;;
+            Linux*)     echo "linux" ;;
+            *)          echo "unknown" ;;
+        esac
+    }
+    return 0
+fi
+
 # ==============================================================================
 # Platform Detection
 # ==============================================================================
@@ -226,7 +239,7 @@ resolve_platform_path() {
             resolved_path="$user_home/.npmrc.local"
             ;;
         *)
-            echo "❌ Unknown path type: $path_type" >&2
+            echo "[x] Unknown path type: $path_type" >&2
             return 1
             ;;
     esac
@@ -288,12 +301,12 @@ clipboard_copy() {
             elif command -v xsel >/dev/null 2>&1; then
                 echo "$content" | xsel --clipboard --input
             else
-                echo "❌ No clipboard command found on Linux"
+                echo "[x] No clipboard command found on Linux"
                 return 1
             fi
             ;;
         *)
-            echo "❌ Unsupported OS for clipboard operations"
+            echo "[x] Unsupported OS for clipboard operations"
             return 1
             ;;
     esac
@@ -312,12 +325,12 @@ clipboard_paste() {
             elif command -v xsel >/dev/null 2>&1; then
                 xsel --clipboard --output
             else
-                echo "❌ No clipboard command found on Linux"
+                echo "[x] No clipboard command found on Linux"
                 return 1
             fi
             ;;
         *)
-            echo "❌ Unsupported OS for clipboard operations"
+            echo "[x] Unsupported OS for clipboard operations"
             return 1
             ;;
     esac
@@ -334,12 +347,12 @@ open_file() {
             if command -v xdg-open >/dev/null 2>&1; then
                 xdg-open "$file"
             else
-                echo "❌ xdg-open not found on Linux"
+                echo "[x] xdg-open not found on Linux"
                 return 1
             fi
             ;;
         *)
-            echo "❌ Unsupported OS for file opening"
+            echo "[x] Unsupported OS for file opening"
             return 1
             ;;
     esac
@@ -357,12 +370,12 @@ send_notification() {
             if command -v notify-send >/dev/null 2>&1; then
                 notify-send "$title" "$message"
             else
-                echo "❌ notify-send not found on Linux"
+                echo "[x] notify-send not found on Linux"
                 return 1
             fi
             ;;
         *)
-            echo "❌ Unsupported OS for notifications"
+            echo "[x] Unsupported OS for notifications"
             return 1
             ;;
     esac
@@ -416,12 +429,12 @@ take_screenshot() {
                         ;;
                 esac
             else
-                echo "❌ No screenshot command found on Linux (install grim or ImageMagick)"
+                echo "[x] No screenshot command found on Linux (install grim or ImageMagick)"
                 return 1
             fi
             ;;
         *)
-            echo "❌ Unsupported OS for screenshots"
+            echo "[x] Unsupported OS for screenshots"
             return 1
             ;;
     esac
@@ -500,7 +513,7 @@ install_package() {
             if command -v brew >/dev/null 2>&1; then
                 brew install "$package"
             else
-                echo "❌ Homebrew not found on macOS"
+                echo "[x] Homebrew not found on macOS"
                 return 1
             fi
             ;;
@@ -517,13 +530,13 @@ install_package() {
                     sudo pacman -S --noconfirm "$package"
                     ;;
                 *)
-                    echo "❌ Unsupported Linux distribution: $distro"
+                    echo "[x] Unsupported Linux distribution: $distro"
                     return 1
                     ;;
             esac
             ;;
         *)
-            echo "❌ Unsupported OS for package installation"
+            echo "[x] Unsupported OS for package installation"
             return 1
             ;;
     esac
@@ -536,7 +549,7 @@ update_packages() {
             if command -v brew >/dev/null 2>&1; then
                 brew update && brew upgrade
             else
-                echo "❌ Homebrew not found on macOS"
+                echo "[x] Homebrew not found on macOS"
                 return 1
             fi
             ;;
@@ -553,13 +566,13 @@ update_packages() {
                     sudo pacman -Syu --noconfirm
                     ;;
                 *)
-                    echo "❌ Unsupported Linux distribution: $distro"
+                    echo "[x] Unsupported Linux distribution: $distro"
                     return 1
                     ;;
             esac
             ;;
         *)
-            echo "❌ Unsupported OS for package updates"
+            echo "[x] Unsupported OS for package updates"
             return 1
             ;;
     esac
@@ -572,13 +585,13 @@ update_packages() {
 # Enhanced memory info function that works cross-platform
 cross_platform_memory_info() {
     local mem_usage=$(get_memory_usage)
-    echo "%F{014}💾 ${mem_usage}%f"  # Cyan memory info
+    echo "%F{014}MEM: ${mem_usage}%f"  # Cyan memory info
 }
 
 # Enhanced CPU info function that works cross-platform
 cross_platform_cpu_info() {
     local cpu_usage=$(get_cpu_usage)
-    echo "%F{011}⚡ ${cpu_usage}%f"  # Yellow CPU info
+    echo "%F{011}CPU: ${cpu_usage}%f"  # Yellow CPU info
 }
 
 # Cross-platform workspace info
@@ -588,23 +601,23 @@ cross_platform_workspace_info() {
     local terminal=$(detect_terminal)
 
     # Start with platform info
-    local info="🖥️ $os"
+    local info="SYS: $os"
     [[ "$desktop" != "unknown" ]] && info="$info | $desktop"
     [[ "$terminal" != "unknown" ]] && info="$info | $terminal"
 
     # Add project context
     if git rev-parse --git-dir > /dev/null 2>&1; then
         local repo_name=$(basename $(git rev-parse --show-toplevel))
-        info="$info | 📁 $repo_name"
+        info="$info | DIR: $repo_name"
     elif [[ -f "package.json" ]]; then
         local project_name=$(jq -r .name package.json 2>/dev/null || echo "Node")
-        info="$info | 📦 $project_name"
+        info="$info | PKG: $project_name"
     elif [[ -f "Cargo.toml" ]]; then
         local project_name=$(grep '^name = ' Cargo.toml | cut -d'"' -f2 || echo "Rust")
-        info="$info | 🦀 $project_name"
+        info="$info | [rust] $project_name"
     elif [[ -f "pyproject.toml" ]]; then
         local project_name=$(grep '^name = ' pyproject.toml | cut -d'"' -f2 || echo "Python")
-        info="$info | 🐍 $project_name"
+        info="$info | [py] $project_name"
     fi
 
     echo "%F{013}$info%f"  # Magenta workspace info
@@ -612,8 +625,8 @@ cross_platform_workspace_info() {
 
 # Cross-platform system status
 system_status() {
-    echo "🖥️  System Status"
-    echo "================"
+    echo "SYS: System Status"
+    echo "=================="
     echo "OS: $(detect_os)"
     echo "Desktop: $(detect_desktop_env)"
     echo "Terminal: $(detect_terminal)"
@@ -660,7 +673,7 @@ uniclip_manager() {
     if [[ -f "$uniclip_manager" ]]; then
         "$uniclip_manager" "$@"
     else
-        echo "❌ Uniclip manager not found at: $uniclip_manager"
+        echo "[x] Uniclip manager not found at: $uniclip_manager"
         return 1
     fi
 }
@@ -688,7 +701,7 @@ setup_dev_env() {
     if [[ -f "$setup_script" ]]; then
         "$setup_script" "$@"
     else
-        echo "❌ Development environment setup script not found at: $setup_script"
+        echo "[x] Development environment setup script not found at: $setup_script"
         return 1
     fi
 }
@@ -712,34 +725,34 @@ dotfiles_health_check() {
     if [[ -f "$health_check_script" ]]; then
         "$health_check_script"
     else
-        echo "❌ Health check script not found at: $health_check_script"
+        echo "[x] Health check script not found at: $health_check_script"
         echo "Attempting basic health checks..."
 
         # Fallback basic checks
-        echo "🔍 Basic Dotfiles Health Check"
-        echo "=============================="
+        echo "CHECK: Basic Dotfiles Health Check"
+        echo "==================================="
 
         # Check shell configuration
         if [[ -f "$HOME/.zshrc" ]]; then
-            echo "✅ .zshrc exists"
+            echo "[+] .zshrc exists"
         else
-            echo "❌ .zshrc not found"
+            echo "[x] .zshrc not found"
         fi
 
         # Check Starship
         if command -v starship >/dev/null 2>&1; then
-            echo "✅ Starship is installed"
+            echo "[+] Starship is installed"
         else
-            echo "❌ Starship not found"
+            echo "[x] Starship not found"
         fi
 
         # Check core tools
         local core_tools=("git" "curl" "tmux")
         for tool in "${core_tools[@]}"; do
             if command -v "$tool" >/dev/null 2>&1; then
-                echo "✅ $tool is available"
+                echo "[+] $tool is available"
             else
-                echo "❌ $tool not found"
+                echo "[x] $tool not found"
             fi
         done
     fi
@@ -752,8 +765,8 @@ alias system-health='dotfiles_health_check'
 
 # Development environment status check
 dev_status() {
-    echo "🖥️  Development Environment Status"
-    echo "==============================="
+    echo "SYS: Development Environment Status"
+    echo "===================================="
     echo
 
     # Platform information
@@ -763,39 +776,39 @@ dev_status() {
     echo
 
     # Check core tools
-    echo "🔧 Core Tools:"
+    echo "TOOLS: Core Tools:"
     local core_tools=("git" "curl" "wget" "zsh" "tmux" "starship")
     for tool in "${core_tools[@]}"; do
         if command -v "$tool" >/dev/null 2>&1; then
-            echo "  ✅ $tool"
+            echo "  [+] $tool"
         else
-            echo "  ❌ $tool (not found)"
+            echo "  [x] $tool (not found)"
         fi
     done
     echo
 
     # Check development tools
-    echo "🛠️  Development Tools:"
+    echo "DEV: Development Tools:"
     local dev_tools=("python3" "neovim" "ripgrep" "fzf" "fd" "jq")
     for tool in "${dev_tools[@]}"; do
         if command -v "$tool" >/dev/null 2>&1; then
-            echo "  ✅ $tool"
+            echo "  [+] $tool"
         else
-            echo "  ❌ $tool (not found)"
+            echo "  [x] $tool (not found)"
         fi
     done
     echo
 
     # Check platform-specific tools
-    echo "🖥️  Platform-Specific Tools:"
+    echo "SYS: Platform-Specific Tools:"
     case "$(detect_os)" in
         macos)
             local macos_tools=("ghostty" "rectangle" "sketchybar")
             for tool in "${macos_tools[@]}"; do
                 if command -v "$tool" >/dev/null 2>&1; then
-                    echo "  ✅ $tool"
+                    echo "  [+] $tool"
                 else
-                    echo "  ❌ $tool (not found)"
+                    echo "  [x] $tool (not found)"
                 fi
             done
             ;;
@@ -803,9 +816,9 @@ dev_status() {
             local linux_tools=("sway" "waybar" "foot" "grim")
             for tool in "${linux_tools[@]}"; do
                 if command -v "$tool" >/dev/null 2>&1; then
-                    echo "  ✅ $tool"
+                    echo "  [+] $tool"
                 else
-                    echo "  ❌ $tool (not found)"
+                    echo "  [x] $tool (not found)"
                 fi
             done
             ;;
@@ -813,37 +826,37 @@ dev_status() {
     echo
 
     # Check services
-    echo "🔄 Services:"
+    echo "SVC: Services:"
     if uniclip_manager status >/dev/null 2>&1; then
-        echo "  ✅ Uniclip service"
+        echo "  [+] Uniclip service"
     else
-        echo "  ❌ Uniclip service (not running or not installed)"
+        echo "  [x] Uniclip service (not running or not installed)"
     fi
     echo
 
     # Check shell configuration
-    echo "🐚 Shell Configuration:"
+    echo "SHELL: Shell Configuration:"
     if [[ "$SHELL" == *"zsh"* ]]; then
-        echo "  ✅ Zsh is default shell"
+        echo "  [+] Zsh is default shell"
     else
-        echo "  ⚠️  Zsh is not default shell (current: $SHELL)"
+        echo "  [!] Zsh is not default shell (current: $SHELL)"
     fi
 
     if [[ -f "$HOME/.zshrc" ]]; then
-        echo "  ✅ .zshrc exists"
+        echo "  [+] .zshrc exists"
     else
-        echo "  ❌ .zshrc not found"
+        echo "  [x] .zshrc not found"
     fi
 
     if [[ -f "$HOME/.config/starship.toml" ]]; then
-        echo "  ✅ Starship configuration exists"
+        echo "  [+] Starship configuration exists"
     else
-        echo "  ❌ Starship configuration not found"
+        echo "  [x] Starship configuration not found"
     fi
     echo
 
     # Quick fix suggestions
-    echo "🔧 Quick Actions:"
+    echo "TOOLS: Quick Actions:"
     if ! command -v starship >/dev/null 2>&1; then
         echo "  - Install Starship: setup_dev_env core"
     fi

@@ -131,6 +131,9 @@ See [Installation Guide](docs/GETTING_STARTED.md) for platform-specific detailed
 ```
 dotfiles/
 ├── zsh/              # Zsh configuration with cross-platform utilities
+│   ├── functions/    # Shell functions (mkcd, qfind, nvim-keys, etc.)
+│   ├── aliases/      # Traditional aliases (safety aliases, extras)
+│   └── abbreviations/# zsh-abbr abbreviations (optional, expands on space)
 ├── starship/         # Starship prompt (3 display modes: compact, standard, verbose)
 ├── tmux/             # Tmux with clipboard integration and theme
 ├── nvim/             # Neovim configuration
@@ -389,6 +392,12 @@ export UNICLIP_SERVER="192.168.1.100:38687"
 ```
 
 **`~/.zshenv.local`** - Sourced from `.zshenv`
+```bash
+# Enable zsh-abbr abbreviations (expands shortcuts on space/enter)
+# Options: alias (default), abbr, both
+export DOTFILES_ABBR_MODE="abbr"
+```
+
 **`~/.zprofile.local`** - Sourced from `.zprofile`
 
 ### Git Configuration

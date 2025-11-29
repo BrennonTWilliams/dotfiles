@@ -32,33 +32,74 @@ This repository uses [GNU Stow](https://www.gnu.org/software/stow/) for symlink 
 | sway | `$HOME/.config/sway` | Sway window manager (Linux) |
 | tmux | `$HOME` | Tmux multiplexer (.tmux.conf) |
 | vscode | `$HOME/.vscode` | VS Code settings (custom target) |
-| zsh | `$HOME` | Zsh shell + oh-my-zsh customizations |
+| zsh | `$HOME` | Zsh shell + modular config (functions, aliases, abbreviations) |
+
+---
+
+## Zsh Modular Structure
+
+The zsh package includes a modular configuration system:
+
+```
+zsh/
+├── .zshrc                    # Main config (loads modules based on DOTFILES_ABBR_MODE)
+├── .zshenv                   # Environment variables
+├── .zprofile                 # Login shell config
+├── functions/                # Shell functions (always loaded)
+│   ├── _init.zsh             # Loader script
+│   ├── navigation.zsh        # mkcd, qfind
+│   ├── neovim.zsh            # nvim-keys
+│   └── macos.zsh             # cpu-temp, wifi-scan, ql, airport (macOS only)
+├── aliases/                  # Traditional aliases (always loaded)
+│   ├── _init.zsh             # Loader script
+│   ├── safety.zsh            # rm -i, cp -i, mv -i
+│   └── extras.zsh            # Fallback aliases for non-abbr mode
+├── abbreviations/            # zsh-abbr abbreviations (loaded in abbr/both modes)
+│   ├── _init.zsh             # Loader + zsh-abbr detection
+│   ├── git.zsh               # gs, ga, gc, gp, gl, gd, gco, gb
+│   ├── navigation.zsh        # .., ..., ....
+│   ├── tmux.zsh              # tls, ta, tn, tk
+│   └── ...
+└── .oh-my-zsh/custom/        # Oh-my-zsh customizations
+    └── aliases.zsh           # Legacy aliases (loaded in alias/both modes)
+```
+
+### Module Loading
+
+Controlled via `DOTFILES_ABBR_MODE` environment variable:
+
+| Mode | Functions | Safety Aliases | Legacy Aliases | Abbreviations |
+|------|-----------|----------------|----------------|---------------|
+| `alias` (default) | Yes | Yes | Yes | No |
+| `abbr` | Yes | Yes | No | Yes |
+| `both` | Yes | Yes | Yes | Yes |
 
 ---
 
 ## Special Cases
 
-### oh-my-zsh Custom Files (Manual Symlinks Required)
+### oh-my-zsh Custom Directory (Directory Symlink)
 
-These files require **manual symlinks** because oh-my-zsh creates its own directory structure before stow runs, causing conflicts:
+The `~/.oh-my-zsh/custom` directory should be symlinked to the dotfiles repository:
 
-| Source (in repo) | Target |
-|------------------|--------|
-| `zsh/.oh-my-zsh/custom/aliases.zsh` | `~/.oh-my-zsh/custom/aliases.zsh` |
-| `zsh/.oh-my-zsh/custom/themes/gruvbox.zsh-theme` | `~/.oh-my-zsh/custom/themes/gruvbox.zsh-theme` |
+```
+~/.oh-my-zsh/custom -> ~/path/to/dotfiles/zsh/.oh-my-zsh/custom
+```
 
-**To create these symlinks manually:**
+This makes all files in `zsh/.oh-my-zsh/custom/` automatically available without individual file symlinks.
+
+**To set up the directory symlink:**
 
 ```bash
-# From the dotfiles directory
-DOTFILES_DIR="$(pwd)"
+# Back up existing custom directory (if it exists and isn't a symlink)
+[[ -d ~/.oh-my-zsh/custom && ! -L ~/.oh-my-zsh/custom ]] && \
+    mv ~/.oh-my-zsh/custom ~/.oh-my-zsh/custom.backup
 
-ln -sf "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh" \
-       ~/.oh-my-zsh/custom/aliases.zsh
-
-ln -sf "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/themes/gruvbox.zsh-theme" \
-       ~/.oh-my-zsh/custom/themes/gruvbox.zsh-theme
+# Create directory symlink
+ln -s ~/path/to/dotfiles/zsh/.oh-my-zsh/custom ~/.oh-my-zsh/custom
 ```
+
+**Warning:** Do NOT create individual file symlinks inside this directory - they will create circular references since the parent directory is already symlinked to the dotfiles repo.
 
 ### Custom .stowrc Targets
 
@@ -137,8 +178,11 @@ stow --restow zsh
 
 ### oh-my-zsh files not linked
 
-These must be done manually (see Special Cases above), or run:
+Verify `~/.oh-my-zsh/custom` is a directory symlink:
 
 ```bash
-./scripts/check-symlinks.sh --fix
+ls -la ~/.oh-my-zsh/custom
+# Should show: custom -> .../dotfiles/zsh/.oh-my-zsh/custom
 ```
+
+If not, create the directory symlink (see Special Cases above).

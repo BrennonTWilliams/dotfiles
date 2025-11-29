@@ -179,33 +179,51 @@ check_stow_packages() {
     fi
 }
 
-check_manual_symlinks() {
-    section "Manual Symlinks (oh-my-zsh)"
+check_zsh_modules() {
+    section "Zsh Modular Configuration"
 
-    echo -e "\n${CYAN}oh-my-zsh custom files:${NC}"
-    echo -e "${YELLOW}(These require manual linking due to oh-my-zsh directory structure)${NC}\n"
+    echo -e "\n${CYAN}Functions:${NC}"
+    if [ -d "$DOTFILES_DIR/zsh/functions" ]; then
+        print_status "ok" "zsh/functions/ directory exists"
+        [ -f "$DOTFILES_DIR/zsh/functions/_init.zsh" ] && print_status "ok" "functions/_init.zsh" || print_status "missing" "functions/_init.zsh"
+    else
+        print_status "missing" "zsh/functions/ directory"
+    fi
 
-    local aliases_source="$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"
-    local aliases_target="$HOME/.oh-my-zsh/custom/aliases.zsh"
+    echo -e "\n${CYAN}Aliases:${NC}"
+    if [ -d "$DOTFILES_DIR/zsh/aliases" ]; then
+        print_status "ok" "zsh/aliases/ directory exists"
+        [ -f "$DOTFILES_DIR/zsh/aliases/_init.zsh" ] && print_status "ok" "aliases/_init.zsh" || print_status "missing" "aliases/_init.zsh"
+        [ -f "$DOTFILES_DIR/zsh/aliases/safety.zsh" ] && print_status "ok" "aliases/safety.zsh" || print_status "missing" "aliases/safety.zsh"
+    else
+        print_status "missing" "zsh/aliases/ directory"
+    fi
 
-    local theme_source="$DOTFILES_DIR/zsh/.oh-my-zsh/custom/themes/gruvbox.zsh-theme"
-    local theme_target="$HOME/.oh-my-zsh/custom/themes/gruvbox.zsh-theme"
+    echo -e "\n${CYAN}Abbreviations:${NC}"
+    if [ -d "$DOTFILES_DIR/zsh/abbreviations" ]; then
+        print_status "ok" "zsh/abbreviations/ directory exists"
+        [ -f "$DOTFILES_DIR/zsh/abbreviations/_init.zsh" ] && print_status "ok" "abbreviations/_init.zsh" || print_status "missing" "abbreviations/_init.zsh"
+    else
+        print_status "missing" "zsh/abbreviations/ directory"
+    fi
 
-    # Check aliases.zsh
-    check_symlink "$aliases_target" "$aliases_source" "~/.oh-my-zsh/custom/aliases.zsh" || {
-        if [ "$FIX_MODE" = true ]; then
-            echo -e "    ${CYAN}Fixing...${NC}"
-            create_symlink "$aliases_source" "$aliases_target"
+    # Check zsh-abbr installation status
+    echo -e "\n${CYAN}zsh-abbr Status:${NC}"
+    local abbr_mode="${DOTFILES_ABBR_MODE:-alias}"
+    if command -v brew >/dev/null 2>&1; then
+        if brew list olets/tap/zsh-abbr >/dev/null 2>&1; then
+            print_status "ok" "zsh-abbr installed (mode: $abbr_mode)"
+        else
+            if [ "$abbr_mode" = "abbr" ] || [ "$abbr_mode" = "both" ]; then
+                print_status "missing" "zsh-abbr not installed (mode: $abbr_mode requires it)"
+                echo -e "    ${YELLOW}Install with: brew install olets/tap/zsh-abbr${NC}"
+            else
+                echo -e "  ${YELLOW}[INFO]${NC} zsh-abbr not installed (not required for mode: $abbr_mode)"
+            fi
         fi
-    }
-
-    # Check gruvbox theme
-    check_symlink "$theme_target" "$theme_source" "~/.oh-my-zsh/custom/themes/gruvbox.zsh-theme" || {
-        if [ "$FIX_MODE" = true ]; then
-            echo -e "    ${CYAN}Fixing...${NC}"
-            create_symlink "$theme_source" "$theme_target"
-        fi
-    }
+    else
+        echo -e "  ${YELLOW}[INFO]${NC} Homebrew not available, skipping zsh-abbr check"
+    fi
 }
 
 # ==============================================================================
@@ -246,7 +264,7 @@ main() {
 
     # Run checks
     check_stow_packages
-    check_manual_symlinks
+    check_zsh_modules
 
     # Summary
     section "Summary"

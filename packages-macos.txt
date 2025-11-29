@@ -4,11 +4,12 @@
 # This file lists all packages that should be installed on macOS systems.
 # It provides macOS alternatives to Linux packages where appropriate.
 #
-# IMPORTANT: sketchybar requires special tap handling:
-#   brew tap FelixKratz/formulae && brew install sketchybar
+# IMPORTANT: Some packages require special tap handling:
+#   sketchybar: brew tap FelixKratz/formulae && brew install sketchybar
+#   zsh-abbr:   brew install olets/tap/zsh-abbr
 #
 # Installation: brew install $(cat packages-macos.txt | grep -v '^#' | grep -v 'sketchybar')
-# Then manually install sketchybar with: brew tap FelixKratz/formulae && brew install sketchybar
+# Then manually install tap packages with their respective tap commands above.
 # ==============================================================================
 
 # ==============================================================================
@@ -22,6 +23,14 @@ htop
 tmux
 zsh
 starship
+
+# ==============================================================================
+# Shell Enhancements
+# ==============================================================================
+# zsh-abbr: Fish-style abbreviations for zsh (expands on Space/Enter)
+# Requires tap: brew install olets/tap/zsh-abbr
+# Enable in dotfiles: export DOTFILES_ABBR_MODE="abbr" in ~/.zshenv.local
+olets/tap/zsh-abbr
 
 # ==============================================================================
 # macOS Development Environment

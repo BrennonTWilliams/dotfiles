@@ -13,7 +13,7 @@ fi
 
 # Ensure path resolution functions are available
 if ! command -v resolve_platform_path >/dev/null 2>&1; then
-    echo "⚠️  Warning: Cross-platform utilities not loaded. Path resolution may not work correctly."
+    echo "[!] Warning: Cross-platform utilities not loaded. Path resolution may not work correctly."
 fi
 
 # ==============================================================================
@@ -25,16 +25,40 @@ if [[ "${DOTFILES_LOGO_ENABLED:-false}" == "true" ]] && [[ -f ~/.config/brenente
     source ~/.config/brenentech/logo.sh
 fi
 
-# Aliases
-# Source custom aliases from oh-my-zsh custom directory
-if [[ -f ~/AIProjects/ai-workspaces/dotfiles/zsh/.oh-my-zsh/custom/aliases.zsh ]]; then
-    source ~/AIProjects/ai-workspaces/dotfiles/zsh/.oh-my-zsh/custom/aliases.zsh
+# ==============================================================================
+# Modular Shell Configuration
+# ==============================================================================
+# Toggle via DOTFILES_ABBR_MODE environment variable:
+#   alias  - Traditional aliases only (default, backward compatible)
+#   abbr   - zsh-abbr abbreviations (requires: brew install olets/tap/zsh-abbr)
+#   both   - Both systems active (for transition testing)
+#
+# Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="abbr"
+
+# Resolve DOTFILES_ZSH from symlink (${0:A:h} doesn't work for sourced files)
+if [[ -L ~/.zshrc ]]; then
+    DOTFILES_ZSH="$HOME/$(dirname "$(readlink ~/.zshrc)")"
+else
+    DOTFILES_ZSH="${0:A:h}"
 fi
 
-alias tre='eza -T'
-# Clipboard sync - uses UNICLIP_SERVER environment variable
-# Set UNICLIP_SERVER in ~/.zshenv or ~/.zshrc.local (e.g., export UNICLIP_SERVER="192.168.1.24:38687")
-alias clipboard-sync='uniclip ${UNICLIP_SERVER:-localhost:53168}'
+# Load functions (always - these are shell functions like mkcd, nvim-keys, etc.)
+[[ -f "$DOTFILES_ZSH/functions/_init.zsh" ]] && source "$DOTFILES_ZSH/functions/_init.zsh"
+
+# Load safety aliases (always - rm -i, cp -i, mv -i should not expand)
+[[ -f "$DOTFILES_ZSH/aliases/_init.zsh" ]] && source "$DOTFILES_ZSH/aliases/_init.zsh"
+
+# Load abbreviations if mode is "abbr" or "both"
+if [[ "${DOTFILES_ABBR_MODE:-alias}" == "abbr" || "${DOTFILES_ABBR_MODE:-alias}" == "both" ]]; then
+    [[ -f "$DOTFILES_ZSH/abbreviations/_init.zsh" ]] && source "$DOTFILES_ZSH/abbreviations/_init.zsh"
+fi
+
+# Load legacy aliases if mode is "alias" or "both" (backward compatibility)
+if [[ "${DOTFILES_ABBR_MODE:-alias}" == "alias" || "${DOTFILES_ABBR_MODE:-alias}" == "both" ]]; then
+    if [[ -f "$DOTFILES_ZSH/.oh-my-zsh/custom/aliases.zsh" ]]; then
+        source "$DOTFILES_ZSH/.oh-my-zsh/custom/aliases.zsh"
+    fi
+fi
 
 # ==============================================================================
 # Starship Prompt Configuration
@@ -108,76 +132,51 @@ if [[ "$TERM_PROGRAM" == "vscode" ]]; then
 fi
 
 # >>> conda initialize (lazy-loaded) >>>
-# !! Lazy-loading wrapper for conda - saves 100-200ms on shell startup !!
-# Conda will be initialized only when first used
-#
-# This replaces the standard synchronous conda init that runs on every shell startup.
-# Instead, we create a placeholder function that initializes conda on first use.
+# Lazy-loading saves 100-200ms on shell startup by deferring conda init until first use
 
-# Initialize conda when first used
 __conda_lazy_init() {
-    # Remove the placeholder function to avoid recursion
     unfunction conda 2>/dev/null
 
-    # Use cross-platform path resolution for conda
+    # Resolve conda paths (with fallback)
+    local conda_bin
     if command -v resolve_platform_path >/dev/null 2>&1; then
-        local conda_bin="$(resolve_platform_path "conda_bin")"
-        __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
+        conda_bin="$(resolve_platform_path "conda_bin")"
     else
-        # Fallback to dynamic paths for backward compatibility
-        local conda_bin="${HOME}/miniforge3/bin"
-        if [ -d "$conda_bin" ]; then
-            __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
-        fi
+        conda_bin="${HOME}/miniforge3/bin"
     fi
 
-    if [ $? -eq 0 ]; then
+    [[ ! -d "$conda_bin" ]] && return 1
+
+    # Try shell hook first, then profile.d, then just PATH
+    local __conda_setup
+    __conda_setup="$("$conda_bin/conda" 'shell.zsh' 'hook' 2>/dev/null)"
+
+    if [[ $? -eq 0 ]]; then
         eval "$__conda_setup"
+    elif [[ -f "${conda_bin%/bin}/etc/profile.d/conda.sh" ]]; then
+        . "${conda_bin%/bin}/etc/profile.d/conda.sh"
     else
-        if command -v resolve_platform_path >/dev/null 2>&1; then
-            local conda_profile="$(resolve_platform_path "conda_profile")"
-            local conda_bin="$(resolve_platform_path "conda_bin")"
-            if [ -f "$conda_profile" ]; then
-                . "$conda_profile"
-            else
-                export PATH="$conda_bin:$PATH"
-            fi
-        else
-            # Fallback to dynamic paths for backward compatibility
-            local conda_root="${HOME}/miniforge3"
-            local conda_profile="$conda_root/etc/profile.d/conda.sh"
-            local conda_bin="$conda_root/bin"
-            if [ -f "$conda_profile" ]; then
-                . "$conda_profile"
-            else
-                export PATH="$conda_bin:$PATH"
-            fi
-        fi
+        export PATH="$conda_bin:$PATH"
     fi
-    unset __conda_setup
 
-    # Clean up the lazy init function
-    unfunction __conda_lazy_init
+    unfunction __conda_lazy_init 2>/dev/null
 }
 
-# Create a placeholder conda function that initializes on first use
 conda() {
     __conda_lazy_init
-    # Call the real conda command with all arguments
     conda "$@"
 }
 
-# Ensure conda bin is in PATH for other tools that might need it
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    local conda_bin="$(resolve_platform_path "conda_bin")"
-    export PATH="$conda_bin:$PATH"
-else
-    # Fallback to dynamic paths for backward compatibility
-    local conda_bin="${HOME}/miniforge3/bin"
-    if [ -d "$conda_bin" ]; then
-        export PATH="$conda_bin:$PATH"
+# Add conda bin to PATH for tools that need it before lazy-init
+{
+    local conda_bin
+    if command -v resolve_platform_path >/dev/null 2>&1; then
+        conda_bin="$(resolve_platform_path "conda_bin")"
+    else
+        conda_bin="${HOME}/miniforge3/bin"
     fi
-fi
+    [[ -d "$conda_bin" ]] && export PATH="$conda_bin:$PATH"
+}
 # <<< conda initialize (lazy-loaded) <<<
 
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
@@ -211,7 +210,9 @@ case "$(detect_os 2>/dev/null || echo 'unknown')" in
 esac
 
 # Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
+if command -v fzf >/dev/null 2>&1; then
+    source <(fzf --zsh)
+fi
 
 # >>> z - jump around (lazy-loaded) >>>
 # !! Lazy-loading wrapper for z - saves 5-15ms on shell startup !!
@@ -228,26 +229,28 @@ __z_lazy_init() {
     # Source the z script
     if [[ -f ~/.local/share/z/z.sh ]]; then
         . ~/.local/share/z/z.sh
+        # Clean up the lazy init function
+        unfunction __z_lazy_init 2>/dev/null
+        return 0
     else
-        echo "Warning: z.sh not found at ~/.local/share/z/z.sh"
+        # Define stub function so future calls fail gracefully
+        z() {
+            echo "[!] z not installed. Install from: https://github.com/rupa/z"
+            return 1
+        }
+        unfunction __z_lazy_init 2>/dev/null
         return 1
     fi
-
-    # Clean up the lazy init function
-    unfunction __z_lazy_init
 }
 
 # Create a placeholder z function that initializes on first use
 z() {
-    __z_lazy_init
-    # Call the real z command with all arguments
-    z "$@"
+    if __z_lazy_init; then
+        # Call the real z command with all arguments
+        z "$@"
+    fi
 }
 # <<< z - jump around (lazy-loaded) <<<
-
-alias breath='zenta now --quick'
-alias breathe='zenta now'
-alias reflect='zenta reflect'
 
 # ==============================================================================
 # BRENENTECH Logo Functions
@@ -287,7 +290,7 @@ logo-show() {
             rm "$state_file"
         fi
     else
-        echo "✗ Logo script not found at: $logo_script"
+        echo "[x] Logo script not found at: $logo_script"
     fi
 }
 
@@ -330,130 +333,56 @@ fi
 
 
 
-
-# Task Master aliases added on 8/16/2025
-alias tm='task-master'
-alias taskmaster='task-master'
-
 # IntelliShell integration removed - using Starship prompt instead
 
 # ==============================================================================
 # Starship Display Mode Functions
 # ==============================================================================
 
-# Switch between Compact, Standard, and Verbose display modes
-starship-compact() {
-    # Use cross-platform path resolution
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local starship_dir="$(resolve_platform_path "starship_config")"
-        local dotfiles_dir="$(resolve_platform_path "dotfiles")/starship"
-    else
-        # Fallback to hardcoded paths for backward compatibility
-        local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/.dotfiles/starship"
-    fi
+# Cache starship paths once (avoids repeated resolve_platform_path calls)
+if command -v resolve_platform_path >/dev/null 2>&1; then
+    typeset -g _STARSHIP_CONFIG_DIR="$(resolve_platform_path "starship_config")"
+    typeset -g _DOTFILES_STARSHIP_DIR="$(resolve_platform_path "dotfiles")/starship"
+else
+    typeset -g _STARSHIP_CONFIG_DIR="$HOME/.config/starship"
+    typeset -g _DOTFILES_STARSHIP_DIR="$HOME/.dotfiles/starship"
+fi
 
-    # Create symlink to compact configuration
-    ln -sf "$dotfiles_dir/modes/compact.toml" "$starship_dir/starship.toml"
-    echo "🚀 Starship mode: COMPACT (minimal information)"
-    echo "Configuration: $dotfiles_dir/modes/compact.toml"
+# Helper to switch starship mode
+_starship_set_mode() {
+    local mode="$1" label="$2" symbol="$3"
+    ln -sf "$_DOTFILES_STARSHIP_DIR/modes/${mode}.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    echo "[$symbol] Starship mode: $label"
+    echo "Configuration: $_DOTFILES_STARSHIP_DIR/modes/${mode}.toml"
     exec zsh
 }
 
-starship-standard() {
-    # Use cross-platform path resolution
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local starship_dir="$(resolve_platform_path "starship_config")"
-        local dotfiles_dir="$(resolve_platform_path "dotfiles")/starship"
-    else
-        # Fallback to hardcoded paths for backward compatibility
-        local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/.dotfiles/starship"
-    fi
-
-    # Create symlink to standard configuration
-    ln -sf "$dotfiles_dir/modes/standard.toml" "$starship_dir/starship.toml"
-    echo "📋 Starship mode: STANDARD (current multi-line layout)"
-    echo "Configuration: $dotfiles_dir/modes/standard.toml"
-    exec zsh
-}
-
-starship-verbose() {
-    # Use cross-platform path resolution
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local starship_dir="$(resolve_platform_path "starship_config")"
-        local dotfiles_dir="$(resolve_platform_path "dotfiles")/starship"
-    else
-        # Fallback to hardcoded paths for backward compatibility
-        local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/.dotfiles/starship"
-    fi
-
-    # Create symlink to verbose configuration
-    ln -sf "$dotfiles_dir/modes/verbose.toml" "$starship_dir/starship.toml"
-    echo "📊 Starship mode: VERBOSE (full context with all details)"
-    echo "Configuration: $dotfiles_dir/modes/verbose.toml"
-    exec zsh
-}
+starship-compact()  { _starship_set_mode "compact"  "COMPACT (minimal information)" ">"; }
+starship-standard() { _starship_set_mode "standard" "STANDARD (current multi-line layout)" "="; }
+starship-verbose()  { _starship_set_mode "verbose"  "VERBOSE (full context with all details)" "+"; }
 
 # Show current Starship display mode
 starship-mode() {
-    # Use cross-platform path resolution
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local starship_config="$(resolve_platform_path "starship_config")/starship.toml"
-        local dotfiles_dir="$(resolve_platform_path "dotfiles")/starship"
-    else
-        # Fallback to hardcoded paths for backward compatibility
-        local starship_config="$HOME/.config/starship/starship.toml"
-        local dotfiles_dir="$HOME/.dotfiles/starship"
-    fi
+    local config_file="$_STARSHIP_CONFIG_DIR/starship.toml"
 
-    # Check which configuration file is currently symlinked
-    if [[ -L "$starship_config" ]]; then
-        local target=$(readlink "$starship_config")
+    if [[ -L "$config_file" ]]; then
+        local target=$(readlink "$config_file")
         case "$target" in
-            *compact.toml)
-                echo "🚀 Current mode: COMPACT (minimal information)"
-                echo "Active configuration: $target"
-                ;;
-            *standard.toml)
-                echo "📋 Current mode: STANDARD (current multi-line layout)"
-                echo "Active configuration: $target"
-                ;;
-            *verbose.toml)
-                echo "📊 Current mode: VERBOSE (full context with all details)"
-                echo "Active configuration: $target"
-                ;;
-            *)
-                echo "❓ Unknown mode - custom configuration"
-                echo "Active configuration: $target"
-                ;;
+            *compact.toml)  echo "[>] Current mode: COMPACT (minimal information)" ;;
+            *standard.toml) echo "[=] Current mode: STANDARD (current multi-line layout)" ;;
+            *verbose.toml)  echo "[+] Current mode: VERBOSE (full context with all details)" ;;
+            *)              echo "[?] Unknown mode - custom configuration" ;;
         esac
+        echo "Active configuration: $target"
     else
-        echo "📋 Current mode: STANDARD (using default configuration)"
-        echo "Configuration: $starship_config (not a symlink)"
+        echo "[=] Current mode: STANDARD (using default configuration)"
+        echo "Configuration: $config_file (not a symlink)"
     fi
 }
 
-# Quick aliases for mode switching
-alias sc=starship-compact
-alias ss=starship-standard
-alias sv=starship-verbose
-alias sm=starship-mode
-
 # Initialize Starship in standard mode if not already configured
-if [[ ! -L "$(resolve_platform_path "starship_config" 2>/dev/null || echo "$HOME/.config/starship")/starship.toml" ]]; then
-    # Use cross-platform path resolution
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        local starship_dir="$(resolve_platform_path "starship_config")"
-        local dotfiles_dir="$(resolve_platform_path "dotfiles")/starship"
-    else
-        # Fallback to hardcoded paths for backward compatibility
-        local starship_dir="$HOME/.config/starship"
-        local dotfiles_dir="$HOME/.dotfiles/starship"
-    fi
-    ln -sf "$dotfiles_dir/modes/standard.toml" "$starship_dir/starship.toml"
-fi
+[[ ! -L "$_STARSHIP_CONFIG_DIR/starship.toml" ]] && \
+    ln -sf "$_DOTFILES_STARSHIP_DIR/modes/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
 
 # ==============================================================================
 # Starship Prompt Integration
@@ -469,3 +398,9 @@ unset PROMPT_COMMAND
 
 # Initialize Starship
 eval "$(starship init zsh)"
+
+# ==============================================================================
+# Local Overrides
+# ==============================================================================
+# Source machine-specific configuration last to allow overriding any setting
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
