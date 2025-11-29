@@ -402,7 +402,7 @@ brew install --cask openinterminal
 
    # Should NOT have static working-directory set
    # Comment out if present:
-   # working-directory = /Users/brennon
+   # working-directory = /Users/yourusername
    ```
 
 3. **Test with Terminal**:
@@ -500,7 +500,7 @@ Modify how Ghostty handles directory opening:
 window-inherit-working-directory = true
 
 # Always start in home directory (override services)
-# working-directory = /Users/brennon
+# working-directory = ~/
 
 # Start in project directory
 # working-directory = ~/Projects

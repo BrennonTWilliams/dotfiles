@@ -538,7 +538,7 @@ This guide provides comprehensive troubleshooting steps for Ghostty terminal emu
    grep "working-directory" ~/.config/ghostty/config
 
    # Comment out if set to static path:
-   # working-directory = /Users/brennon
+   # working-directory = /Users/yourusername
 
    # Ensure directory inheritance is enabled:
    window-inherit-working-directory = true
