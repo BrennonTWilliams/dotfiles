@@ -40,12 +40,12 @@ Thank you for your interest in contributing to this dotfiles project! This docum
 3. **Set Up Development Environment**
    ```bash
    # Quick development setup (recommended for contributors)
-   # Note: install-new.sh does not have a --development flag.
+   # Note: install.sh does not have a --development flag.
    # Use --dotfiles for selective installation or interactive mode:
-   ./install-new.sh --dotfiles
+   ./install.sh --dotfiles
 
    # Or install dotfiles interactively
-   ./install-new.sh
+   ./install.sh
 
    # Or use the advanced setup script for custom configurations
    ./scripts/setup-dev-env
@@ -103,9 +103,9 @@ git checkout -b fix/issue-description
 ./tests/test_installation.sh
 
 # Manual testing
-# Note: install-new.sh does not have a --dry-run flag.
+# Note: install.sh does not have a --dry-run flag.
 # Review the script or use the interactive mode to select specific components:
-# ./install-new.sh
+# ./install.sh
 # For now, review code changes manually before running installation.
 ```
 
@@ -522,10 +522,10 @@ fi
 ```bash
 # Enable debug mode
 set -x  # Enable debug tracing
-# Note: install-new.sh does not have a --debug flag.
+# Note: install.sh does not have a --debug flag.
 # For debugging, use 'set -x' before running the script or edit the script
 # to add debug output as needed:
-# bash -x ./install-new.sh
+# bash -x ./install.sh
 
 # Test specific components
 ./tests/test_component.sh --verbose

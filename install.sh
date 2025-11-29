@@ -12,11 +12,11 @@
 # It provides safe backups, platform detection, and selective installation.
 #
 # Usage:
-#   ./install-new.sh                   # Interactive installation
-#   ./install-new.sh --all             # Install all components
-#   ./install-new.sh --packages        # Install system packages only
-#   ./install-new.sh --terminal        # Setup terminal only
-#   ./install-new.sh --dotfiles        # Install dotfiles only
+#   ./install.sh                   # Interactive installation
+#   ./install.sh --all             # Install all components
+#   ./install.sh --packages        # Install system packages only
+#   ./install.sh --terminal        # Setup terminal only
+#   ./install.sh --dotfiles        # Install dotfiles only
 # ==============================================================================
 
 set -euo pipefail

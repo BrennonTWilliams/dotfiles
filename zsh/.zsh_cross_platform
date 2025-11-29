@@ -763,6 +763,23 @@ alias health-check='dotfiles_health_check'
 alias dotfiles-check='dotfiles_health_check'
 alias system-health='dotfiles_health_check'
 
+# Development and system status aliases
+alias dev-status='dev_status'
+alias system-status='system_info_display'
+
+# System information display function
+system_info_display() {
+    echo "=== System Information ==="
+    echo "OS: $(detect_os)"
+    echo "Kernel: $(uname -r)"
+    echo "Terminal: $(detect_terminal)"
+    echo "Desktop: $(detect_desktop_env)"
+    echo "Shell: $SHELL"
+    echo "User: $(get_username)"
+    echo "Home: $(get_user_home)"
+    echo "Dotfiles: ${DOTFILES_DIR:-~/.dotfiles}"
+}
+
 # Development environment status check
 dev_status() {
     echo "SYS: Development Environment Status"

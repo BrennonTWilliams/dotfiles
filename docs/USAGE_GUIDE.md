@@ -42,7 +42,7 @@ cd ~/.dotfiles
 
 **Interactive (recommended for first time):**
 ```bash
-./install-new.sh
+./install.sh
 ```
 
 The script will:
@@ -54,7 +54,7 @@ The script will:
 
 **Non-interactive (install everything):**
 ```bash
-./install-new.sh --all
+./install.sh --all
 ```
 
 ### 4. Install Additional Dependencies
@@ -834,10 +834,10 @@ Install only what you need on specific machines:
 
 ```bash
 # Minimal server setup (no GUI)
-./install-new.sh zsh bash tmux
+./install.sh zsh bash tmux
 
 # Full desktop setup
-./install-new.sh --all
+./install.sh --all
 ```
 
 ### Viewing Repository Structure
@@ -898,7 +898,7 @@ git pull
 
 ```bash
 # Install on new machine
-./install-new.sh
+./install.sh
 
 # Update from GitHub
 cd ~/.dotfiles && git pull

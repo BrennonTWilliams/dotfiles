@@ -21,23 +21,13 @@ stow brenentech  # Creates ~/.config/brenentech/
 
 ## Enabling Logo Display
 
-The logo is **disabled by default**. To enable it:
-
-### Option 1: Environment Variable (Recommended)
-
-Add to your `~/.zshrc.local`:
+The logo is **disabled by default**. To enable:
 
 ```bash
-export DOTFILES_LOGO_ENABLED=true
+logo-toggle    # Enable logo display
 ```
 
-### Option 2: State File
-
-Create the state file:
-
-```bash
-touch ~/.config/brenentech/.logo_enabled
-```
+This creates `~/.config/brenentech/.logo_enabled`. Run again to disable.
 
 ## Usage
 

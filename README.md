@@ -16,7 +16,7 @@
 ```bash
 git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./install-new.sh --all
+./install.sh --all
 ```
 
 **What you get:** Modern terminal (Ghostty/Foot), Starship prompt with Gruvbox theme, cross-platform shell utilities, comprehensive development environment, health monitoring, and modular configuration.
@@ -27,7 +27,7 @@ cd ~/.dotfiles
 
 ## Screenshot
 
-![Dotfiles Terminal Setup](docs/images/terminal-screenshot.png)
+![Dotfiles Terminal Setup](terminal-screenshot.png)
 *Unified Gruvbox theme with Starship prompt across macOS (Ghostty) and Linux (Foot)*
 
 ---
@@ -41,7 +41,7 @@ cd ~/.dotfiles
 | **Conflict Resolution** | ✅ Interactive + auto-resolve modes | ❌ Overwrites blindly |
 | **Preview Mode** | ✅ Dry-run before installing | ❌ No preview capability |
 | **Health Checks** | Post-install validation system | ❌ No verification |
-| **Path Management** | Dynamic resolution (13 paths) | ❌ Hardcoded paths |
+| **Path Management** | Dynamic resolution (21 paths) | ❌ Hardcoded paths |
 | **Theme Consistency** | Unified Gruvbox everywhere | ⚠️ Inconsistent colors |
 | **Performance** | Optimized shell startup (<50ms) | ⚠️ Often >200ms |
 | **Documentation** | Comprehensive with examples | ⚠️ README only |
@@ -92,34 +92,34 @@ git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # 2. Run the modular installer
-./install-new.sh --all
+./install.sh --all
 
 # 3. Reload your shell
 exec zsh
 ```
 
 **Installation options:**
-- `./install-new.sh` - Interactive installation (recommended for first-time)
-- `./install-new.sh --all` - Install everything automatically
-- `./install-new.sh --packages` - System packages only
-- `./install-new.sh --terminal` - Terminal and shell only
-- `./install-new.sh --dotfiles` - Dotfiles only (assumes packages installed)
-- `./install-new.sh --check-deps` - Check system dependencies without installing
-- `./install-new.sh --preview --all` - **Preview changes without installing** (dry-run mode)
+- `./install.sh` - Interactive installation (recommended for first-time)
+- `./install.sh --all` - Install everything automatically
+- `./install.sh --packages` - System packages only
+- `./install.sh --terminal` - Terminal and shell only
+- `./install.sh --dotfiles` - Dotfiles only (assumes packages installed)
+- `./install.sh --check-deps` - Check system dependencies without installing
+- `./install.sh --preview --all` - **Preview changes without installing** (dry-run mode)
 
 **Preview mode** lets you see what would be installed before making changes:
 ```bash
-./install-new.sh --preview --all          # Preview complete installation
-./install-new.sh --preview --packages     # Preview package installations
-./install-new.sh --preview --dotfiles     # Preview symlink creation
-./install-new.sh --preview --all --verbose # Detailed preview output
+./install.sh --preview --all          # Preview complete installation
+./install.sh --preview --packages     # Preview package installations
+./install.sh --preview --dotfiles     # Preview symlink creation
+./install.sh --preview --all --verbose # Detailed preview output
 ```
 
 **Conflict resolution** handles existing dotfiles intelligently:
 ```bash
-./install-new.sh --dotfiles                          # Interactive prompts (default)
-./install-new.sh --dotfiles --auto-resolve=overwrite # Auto-backup and replace
-./install-new.sh --dotfiles --auto-resolve=keep-existing # Keep your files
+./install.sh --dotfiles                          # Interactive prompts (default)
+./install.sh --dotfiles --auto-resolve=overwrite # Auto-backup and replace
+./install.sh --dotfiles --auto-resolve=keep-existing # Keep your files
 ```
 
 See [Installation Guide](docs/GETTING_STARTED.md) for platform-specific detailed instructions.
@@ -222,7 +222,7 @@ See [Getting Started Guide](docs/GETTING_STARTED.md) for platform-specific setup
 ### Option 1: Full Installation (Recommended)
 
 ```bash
-./install-new.sh --all
+./install.sh --all
 ```
 
 Installs:
@@ -236,23 +236,23 @@ Installs:
 
 **Packages only:**
 ```bash
-./install-new.sh --packages
+./install.sh --packages
 ```
 
 **Terminal setup only:**
 ```bash
-./install-new.sh --terminal
+./install.sh --terminal
 ```
 
 **Dotfiles only** (assumes packages installed):
 ```bash
-./install-new.sh --dotfiles
+./install.sh --dotfiles
 ```
 
 ### Option 3: Interactive Installation
 
 ```bash
-./install-new.sh
+./install.sh
 ```
 
 Prompts you to select which components to install.
@@ -328,12 +328,6 @@ starship-mode       # Show current mode (sm)
 
 The logo display is **disabled by default**. To enable:
 
-```bash
-# Add to ~/.zshrc.local
-export DOTFILES_LOGO_ENABLED=true
-```
-
-Commands:
 ```bash
 logo-toggle         # Enable/disable login logo animation
 logo-show           # Display logo manually
@@ -450,7 +444,7 @@ sudo apt update && sudo apt upgrade
 
 ```bash
 # Automatic backup during installation
-./install-new.sh  # Creates ~/.dotfiles_backup_YYYYMMDD_HHMMSS
+./install.sh  # Creates ~/.dotfiles_backup_YYYYMMDD_HHMMSS
 
 # Manual backup
 cp -r ~/.dotfiles ~/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)
@@ -502,7 +496,7 @@ source ~/.zsh_cross_platform
 resolve_platform_path dotfiles
 ```
 
-For more issues, see [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
+For more issues, see [Troubleshooting Guide](TROUBLESHOOTING.md).
 
 ---
 
@@ -521,7 +515,7 @@ For more issues, see [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
 
 ### Maintenance & Development
 - [Backup & Recovery](docs/BACKUP_RECOVERY.md) - Backup procedures and restore steps
-- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Troubleshooting Guide](TROUBLESHOOTING.md) - Common issues and solutions
 - [Contributing Guidelines](CONTRIBUTING.md) - Development setup and contribution process
 - [Changelog](CHANGELOG.md) - Version history and migration guides
 

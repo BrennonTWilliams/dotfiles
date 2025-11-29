@@ -4,8 +4,9 @@
 # This file is sourced when DOTFILES_ABBR_MODE is "abbr" (the default)
 # Set DOTFILES_ABBR_MODE="alias" in ~/.zshenv.local to use traditional aliases
 
-# Suppress "Added..." messages during shell startup
+# Suppress "Added..." and "will now expand..." messages during shell startup
 export ABBR_QUIET=1
+export ABBR_QUIETER=1
 
 # ==============================================================================
 # Detect and Load zsh-abbr

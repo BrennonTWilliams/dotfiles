@@ -36,7 +36,7 @@
 # Clone and setup (requires SSH key access to GitHub)
 git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
-./install-new.sh --all --packages
+./install.sh --all --packages
 exec zsh
 ```
 
@@ -172,7 +172,7 @@ git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Install with platform-specific packages and setup
-./install-new.sh --all --packages
+./install.sh --all --packages
 
 # This will:
 # - Install macOS-specific packages from packages-macos.txt

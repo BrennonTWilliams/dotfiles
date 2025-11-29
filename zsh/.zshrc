@@ -20,8 +20,8 @@ fi
 # Custom Logo Display (Opt-in)
 # ==============================================================================
 # Display custom CLI logo for interactive shells
-# To enable: export DOTFILES_LOGO_ENABLED=true in ~/.zshrc.local
-if [[ "${DOTFILES_LOGO_ENABLED:-false}" == "true" ]] && [[ -f ~/.config/brenentech/logo.sh ]]; then
+# To enable: run `logo-toggle` (creates ~/.config/brenentech/.logo_enabled)
+if [[ -f ~/.config/brenentech/logo.sh ]]; then
     source ~/.config/brenentech/logo.sh
 fi
 

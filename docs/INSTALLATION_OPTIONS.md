@@ -19,18 +19,18 @@ Comprehensive guide to all dotfiles installation modes and options.
 
 ```bash
 # Interactive mode (recommended for first-time users)
-./install-new.sh
+./install.sh
 
 # Full automatic installation
-./install-new.sh --all
+./install.sh --all
 
 # Check dependencies before installing
-./install-new.sh --check-deps
+./install.sh --check-deps
 
 # Component-specific installations
-./install-new.sh --packages     # System packages only
-./install-new.sh --terminal     # Terminal and shell setup only
-./install-new.sh --dotfiles     # Dotfiles only (symlinks)
+./install.sh --packages     # System packages only
+./install.sh --terminal     # Terminal and shell setup only
+./install.sh --dotfiles     # Dotfiles only (symlinks)
 ```
 
 ---
@@ -39,7 +39,7 @@ Comprehensive guide to all dotfiles installation modes and options.
 
 ### Interactive Mode
 
-**Command:** `./install-new.sh`
+**Command:** `./install.sh`
 
 Launches an interactive menu that lets you choose which components to install.
 
@@ -61,7 +61,7 @@ Launches an interactive menu that lets you choose which components to install.
 
 ### Full Installation
 
-**Command:** `./install-new.sh --all`
+**Command:** `./install.sh --all`
 
 Installs everything in one go: system packages, dotfiles, and terminal configuration.
 
@@ -85,7 +85,7 @@ Installs everything in one go: system packages, dotfiles, and terminal configura
 
 ### Packages Only
 
-**Command:** `./install-new.sh --packages`
+**Command:** `./install.sh --packages`
 
 Installs only system packages from platform-specific manifests.
 
@@ -109,7 +109,7 @@ Installs only system packages from platform-specific manifests.
 
 ### Terminal Setup Only
 
-**Command:** `./install-new.sh --terminal`
+**Command:** `./install.sh --terminal`
 
 Configures terminal environment without installing packages or dotfiles.
 
@@ -127,7 +127,7 @@ Configures terminal environment without installing packages or dotfiles.
 
 ### Dotfiles Only
 
-**Command:** `./install-new.sh --dotfiles`
+**Command:** `./install.sh --dotfiles`
 
 Creates symlinks for dotfiles using GNU Stow, without installing packages or configuring terminal.
 
@@ -153,8 +153,8 @@ Creates symlinks for dotfiles using GNU Stow, without installing packages or con
 
 ### Preview Mode (Dry-Run)
 
-**Command:** `./install-new.sh --preview [--all|--packages|--dotfiles|--terminal]`
-**Alias:** `./install-new.sh --dry-run`
+**Command:** `./install.sh --preview [--all|--packages|--dotfiles|--terminal]`
+**Alias:** `./install.sh --dry-run`
 
 Preview what changes would be made **without actually modifying your system**. Perfect for understanding what will happen before committing to installation.
 
@@ -171,7 +171,7 @@ Preview what changes would be made **without actually modifying your system**. P
 #### Preview Output Example
 
 ```bash
-$ ./install-new.sh --preview --all
+$ ./install.sh --preview --all
 
 ╔═══════════════════════════════════════════════════════════════════╗
 ║  INSTALLATION PREVIEW MODE                                        ║
@@ -240,7 +240,7 @@ Resource Estimates:
   Backups: 1 file(s) to backup
 
 To proceed with installation:
-  ./install-new.sh --all
+  ./install.sh --all
 ```
 
 ---
@@ -249,30 +249,30 @@ To proceed with installation:
 
 **Preview everything:**
 ```bash
-./install-new.sh --preview --all
+./install.sh --preview --all
 ```
 
 **Preview packages only:**
 ```bash
-./install-new.sh --preview --packages
+./install.sh --preview --packages
 ```
 Shows which packages would be installed, upgraded, or are already present.
 
 **Preview dotfiles only:**
 ```bash
-./install-new.sh --preview --dotfiles
+./install.sh --preview --dotfiles
 ```
 Lists all symlinks that would be created and any conflicts detected.
 
 **Preview terminal setup only:**
 ```bash
-./install-new.sh --preview --terminal
+./install.sh --preview --terminal
 ```
 Shows what shell/terminal configuration changes would be made.
 
 **Verbose preview:**
 ```bash
-./install-new.sh --preview --all --verbose
+./install.sh --preview --all --verbose
 ```
 Shows detailed output including:
 - Every symlink path (not just counts)
@@ -287,25 +287,25 @@ Shows detailed output including:
 **Before First Installation:**
 ```bash
 # See what will happen before committing
-./install-new.sh --preview --all
+./install.sh --preview --all
 
 # If satisfied, proceed with actual installation
-./install-new.sh --all
+./install.sh --all
 ```
 
 **Check for Conflicts:**
 ```bash
 # Preview just dotfiles to see what conflicts exist
-./install-new.sh --preview --dotfiles
+./install.sh --preview --dotfiles
 
 # Review conflicts, backup manually if needed, then install
-./install-new.sh --dotfiles
+./install.sh --dotfiles
 ```
 
 **Verify Package Updates:**
 ```bash
 # Check which packages would be upgraded
-./install-new.sh --preview --packages
+./install.sh --preview --packages
 
 # See version changes before updating
 ```
@@ -313,7 +313,7 @@ Shows detailed output including:
 **Test on New System:**
 ```bash
 # Safe way to explore what dotfiles would do
-./install-new.sh --preview --all --verbose
+./install.sh --preview --all --verbose
 
 # Learn about your dotfiles without risk
 ```
@@ -321,7 +321,7 @@ Shows detailed output including:
 **CI/CD Validation:**
 ```bash
 # Use in automated testing to verify installation scripts
-./install-new.sh --preview --all
+./install.sh --preview --all
 echo "Exit code: $?"  # Should be 0 if preview succeeds
 ```
 
@@ -352,8 +352,8 @@ When installing dotfiles, conflicts can occur when a file already exists at the 
 
 **Default Behavior:** Interactive prompts for each conflict
 
-**Command:** `./install-new.sh --dotfiles` (interactive, default)
-**Auto-resolve:** `./install-new.sh --dotfiles --auto-resolve=STRATEGY`
+**Command:** `./install.sh --dotfiles` (interactive, default)
+**Auto-resolve:** `./install.sh --dotfiles --auto-resolve=STRATEGY`
 
 ---
 
@@ -378,7 +378,7 @@ stow -n -v -d ~/.dotfiles -t ~/ package_name
 
 ### Interactive Conflict Resolution
 
-**Mode:** `./install-new.sh --dotfiles --interactive` (default)
+**Mode:** `./install.sh --dotfiles --interactive` (default)
 
 When a conflict is detected, you'll see an interactive prompt with 6 options:
 
@@ -455,14 +455,14 @@ Choice [1-6]:
 For non-interactive installations (CI/CD, automation), use auto-resolve strategies:
 
 ```bash
-./install-new.sh --dotfiles --auto-resolve=STRATEGY
+./install.sh --dotfiles --auto-resolve=STRATEGY
 ```
 
 ---
 
 #### Strategy: `keep-existing`
 
-**Command:** `./install-new.sh --dotfiles --auto-resolve=keep-existing`
+**Command:** `./install.sh --dotfiles --auto-resolve=keep-existing`
 
 **Behavior:**
 - Skips all conflicting dotfiles
@@ -476,7 +476,7 @@ For non-interactive installations (CI/CD, automation), use auto-resolve strategi
 
 **Example:**
 ```bash
-$ ./install-new.sh --dotfiles --auto-resolve=keep-existing
+$ ./install.sh --dotfiles --auto-resolve=keep-existing
 
 Installing Dotfiles...
 ⊘ Skipped: ~/.gitconfig (keeping existing)
@@ -493,7 +493,7 @@ Conflict Resolution Summary:
 
 #### Strategy: `overwrite`
 
-**Command:** `./install-new.sh --dotfiles --auto-resolve=overwrite`
+**Command:** `./install.sh --dotfiles --auto-resolve=overwrite`
 
 **Behavior:**
 - Backs up all conflicting files to `~/.dotfiles_backup_TIMESTAMP/`
@@ -507,7 +507,7 @@ Conflict Resolution Summary:
 
 **Example:**
 ```bash
-$ ./install-new.sh --dotfiles --auto-resolve=overwrite
+$ ./install.sh --dotfiles --auto-resolve=overwrite
 
 Installing Dotfiles...
 ✓ Backed up: ~/.gitconfig → ~/.dotfiles_backup_20250123_143022/gitconfig.backup
@@ -526,7 +526,7 @@ Backup Location: ~/.dotfiles_backup_20250123_143022
 
 #### Strategy: `backup-all`
 
-**Command:** `./install-new.sh --dotfiles --auto-resolve=backup-all`
+**Command:** `./install.sh --dotfiles --auto-resolve=backup-all`
 
 **Behavior:**
 - Renames conflicting files with `.orig` suffix
@@ -540,7 +540,7 @@ Backup Location: ~/.dotfiles_backup_20250123_143022
 
 **Example:**
 ```bash
-$ ./install-new.sh --dotfiles --auto-resolve=backup-all
+$ ./install.sh --dotfiles --auto-resolve=backup-all
 
 Installing Dotfiles...
 ✓ Renamed: ~/.gitconfig → ~/.gitconfig.orig
@@ -557,7 +557,7 @@ Conflict Resolution Summary:
 
 #### Strategy: `fail-on-conflict`
 
-**Command:** `./install-new.sh --dotfiles --auto-resolve=fail-on-conflict`
+**Command:** `./install.sh --dotfiles --auto-resolve=fail-on-conflict`
 
 **Behavior:**
 - Aborts installation if **any** conflict is detected
@@ -571,7 +571,7 @@ Conflict Resolution Summary:
 
 **Example:**
 ```bash
-$ ./install-new.sh --dotfiles --auto-resolve=fail-on-conflict
+$ ./install.sh --dotfiles --auto-resolve=fail-on-conflict
 
 Installing Dotfiles...
 [ERROR] Conflict detected: ~/.gitconfig
@@ -730,7 +730,7 @@ cp ~/.dotfiles_backup_20250123_143022/gitconfig.backup ~/.gitconfig
 #### Example 1: Interactive Installation with Merge
 
 ```bash
-$ ./install-new.sh --dotfiles
+$ ./install.sh --dotfiles
 
 Installing Dotfiles...
 
@@ -767,7 +767,7 @@ Conflict Resolution Summary for git:
 #### Example 2: Auto-Resolve with Overwrite
 
 ```bash
-$ ./install-new.sh --dotfiles --auto-resolve=overwrite --verbose
+$ ./install.sh --dotfiles --auto-resolve=overwrite --verbose
 
 Installing Dotfiles...
 Available packages: zsh starship tmux git neovim
@@ -787,7 +787,7 @@ Conflict Resolution Summary for git:
 #### Example 3: Preview Conflicts
 
 ```bash
-$ ./install-new.sh --preview --dotfiles
+$ ./install.sh --preview --dotfiles
 
 ╔═══════════════════════════════════════════════════════════════════╗
 ║  INSTALLATION PREVIEW MODE                                        ║
@@ -821,7 +821,7 @@ Total: 15 symlink(s) would be created
 **1. Preview Before Installing**
 ```bash
 # See conflicts before committing
-./install-new.sh --preview --dotfiles
+./install.sh --preview --dotfiles
 ```
 
 **2. Backup Important Configs**
@@ -831,7 +831,7 @@ cp ~/.gitconfig ~/gitconfig.backup
 cp ~/.zshrc ~/zshrc.backup
 
 # Then install
-./install-new.sh --dotfiles
+./install.sh --dotfiles
 ```
 
 **3. Use Merge for Config Files**
@@ -860,7 +860,7 @@ sudo apt install git-delta  # Linux
 
 The dependency validation system ensures all required tools are present before installation begins, preventing mid-installation failures.
 
-**Command:** `./install-new.sh --check-deps`
+**Command:** `./install.sh --check-deps`
 
 ---
 
@@ -893,7 +893,7 @@ These **enhance the experience** but aren't required:
 ### Pre-flight Check Output
 
 ```bash
-$ ./install-new.sh --check-deps
+$ ./install.sh --check-deps
 
 ═══════════════════════════════════════════════════════════════════
 PRE-FLIGHT DEPENDENCY CHECK
@@ -1000,10 +1000,10 @@ To install missing dependencies manually:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 After installing dependencies, re-run this script:
-  ./install-new.sh --all
+  ./install.sh --all
 
 Or check dependencies only:
-  ./install-new.sh --check-deps
+  ./install.sh --check-deps
 ```
 
 #### Option 4: Continue Anyway
@@ -1018,10 +1018,10 @@ Exits the installer, allowing you to install dependencies manually.
 
 ### Automatic Pre-flight Integration
 
-When running `./install-new.sh --all`, the pre-flight check runs **automatically** before any installation begins:
+When running `./install.sh --all`, the pre-flight check runs **automatically** before any installation begins:
 
 ```bash
-$ ./install-new.sh --all
+$ ./install.sh --all
 
 ═══ Complete Installation ═══
 
@@ -1058,19 +1058,19 @@ git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Check what's needed (Homebrew likely missing on fresh install)
-./install-new.sh --check-deps
+./install.sh --check-deps
 
 # Choose option 1 to install Homebrew and all dependencies
 # Then run full installation
-./install-new.sh --all
+./install.sh --all
 ```
 
 ### Example 2: Linux Server (Minimal Install)
 
 ```bash
 # Only install dotfiles and configure shell, skip GUI packages
-./install-new.sh --dotfiles
-./install-new.sh --terminal
+./install.sh --dotfiles
+./install.sh --terminal
 
 # Manually install only needed packages
 sudo apt install git curl stow zsh
@@ -1084,17 +1084,17 @@ cd ~/.dotfiles
 git pull
 
 # Re-stow dotfiles to update symlinks
-./install-new.sh --dotfiles
+./install.sh --dotfiles
 
 # Or rebuild everything
-./install-new.sh --all
+./install.sh --all
 ```
 
 ### Example 4: Verify Installation
 
 ```bash
 # Check all dependencies are present
-./install-new.sh --check-deps
+./install.sh --check-deps
 
 # Run health check
 ./scripts/health-check.sh
@@ -1127,7 +1127,7 @@ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Re-run check
-./install-new.sh --check-deps
+./install.sh --check-deps
 ```
 
 ### "Permission denied" during installation
