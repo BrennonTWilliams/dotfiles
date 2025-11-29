@@ -422,14 +422,16 @@ export PATH="$(brew --prefix)/sbin:$PATH"
 
 ## Other Common Issues
 
-### Oh My Zsh Not Found
+### zsh-abbr Not Found
 
-If you see "Oh My Zsh not found" errors:
+If abbreviations aren't working:
 
 ```bash
-# Run the Oh My Zsh setup script
-cd ~/dotfiles
-./scripts/setup-ohmyzsh.sh
+# Install zsh-abbr
+brew install olets/tap/zsh-abbr
+
+# Reload shell
+exec zsh
 ```
 
 ### NVM Not Working

@@ -62,9 +62,6 @@ The script will:
 After the main installation, run these helper scripts:
 
 ```bash
-# Install Oh My Zsh and plugins
-./scripts/setup-ohmyzsh.sh
-
 # Install Node Version Manager
 ./scripts/setup-nvm.sh
 
@@ -170,18 +167,17 @@ Toggle via `DOTFILES_ABBR_MODE` environment variable in `~/.zshenv.local`:
 
 | Mode | Behavior |
 |------|----------|
-| `alias` | Traditional aliases only (default, backward compatible) |
-| `abbr` | zsh-abbr abbreviations only (requires zsh-abbr installed) |
-| `both` | Both systems active (for transition/testing) |
+| `abbr` (default) | zsh-abbr abbreviations (requires zsh-abbr installed) |
+| `alias` | Traditional aliases only (fallback if zsh-abbr not installed) |
 
 ### Setup
 
 ```bash
-# Install zsh-abbr (optional, only needed for abbr/both modes)
+# Install zsh-abbr (required for default abbr mode)
 brew install olets/tap/zsh-abbr
 
-# Enable abbreviations in ~/.zshenv.local
-export DOTFILES_ABBR_MODE="abbr"
+# To use traditional aliases instead (optional):
+export DOTFILES_ABBR_MODE="alias"
 ```
 
 ### How It Works
@@ -203,23 +199,22 @@ $ gs<Space>
 ```
 zsh/
 ├── functions/       # Always loaded (mkcd, qfind, nvim-keys, etc.)
-├── aliases/         # Always loaded (safety: rm -i, cp -i, mv -i)
-│   ├── safety.zsh   # Destructive command safeguards
-│   └── extras.zsh   # Aliases for non-abbr mode fallback
-└── abbreviations/   # Loaded in abbr/both modes
+├── aliases/
+│   ├── safety.zsh   # Always loaded (rm -i, cp -i, mv -i)
+│   └── extras.zsh   # Loaded in alias mode only (fallback)
+└── abbreviations/   # Loaded in abbr mode (default)
     ├── git.zsh      # gs, ga, gc, gp, gl, gd, gco, gb
     ├── navigation.zsh # .., ..., ....
     ├── tmux.zsh     # tls, ta, tn, tk
     └── ...
 ```
 
-### Known Conflicts
+### System Command Overrides
 
-Some abbreviations conflict with system commands:
-- `gs` - Conflicts with Ghostscript (`/opt/homebrew/bin/gs`)
-- `cc` - Conflicts with C compiler (`/usr/bin/cc`)
-
-zsh-abbr will show warnings but these shortcuts still work in `alias` or `both` mode.
+Some abbreviations override system commands using `--force`:
+- `gs` - Overrides Ghostscript (`/opt/homebrew/bin/gs`) -> `git status`
+- `cc` - Overrides C compiler (`/usr/bin/cc`) -> `claude --dangerously-skip-permissions`
+- `sleep` - Overrides `/bin/sleep` -> `pmset sleepnow`
 
 ---
 
@@ -770,21 +765,20 @@ ssh -T git@github.com
 # Should see: "Hi USERNAME! You've successfully authenticated..."
 ```
 
-### Oh My Zsh Plugin Not Working
+### zsh-abbr Abbreviations Not Working
 
-**Problem:** Plugin installed but not functioning
+**Problem:** Abbreviations not expanding
 
 **Solution:**
 ```bash
-# Verify plugin is listed in .zshrc
-grep "plugins=" ~/.zshrc
+# Verify zsh-abbr is installed
+brew list olets/tap/zsh-abbr
 
-# Ensure plugin directory exists
-ls ~/.oh-my-zsh/custom/plugins/
+# Check DOTFILES_ABBR_MODE (should be "abbr")
+echo $DOTFILES_ABBR_MODE
 
-# Reinstall plugin
-rm -rf ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-./scripts/setup-ohmyzsh.sh
+# Reinstall zsh-abbr
+brew reinstall olets/tap/zsh-abbr
 
 # Reload shell
 exec zsh

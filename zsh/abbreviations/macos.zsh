@@ -48,7 +48,8 @@ abbr -S power-info='system_profiler SPPowerDataType'
 # macOS App Shortcuts
 # ==============================================================================
 abbr -S lock='pmset displaysleepnow'
-abbr -S sleep='pmset sleepnow'
+# --force needed to override /bin/sleep
+abbr -S --force --quiet sleep='pmset sleepnow'
 abbr -S screensaver='open -a ScreenSaverEngine'
 
 # ==============================================================================

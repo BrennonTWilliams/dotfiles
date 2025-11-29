@@ -34,109 +34,58 @@
 ### Zsh
 
 - **Version:** 5.9
-- **Framework:** Oh My Zsh
-- **Installation Location:** `~/.oh-my-zsh`
+- **Prompt:** Starship (cross-shell prompt)
+- **Abbreviations:** zsh-abbr (Fish-style abbreviations)
 - **Configuration File:** `~/.zshrc`
 
-#### Theme
+#### Prompt (Starship)
 
-- **Active Theme:** Gruvbox (`gruvbox.zsh-theme`)
-- **Location:** `~/.oh-my-zsh/custom/themes/gruvbox.zsh-theme`
+Starship provides a fast, customizable prompt with Gruvbox theme.
 
-#### Plugins
+- **Configuration:** `~/.config/starship/starship.toml`
+- **Modes:** compact, standard, verbose (switch with `starship-compact`, `starship-standard`, `starship-verbose`)
 
-Located in `~/.zshrc:73`:
+#### Abbreviations (zsh-abbr)
 
-```zsh
-plugins=(git z zsh-autosuggestions zsh-syntax-highlighting tmux colored-man-pages command-not-found extract)
+Unlike aliases, abbreviations expand to their full command when you press Space or Enter.
+
+**Location:** `zsh/abbreviations/`
+
+| File | Contents |
+|------|----------|
+| `git.zsh` | gs, ga, gc, gp, gl, gd, gco, gb |
+| `navigation.zsh` | .., ..., ...., ..... |
+| `tmux.zsh` | tls, ta, tn, tk |
+| `development.zsh` | serve, ports, cc |
+| `macos.zsh` | macOS-specific abbreviations |
+| `system.zsh` | General system shortcuts |
+
+**Mode Toggle:** Set `DOTFILES_ABBR_MODE` in `~/.zshenv.local`:
+- `abbr` (default) - zsh-abbr abbreviations
+- `alias` - Traditional aliases (fallback)
+
+#### Modular Structure
+
+```
+zsh/
+├── .zshrc              # Main configuration
+├── .zshenv             # Environment variables
+├── functions/          # Shell functions (always loaded)
+│   ├── navigation.zsh  # mkcd, qfind
+│   ├── neovim.zsh      # nvim-keys
+│   └── macos.zsh       # macOS-specific functions
+├── aliases/            # Traditional aliases
+│   ├── safety.zsh      # rm -i, cp -i, mv -i (always loaded)
+│   └── extras.zsh      # Fallback for alias mode
+└── abbreviations/      # zsh-abbr abbreviations (default)
+    ├── git.zsh
+    ├── navigation.zsh
+    ├── tmux.zsh
+    └── ...
 ```
 
-**Plugin Details:**
+#### Custom Functions
 
-- `git` - Git aliases and functions (built-in)
-- `z` - Jump to frequently used directories (built-in)
-- `zsh-autosuggestions` - Fish-like autosuggestions (custom: `~/.oh-my-zsh/custom/plugins/zsh-autosuggestions`)
-- `zsh-syntax-highlighting` - Syntax highlighting for commands (custom: `~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting`)
-- `tmux` - Tmux integration (built-in)
-- `colored-man-pages` - Colorized man pages (built-in)
-- `command-not-found` - Suggests package installation for missing commands (built-in)
-- `extract` - Universal archive extraction (built-in)
-
-#### Custom Configuration
-
-**History Settings** (`~/.zshrc:79-84`):
-- `HISTSIZE=50000` - 50k commands in memory
-- `SAVEHIST=50000` - 50k commands saved to file
-- `HIST_IGNORE_ALL_DUPS` - Remove older duplicates
-- `HIST_FIND_NO_DUPS` - Don't display duplicates in search
-- `SHARE_HISTORY` - Share history across sessions
-
-**Zsh Options** (`~/.zshrc:86-89`):
-- `EXTENDED_GLOB` - Better globbing patterns
-- `AUTO_CD` - Type directory name to cd
-- `CORRECT` - Correct typos in commands
-- `COMPLETION_WAITING_DOTS="true"` - Show dots while waiting for completion
-
-**Environment Variables** (`~/.zshrc:97-98`):
-- `EDITOR='vim'`
-- `VISUAL='vim'`
-
-#### Custom Aliases
-
-**Location:** `~/.oh-my-zsh/custom/aliases.zsh`
-
-**Directory Navigation:**
-```zsh
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-```
-
-**File Operations:**
-```zsh
-alias ls='ls --color=auto'
-alias ll='ls -alFh'
-alias la='ls -A'
-alias l='ls -CF'
-alias lh='ls -lh'
-```
-
-**Git Shortcuts:**
-```zsh
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline --graph --decorate'
-alias gd='git diff'
-alias gco='git checkout'
-alias gb='git branch'
-```
-
-**System Management:**
-```zsh
-alias update='sudo apt update && sudo apt upgrade -y'
-alias cleanup='sudo apt autoremove -y && sudo apt autoclean'
-alias h='history'
-alias c='clear'
-```
-
-**Tmux Shortcuts:**
-```zsh
-alias tls='tmux ls'
-alias ta='tmux attach -t'
-alias tn='tmux new -s'
-alias tk='tmux kill-session -t'
-```
-
-**Development:**
-```zsh
-alias serve='python3 -m http.server'
-alias ports='netstat -tulanp'
-```
-
-**Custom Functions:**
 ```zsh
 mkcd() {          # Create and enter directory
   mkdir -p "$1" && cd "$1"
@@ -146,11 +95,6 @@ qfind() {         # Quick find
   find . -name "*$1*"
 }
 ```
-
-#### Oh My Zsh Update Settings
-
-- **Update Mode:** Auto (updates automatically without asking)
-- **Update Frequency:** 7 days
 
 ---
 
@@ -592,9 +536,9 @@ The `clipboard-sync` alias will use `$UNICLIP_SERVER` if set, or fall back to `l
 
 | File | Purpose | Notes |
 |------|---------|-------|
-| `~/.zshrc` | Primary Zsh configuration | Main shell config, sources Oh My Zsh |
-| `~/.bashrc` | Bash configuration | Fallback shell, similar config to zsh |
-| `~/.oh-my-zsh/custom/aliases.zsh` | Custom shell aliases | Shared across sessions |
+| `~/.zshrc` | Primary Zsh configuration | Loads Starship, zsh-abbr, modular config |
+| `~/.zshenv` | Environment variables | PATH, EDITOR, etc. |
+| `~/.bashrc` | Bash configuration | Fallback shell |
 | `~/.zsh_history` | Zsh command history | 50k entries |
 | `~/.bash_history` | Bash command history | 50k/100k entries |
 
@@ -641,22 +585,26 @@ When installing new CLI tools or making configuration changes, update this docum
 1. **Package Managers:** Add to Homebrew, apt, or npm section
 2. **Configuration Files:** Note location and purpose
 3. **Environment Variables:** Add to Shell Environment section
-4. **Aliases/Functions:** Add to `~/.oh-my-zsh/custom/aliases.zsh`
-5. **Keybindings:** Update Tmux or Shell sections as needed
+4. **Abbreviations:** Add to `zsh/abbreviations/*.zsh`
+5. **Functions:** Add to `zsh/functions/*.zsh`
+6. **Keybindings:** Update Tmux or Shell sections as needed
 
 ### Configuration Hierarchy
 
 **Shell Startup Order (Zsh):**
-1. `~/.zshrc` sources `$ZSH/oh-my-zsh.sh`
-2. Oh My Zsh loads plugins
-3. Oh My Zsh loads theme
-4. Custom files in `~/.oh-my-zsh/custom/` are sourced
-5. Homebrew environment is initialized
-6. NVM lazy-load functions are defined
+1. `~/.zshenv` sets environment variables
+2. `~/.zshrc` loads modular configuration:
+   - Safety aliases (always)
+   - Functions (always)
+   - Abbreviations OR aliases (based on `DOTFILES_ABBR_MODE`)
+3. Starship prompt initialized
+4. Homebrew environment initialized
+5. Lazy-load functions defined (conda, z, etc.)
 
-**Priority for Aliases:**
-- Custom aliases in `~/.oh-my-zsh/custom/aliases.zsh` override plugin aliases
-- Shell aliases override system commands
+**Priority for Shortcuts:**
+- Abbreviations expand on Space/Enter (show full command in history)
+- Safety aliases (rm -i, cp -i) are always loaded
+- Shell shortcuts override system commands
 
 ### Common Tasks
 
@@ -716,8 +664,9 @@ Current PATH additions (in order):
 
 Important files to backup when migrating or updating:
 - `~/.zshrc`
+- `~/.zshenv`
 - `~/.tmux.conf`
-- `~/.oh-my-zsh/custom/`
+- `~/.config/starship/`
 - `~/.config/sway/config`
 - `~/.config/foot/foot.ini`
 - `~/.config/systemd/user/uniclip.service`

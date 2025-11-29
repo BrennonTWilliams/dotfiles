@@ -62,12 +62,6 @@ The dotfiles repository currently manages:
 | `.matplotlib/` | Matplotlib plotting configuration | Low |
 | `.platformio/` | PlatformIO development platform | Low |
 
-### 🛠️ Shell Frameworks
-
-| Directory | Purpose | Recommendation |
-|-----------|---------|----------------|
-| `.oh-my-zsh/` | Oh My Zsh framework | Consider managing via install script |
-
 ### 🤖 AI Development Tools
 
 | Directory | Purpose | Priority |

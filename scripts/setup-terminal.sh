@@ -75,14 +75,6 @@ setup_zsh() {
         info "Zsh is already the default shell"
     fi
 
-    # Install Oh My Zsh if not present
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        info "Installing Oh My Zsh..."
-        RUNZSH=no sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-        success "Oh My Zsh installed"
-    else
-        info "Oh My Zsh already installed"
-    fi
 }
 
 setup_starship() {

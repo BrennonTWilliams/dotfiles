@@ -285,17 +285,6 @@ preview_shell_setup() {
         fi
     fi
 
-    # Check Oh My Zsh
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        preview_shell_change "Install Oh My Zsh"
-        preview_action "curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh"
-        ((changes++))
-    else
-        if [ "$VERBOSE" = true ]; then
-            info "Oh My Zsh is already installed"
-        fi
-    fi
-
     # Check Starship
     if ! command_exists starship; then
         preview_shell_change "Install Starship prompt"

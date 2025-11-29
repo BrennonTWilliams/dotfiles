@@ -34,3 +34,10 @@ alias sc='starship-compact'
 alias ss='starship-standard'
 alias sv='starship-verbose'
 alias sm='starship-mode'
+
+# Development
+alias serve='python3 -m http.server'
+alias ports='netstat -tulanp'
+
+# AI Tools
+alias cc='claude --dangerously-skip-permissions'

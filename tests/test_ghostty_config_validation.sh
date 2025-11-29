@@ -216,14 +216,21 @@ test_window_configuration() {
 }
 
 test_completion_installed() {
-    [[ -f "$HOME/.oh-my-zsh/completions/_ghostty" ]] && \
-    [[ -L "$HOME/.oh-my-zsh/completions/_ghostty" ]]
+    # Check standard zsh completion locations
+    [[ -f "$HOME/.local/share/zsh/completions/_ghostty" ]] || \
+    [[ -f "/opt/homebrew/share/zsh/site-functions/_ghostty" ]] || \
+    [[ -f "/usr/local/share/zsh/site-functions/_ghostty" ]]
 }
 
 test_completion_valid() {
-    # Check that completion file is not empty and has basic structure
-    local completion_file="$HOME/.oh-my-zsh/completions/_ghostty"
-    [[ -f "$completion_file" ]] && \
+    # Check that completion file exists in any standard location
+    local completion_file=""
+    for path in "$HOME/.local/share/zsh/completions/_ghostty" \
+                "/opt/homebrew/share/zsh/site-functions/_ghostty" \
+                "/usr/local/share/zsh/site-functions/_ghostty"; do
+        [[ -f "$path" ]] && completion_file="$path" && break
+    done
+    [[ -n "$completion_file" ]] && \
     [[ -s "$completion_file" ]] && \
     grep -q "#compdef" "$completion_file"
 }

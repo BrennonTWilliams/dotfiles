@@ -18,74 +18,16 @@ These are the highest-value improvements that can be implemented quickly. All fi
 
 ---
 
-## 🚨 Critical Security Fixes (Total: ~45 minutes)
+## 🚨 Critical Security Fixes (Total: ~30 minutes)
 
-### Quick Win #1: Add Checksum Verification to setup-ohmyzsh.sh
+### Quick Win #1: Add Checksum Verification to Setup Scripts
 
 **Time**: 15 minutes
 **Impact**: Prevents critical remote code execution vulnerability
 **Difficulty**: Low
 
-#### Current Code (VULNERABLE)
-```bash
-# scripts/setup-ohmyzsh.sh:18
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-```
-
-#### Quick Fix
-```bash
-#!/usr/bin/env bash
-# scripts/setup-ohmyzsh.sh
-
-set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/lib/utils.sh"
-
-# Get checksum from Oh My Zsh repository or verify manually
-OHMYZSH_INSTALLER_SHA256="YOUR_VERIFIED_CHECKSUM_HERE"
-OHMYZSH_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
-
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    info "Installing Oh My Zsh..."
-
-    # Download installer
-    local temp_script=$(mktemp)
-    trap 'rm -f "$temp_script"' EXIT
-
-    if ! curl -fsSL "$OHMYZSH_URL" -o "$temp_script"; then
-        error "Failed to download Oh My Zsh installer"
-    fi
-
-    # Verify checksum (skip if checksum not set)
-    if [ "$OHMYZSH_INSTALLER_SHA256" != "YOUR_VERIFIED_CHECKSUM_HERE" ]; then
-        info "Verifying installer checksum..."
-        if ! echo "$OHMYZSH_INSTALLER_SHA256 $temp_script" | sha256sum --check --status; then
-            error "Checksum verification failed - possible MITM attack"
-        fi
-    else
-        warn "Checksum verification skipped - update OHMYZSH_INSTALLER_SHA256"
-    fi
-
-    # Execute installer
-    sh -c "cat $temp_script" "" --unattended
-    info "Oh My Zsh installed successfully"
-else
-    info "Oh My Zsh already installed"
-fi
-
-# Rest of script remains the same...
-```
-
-#### How to Get Checksum
-```bash
-# Run once to get the checksum, then hardcode it
-curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sha256sum
-```
-
-**Apply same pattern to**:
-- `scripts/setup-nvm.sh:19`
-- `scripts/setup-terminal.sh:79`
+**Apply checksum verification to**:
+- `scripts/setup-nvm.sh` - NVM installer
 
 ---
 

@@ -309,12 +309,7 @@ test_component_interaction() {
 
     # Test ZSH configuration
     if [[ -L "$FAKE_HOME/.zshrc" ]]; then
-        local zshrc_target="$(readlink "$FAKE_HOME/.zshrc")"
-        if [[ "$zshrc_target" == *".oh-my-zsh"* ]]; then
-            log_info "✓ ZSH configuration symlinked to Oh My Zsh"
-        else
-            log_warning "ZSH configuration not linked to Oh My Zsh"
-        fi
+        log_info "✓ ZSH configuration symlinked"
     else
         log_warning "ZSH configuration not symlinked"
     fi

@@ -3,7 +3,8 @@
 # ==============================================================================
 # These expand on Space/Enter to show the full command in history
 
-abbr -S gs='git status'
+# --force needed to override ghostscript (gs)
+abbr -S --force --quiet gs='git status'
 abbr -S ga='git add'
 abbr -S gc='git commit'
 abbr -S gp='git push'

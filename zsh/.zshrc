@@ -29,11 +29,10 @@ fi
 # Modular Shell Configuration
 # ==============================================================================
 # Toggle via DOTFILES_ABBR_MODE environment variable:
-#   alias  - Traditional aliases only (default, backward compatible)
-#   abbr   - zsh-abbr abbreviations (requires: brew install olets/tap/zsh-abbr)
-#   both   - Both systems active (for transition testing)
+#   abbr   - zsh-abbr abbreviations (default, requires: brew install olets/tap/zsh-abbr)
+#   alias  - Traditional aliases only (fallback if zsh-abbr not installed)
 #
-# Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="abbr"
+# Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="alias"
 
 # Resolve DOTFILES_ZSH from symlink (${0:A:h} doesn't work for sourced files)
 if [[ -L ~/.zshrc ]]; then
@@ -48,16 +47,14 @@ fi
 # Load safety aliases (always - rm -i, cp -i, mv -i should not expand)
 [[ -f "$DOTFILES_ZSH/aliases/_init.zsh" ]] && source "$DOTFILES_ZSH/aliases/_init.zsh"
 
-# Load abbreviations if mode is "abbr" or "both"
-if [[ "${DOTFILES_ABBR_MODE:-alias}" == "abbr" || "${DOTFILES_ABBR_MODE:-alias}" == "both" ]]; then
+# Load abbreviations (default mode)
+if [[ "${DOTFILES_ABBR_MODE:-abbr}" == "abbr" ]]; then
     [[ -f "$DOTFILES_ZSH/abbreviations/_init.zsh" ]] && source "$DOTFILES_ZSH/abbreviations/_init.zsh"
 fi
 
-# Load legacy aliases if mode is "alias" or "both" (backward compatibility)
-if [[ "${DOTFILES_ABBR_MODE:-alias}" == "alias" || "${DOTFILES_ABBR_MODE:-alias}" == "both" ]]; then
-    if [[ -f "$DOTFILES_ZSH/.oh-my-zsh/custom/aliases.zsh" ]]; then
-        source "$DOTFILES_ZSH/.oh-my-zsh/custom/aliases.zsh"
-    fi
+# Load aliases if mode is "alias" (fallback when zsh-abbr not installed)
+if [[ "${DOTFILES_ABBR_MODE:-abbr}" == "alias" ]]; then
+    [[ -f "$DOTFILES_ZSH/aliases/extras.zsh" ]] && source "$DOTFILES_ZSH/aliases/extras.zsh"
 fi
 
 # ==============================================================================

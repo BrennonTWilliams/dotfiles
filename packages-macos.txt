@@ -29,7 +29,8 @@ starship
 # ==============================================================================
 # zsh-abbr: Fish-style abbreviations for zsh (expands on Space/Enter)
 # Requires tap: brew install olets/tap/zsh-abbr
-# Enable in dotfiles: export DOTFILES_ABBR_MODE="abbr" in ~/.zshenv.local
+# This is the default mode. To use traditional aliases instead:
+#   export DOTFILES_ABBR_MODE="alias" in ~/.zshenv.local
 olets/tap/zsh-abbr
 
 # ==============================================================================

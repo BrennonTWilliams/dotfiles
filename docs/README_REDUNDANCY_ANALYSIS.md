@@ -146,7 +146,6 @@ brew-clean           # Check Homebrew health
 ```
 
 **Problem**: Aliases scattered across different "Usage" sections
-**Additional issue**: Aliases also appear in the actual `.oh-my-zsh/custom/aliases.zsh` files
 **Solution**: Move ALL aliases to docs/USAGE_GUIDE.md with clear sections
 **Savings**: 65 lines → Link to docs (-65 lines)
 

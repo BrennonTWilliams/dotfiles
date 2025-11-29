@@ -209,12 +209,12 @@ check_zsh_modules() {
 
     # Check zsh-abbr installation status
     echo -e "\n${CYAN}zsh-abbr Status:${NC}"
-    local abbr_mode="${DOTFILES_ABBR_MODE:-alias}"
+    local abbr_mode="${DOTFILES_ABBR_MODE:-abbr}"
     if command -v brew >/dev/null 2>&1; then
         if brew list olets/tap/zsh-abbr >/dev/null 2>&1; then
             print_status "ok" "zsh-abbr installed (mode: $abbr_mode)"
         else
-            if [ "$abbr_mode" = "abbr" ] || [ "$abbr_mode" = "both" ]; then
+            if [ "$abbr_mode" = "abbr" ]; then
                 print_status "missing" "zsh-abbr not installed (mode: $abbr_mode requires it)"
                 echo -e "    ${YELLOW}Install with: brew install olets/tap/zsh-abbr${NC}"
             else

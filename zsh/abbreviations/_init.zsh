@@ -1,17 +1,11 @@
 # ==============================================================================
 # zsh-abbr Abbreviations Loader
 # ==============================================================================
-# Toggle via DOTFILES_ABBR_MODE environment variable:
-#   alias  - Traditional aliases only (default, backward compatible)
-#   abbr   - Abbreviations only (requires zsh-abbr)
-#   both   - Both systems active (for transition testing)
-#
-# Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="abbr"
+# This file is sourced when DOTFILES_ABBR_MODE is "abbr" (the default)
+# Set DOTFILES_ABBR_MODE="alias" in ~/.zshenv.local to use traditional aliases
 
-: "${DOTFILES_ABBR_MODE:=alias}"
-
-# Skip abbreviations if mode is "alias" only
-[[ "$DOTFILES_ABBR_MODE" == "alias" ]] && return 0
+# Suppress "Added..." messages during shell startup
+export ABBR_QUIET=1
 
 # ==============================================================================
 # Detect and Load zsh-abbr

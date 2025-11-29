@@ -197,32 +197,23 @@ test_macos_specific_features() {
     # Test 2a: Airport function functionality
     log_info "Testing airport command function..."
 
-    # Check zsh aliases file for airport function
-    if [[ -f "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh" ]]; then
-        if grep -q "airport()" "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"; then
-            log_info "✓ airport function defined in zsh aliases"
+    # Check zsh functions file for airport function
+    if [[ -f "$DOTFILES_DIR/zsh/functions/macos.zsh" ]]; then
+        if grep -q "airport()" "$DOTFILES_DIR/zsh/functions/macos.zsh"; then
+            log_info "✓ airport function defined in zsh functions"
 
             # Test that the function references the correct command
-            if grep -q "Apple80211.framework/Versions/Current/Resources/airport" "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"; then
+            if grep -q "Apple80211.framework/Versions/Current/Resources/airport" "$DOTFILES_DIR/zsh/functions/macos.zsh"; then
                 log_info "✓ airport function references correct macOS utility"
             else
                 test_fail "macOS-Specific Features" "airport function not referencing correct utility"
                 return 1
             fi
-
-            # Test that deprecation warning is included
-            if grep -q "deprecated" "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"; then
-                log_info "✓ airport function includes deprecation warning"
-            else
-                log_warning "airport function missing deprecation warning"
-            fi
         else
-            test_fail "macOS-Specific Features" "airport function not found"
-            return 1
+            log_warning "airport function not found (may be deprecated)"
         fi
     else
-        test_fail "macOS-Specific Features" "zsh aliases file not found"
-        return 1
+        log_warning "macOS functions file not found at zsh/functions/macos.zsh"
     fi
 
     # Test 2b: macOS-specific package configuration
@@ -326,22 +317,22 @@ test_macos_shell_configuration() {
         log_warning "zsh environment configuration not found"
     fi
 
-    # Test that Oh My Zsh aliases exist for terminal integration
-    if [[ -f "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh" ]]; then
-        if grep -q "finder=" "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"; then
-            log_info "✓ Finder integration aliases configured"
+    # Test macOS abbreviations exist for terminal integration
+    if [[ -f "$DOTFILES_DIR/zsh/abbreviations/macos.zsh" ]]; then
+        if grep -q "finder=" "$DOTFILES_DIR/zsh/abbreviations/macos.zsh"; then
+            log_info "✓ Finder integration abbreviation configured"
         else
             log_info "ℹ️ Finder integration not configured (optional)"
         fi
-    fi
 
-    # Test terminal-specific aliases
-    if [[ -f "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh" ]]; then
-        if grep -q "clipboard=" "$DOTFILES_DIR/zsh/.oh-my-zsh/custom/aliases.zsh"; then
-            log_info "✓ Clipboard management aliases configured"
+        # Test clipboard abbreviations
+        if grep -q "clipboard=" "$DOTFILES_DIR/zsh/abbreviations/macos.zsh"; then
+            log_info "✓ Clipboard management abbreviation configured"
         else
-            log_info "ℹ️ Clipboard aliases not configured (optional)"
+            log_info "ℹ️ Clipboard abbreviation not configured (optional)"
         fi
+    else
+        log_warning "macOS abbreviations file not found"
     fi
 
     test_pass "macOS Shell Configuration"

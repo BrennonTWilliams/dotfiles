@@ -1,1 +1,0 @@
-/Users/brennon/AIProjects/ai-workspaces/dotfiles/zsh/.oh-my-zsh/custom/themes/gruvbox.zsh-theme

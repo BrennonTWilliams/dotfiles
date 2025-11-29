@@ -393,9 +393,8 @@ export UNICLIP_SERVER="192.168.1.100:38687"
 
 **`~/.zshenv.local`** - Sourced from `.zshenv`
 ```bash
-# Enable zsh-abbr abbreviations (expands shortcuts on space/enter)
-# Options: alias (default), abbr, both
-export DOTFILES_ABBR_MODE="abbr"
+# Use traditional aliases instead of zsh-abbr (abbr is the default)
+export DOTFILES_ABBR_MODE="alias"
 ```
 
 **`~/.zprofile.local`** - Sourced from `.zprofile`
