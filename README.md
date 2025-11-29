@@ -14,7 +14,7 @@
 **Get started in 60 seconds:**
 
 ```bash
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./install-new.sh --all
 ```
@@ -88,7 +88,7 @@ sudo apt update && sudo apt install -y git curl stow
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/BrennonTWilliams/dotfiles.git ~/.dotfiles
+git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 
 # 2. Run the modular installer
