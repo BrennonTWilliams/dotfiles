@@ -381,6 +381,7 @@ starship-mode() {
 }
 
 # Initialize Starship in standard mode if not already configured
+[[ ! -d "$_STARSHIP_CONFIG_DIR" ]] && mkdir -p "$_STARSHIP_CONFIG_DIR"
 [[ ! -L "$_STARSHIP_CONFIG_DIR/starship.toml" ]] && \
     ln -sf "$_DOTFILES_STARSHIP_DIR/modes/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
 
@@ -395,6 +396,9 @@ starship-mode() {
 unset PROMPT
 unset RPROMPT
 unset PROMPT_COMMAND
+
+# Clean up prompts on shell exit to prevent raw command echo (Ghostty/terminal quirk)
+trap 'unset RPROMPT PROMPT 2>/dev/null' EXIT
 
 # Initialize Starship
 eval "$(starship init zsh)"
