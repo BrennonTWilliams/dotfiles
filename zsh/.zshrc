@@ -394,9 +394,6 @@ unset PROMPT
 unset RPROMPT
 unset PROMPT_COMMAND
 
-# Clean up prompts on shell exit to prevent raw command echo (Ghostty/terminal quirk)
-trap 'unset RPROMPT PROMPT 2>/dev/null' EXIT
-
 # Initialize Starship
 eval "$(starship init zsh)"
 
