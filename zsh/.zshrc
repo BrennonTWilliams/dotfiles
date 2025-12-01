@@ -176,18 +176,23 @@ conda() {
 }
 # <<< conda initialize (lazy-loaded) <<<
 
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-# Use cross-platform path resolution for Docker completions
+# ==============================================================================
+# Completion System Configuration
+# ==============================================================================
+
+# Add local site-functions to fpath (for stow-managed completions like ghostty)
+fpath=(${HOME}/.local/share/zsh/site-functions $fpath)
+
+# Docker CLI completions (added by Docker Desktop)
 if command -v resolve_platform_path >/dev/null 2>&1; then
     local docker_completions="$(resolve_platform_path "docker_completions")"
     fpath=($docker_completions $fpath)
 else
-    # Fallback to dynamic path for backward compatibility
     fpath=(${HOME}/.docker/completions $fpath)
 fi
+
 autoload -Uz compinit
 compinit
-# End of Docker CLI completions
 
 # ==============================================================================
 # PATH Configuration
@@ -348,9 +353,9 @@ fi
 # Helper to switch starship mode
 _starship_set_mode() {
     local mode="$1" label="$2" symbol="$3"
-    ln -sf "$_DOTFILES_STARSHIP_DIR/modes/${mode}.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/${mode}.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
     echo "[$symbol] Starship mode: $label"
-    echo "Configuration: $_DOTFILES_STARSHIP_DIR/modes/${mode}.toml"
+    echo "Configuration: $_DOTFILES_STARSHIP_DIR/.config/starship/${mode}.toml"
     exec zsh
 }
 
@@ -380,7 +385,7 @@ starship-mode() {
 # Initialize Starship in standard mode if not already configured
 [[ ! -d "$_STARSHIP_CONFIG_DIR" ]] && mkdir -p "$_STARSHIP_CONFIG_DIR"
 [[ ! -L "$_STARSHIP_CONFIG_DIR/starship.toml" ]] && \
-    ln -sf "$_DOTFILES_STARSHIP_DIR/modes/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
 
 # ==============================================================================
 # Starship Prompt Integration

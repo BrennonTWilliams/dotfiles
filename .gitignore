@@ -54,7 +54,8 @@ secrets*
 # ==============================================================================
 
 # Local overrides (pattern for machine-specific configs)
-*.local
+# Note: *.local matches files like .zshrc.local, not .local directories
+?*.local
 *_local
 local.*
 
@@ -119,6 +120,11 @@ node_modules/
 # Application data
 .local/share/applications/
 .local/share/Trash/
+
+# Exception: Allow zsh completions managed by stow packages
+!**/.local/share/zsh/
+!**/.local/share/zsh/site-functions/
+!**/.local/share/zsh/site-functions/_*
 
 # ==============================================================================
 # PLUGIN MANAGERS & FRAMEWORKS (manage via installation scripts)

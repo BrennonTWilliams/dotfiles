@@ -19,21 +19,7 @@ source "$SCRIPT_DIR/lib/utils.sh"
 # Configuration
 # ==============================================================================
 
-# Platform-specific packages
-declare -A PACKAGES=(
-    ["debian"]="git curl wget vim build-essential stow zsh tmux"
-    ["redhat"]="git curl wget vim make gcc stow zsh tmux"
-    ["arch"]="git curl wget vim base-devel stow zsh tmux"
-    ["macos"]="git curl wget vim stow zsh tmux"
-    ["opensuse-leap"]="git curl wget vim make gcc stow zsh tmux"
-    ["opensuse-tumbleweed"]="git curl wget vim make gcc stow zsh tmux"
-    ["void"]="git curl wget vim base-devel stow zsh tmux"
-    ["void-musl"]="git curl wget vim base-devel stow zsh tmux"
-    ["alpine"]="git curl wget vim build-base stow zsh tmux"
-    ["gentoo"]="git curl wget vim stow zsh tmux"
-    ["solus"]="git curl wget vim make gcc stow zsh tmux"
-    ["clear-linux-os"]="git curl wget vim stow zsh tmux"
-)
+# Platform-specific packages (defined in function to support bash 3.2+)
 
 # ==============================================================================
 # macOS Package Management
@@ -52,19 +38,9 @@ check_brew_package_availability() {
 
 # Install required Homebrew taps
 install_required_taps() {
-    info "Checking required Homebrew taps..."
-
-    local taps=(
-        "homebrew/core"
-        "homebrew/cask"
-    )
-
-    for tap in "${taps[@]}"; do
-        if ! brew tap | grep -q "$tap"; then
-            info "Adding tap: $tap"
-            brew tap "$tap"
-        fi
-    done
+    # Note: homebrew/core and homebrew/cask are now installed by default
+    # No longer need to explicitly tap them in modern Homebrew
+    info "Homebrew taps are automatically configured"
 }
 
 # Install package using appropriate package manager
@@ -145,7 +121,49 @@ install_package() {
 
 # Get available packages for current platform
 get_platform_packages() {
-    local platform_packages="${PACKAGES[$OS]}"
+    # Ensure OS is set
+    if [ -z "${OS:-}" ]; then
+        error "OS variable not set. Run detect_os first."
+    fi
+
+    # Return packages based on OS (using case for bash 3.2 compatibility)
+    local platform_packages=""
+    case "$OS" in
+        debian|ubuntu|linuxmint|pop)
+            platform_packages="git curl wget vim build-essential stow zsh tmux"
+            ;;
+        redhat|fedora|rhel|centos|rocky|almalinux)
+            platform_packages="git curl wget vim make gcc stow zsh tmux"
+            ;;
+        arch|manjaro|endeavouros|garuda)
+            platform_packages="git curl wget vim base-devel stow zsh tmux"
+            ;;
+        macos)
+            platform_packages="git curl wget vim stow zsh tmux bash"
+            ;;
+        opensuse-leap|opensuse-tumbleweed)
+            platform_packages="git curl wget vim make gcc stow zsh tmux"
+            ;;
+        void|void-musl)
+            platform_packages="git curl wget vim base-devel stow zsh tmux"
+            ;;
+        alpine)
+            platform_packages="git curl wget vim build-base stow zsh tmux"
+            ;;
+        gentoo)
+            platform_packages="git curl wget vim stow zsh tmux"
+            ;;
+        solus)
+            platform_packages="git curl wget vim make gcc stow zsh tmux"
+            ;;
+        clear-linux-os)
+            platform_packages="git curl wget vim stow zsh tmux"
+            ;;
+        *)
+            warn "No packages defined for OS: $OS"
+            return 1
+            ;;
+    esac
 
     if [ -z "$platform_packages" ]; then
         warn "No packages defined for OS: $OS"

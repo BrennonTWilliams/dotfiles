@@ -106,7 +106,7 @@ test_copy_paste_functionality() {
 
 test_zsh_completion_available() {
     # Test if zsh completion is available in standard locations
-    [[ -f "$HOME/.local/share/zsh/completions/_ghostty" ]] || \
+    [[ -f "$HOME/.local/share/zsh/site-functions/_ghostty" ]] || \
     [[ -f "/opt/homebrew/share/zsh/site-functions/_ghostty" ]] || \
     [[ -f "/usr/local/share/zsh/site-functions/_ghostty" ]]
 }

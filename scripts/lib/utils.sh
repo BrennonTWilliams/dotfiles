@@ -241,6 +241,10 @@ detect_os() {
         OS="unknown"
         PKG_MANAGER="unknown"
     fi
+
+    # Export variables for use in calling scripts
+    export OS
+    export PKG_MANAGER
 }
 
 # Get detailed system information for debugging

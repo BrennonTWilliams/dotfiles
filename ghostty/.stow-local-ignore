@@ -1,0 +1,8 @@
+# Stow ignore file for ghostty package
+# These files/directories should not be symlinked to $HOME
+
+# macOS Automator quick actions (install separately via install-quick-actions.sh)
+automator
+
+# Documentation
+README.md

@@ -217,7 +217,7 @@ test_window_configuration() {
 
 test_completion_installed() {
     # Check standard zsh completion locations
-    [[ -f "$HOME/.local/share/zsh/completions/_ghostty" ]] || \
+    [[ -f "$HOME/.local/share/zsh/site-functions/_ghostty" ]] || \
     [[ -f "/opt/homebrew/share/zsh/site-functions/_ghostty" ]] || \
     [[ -f "/usr/local/share/zsh/site-functions/_ghostty" ]]
 }
@@ -225,7 +225,7 @@ test_completion_installed() {
 test_completion_valid() {
     # Check that completion file exists in any standard location
     local completion_file=""
-    for path in "$HOME/.local/share/zsh/completions/_ghostty" \
+    for path in "$HOME/.local/share/zsh/site-functions/_ghostty" \
                 "/opt/homebrew/share/zsh/site-functions/_ghostty" \
                 "/usr/local/share/zsh/site-functions/_ghostty"; do
         [[ -f "$path" ]] && completion_file="$path" && break

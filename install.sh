@@ -60,8 +60,12 @@ export AUTO_RESOLVE_STRATEGY
 get_available_packages() {
     local packages=()
     for dir in */; do
-        if [ -d "$dir" ] && [ -f "$dir/.stowrc" ] || [ -f "$dir/.*" ]; then
-            packages+=("${dir%/}")
+        if [ -d "$dir" ]; then
+            # Check for any dotfile or dotdir (excluding . and ..)
+            # Using find for reliable cross-shell detection
+            if find "$dir" -maxdepth 1 -name ".*" ! -name "." ! -name ".." -print -quit 2>/dev/null | grep -q .; then
+                packages+=("${dir%/}")
+            fi
         fi
     done
     echo "${packages[@]}"

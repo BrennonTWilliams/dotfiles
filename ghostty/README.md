@@ -42,12 +42,13 @@ ghostty/
 ├── .config/
 │   └── ghostty/
 │       └── config           # Main configuration file
-├── automator/               # Finder integration Quick Actions
+├── .local/
+│   └── share/zsh/site-functions/
+│       └── _ghostty         # Zsh completions (stow-managed)
+├── automator/               # Finder integration Quick Actions (install separately)
 │   ├── *.workflow/          # Automator workflow bundles
 │   ├── install-quick-actions.sh  # Installation script
 │   └── README.md            # Automator documentation
-├── completions/
-│   └── _ghostty             # Zsh completions
 └── README.md                # This file
 ```
 
