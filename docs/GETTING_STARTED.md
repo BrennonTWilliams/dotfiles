@@ -38,6 +38,13 @@ echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
+**Note on bash versions:** macOS ships with bash 3.2 due to GPL licensing. The install scripts are fully compatible with bash 3.2. However, if you want to run the test suite, you'll need Homebrew bash:
+
+```bash
+brew install bash
+# Run tests with: /opt/homebrew/bin/bash tests/run_all_tests.sh
+```
+
 ### Linux (Ubuntu/Debian)
 
 ```bash
@@ -177,12 +184,21 @@ See [INSTALLATION_OPTIONS.md](INSTALLATION_OPTIONS.md) for complete installation
 
 ## Post-Installation Steps
 
-### 1. Configure Git Identity
+### 1. Verify Git Identity
+
+The installer will prompt you for your Git identity if it detects placeholder values or missing configuration. To verify or update:
 
 ```bash
+# Check current identity
+git config --global user.name
+git config --global user.email
+
+# Update if needed
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
+
+> **Important:** The template `git/.gitconfig` contains placeholder values (`Your Name`, `your.email@example.com`). The `git config --global` settings take precedence. Always verify your identity is correctly set before making commits.
 
 ### 2. Create Machine-Specific Settings
 

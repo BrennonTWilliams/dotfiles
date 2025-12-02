@@ -72,12 +72,27 @@ cd ~/.dotfiles
 ```bash
 # Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# IMPORTANT: Follow the post-install instructions to add Homebrew to your PATH
+# For Apple Silicon Macs:
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
 **Linux (Ubuntu/Debian):**
 ```bash
 sudo apt update && sudo apt install -y git curl stow
 ```
+
+### Brand New Mac?
+
+If this is a fresh macOS installation, here's what you need to know:
+
+1. **System bash is 3.2** - Apple ships an old version due to licensing. The install scripts are compatible with bash 3.2, but running tests requires Homebrew bash (`brew install bash`).
+
+2. **Git identity setup** - The installer will prompt you for your name and email. This prevents commits with placeholder author info.
+
+3. **Xcode Command Line Tools** - If not already installed, you'll be prompted automatically when you first run `git`.
 
 ### Installation
 
@@ -260,14 +275,22 @@ See [System Requirements](docs/SYSTEM_REQUIREMENTS.md) for detailed package list
 
 ## First Steps After Install
 
-### 1. Configure Git User Info
+### 1. Verify Git Identity
+
+The installer prompts for your Git identity during setup. To verify or change it:
 
 ```bash
+# Check current identity
+git config --global user.name
+git config --global user.email
+
+# Update if needed
 git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-These override the portable defaults in `git/.gitconfig`.
+> **Note:** The template `.gitconfig` contains placeholder values. Your identity is set via
+> `git config --global` which takes precedence. Always verify before making commits.
 
 ### 2. Set Up Machine-Specific Settings
 

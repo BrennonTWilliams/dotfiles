@@ -18,6 +18,68 @@ source "$SCRIPT_DIR/lib/utils.sh"
 # Git Configuration Setup
 # ==============================================================================
 
+# Prompt for git identity interactively
+prompt_git_identity() {
+    local current_name current_email
+    current_name=$(git config --global user.name 2>/dev/null || echo "")
+    current_email=$(git config --global user.email 2>/dev/null || echo "")
+
+    # Check if identity looks like placeholder values
+    local needs_setup=false
+    if [ -z "$current_name" ] || [ "$current_name" = "Your Name" ]; then
+        needs_setup=true
+    fi
+    if [ -z "$current_email" ] || [ "$current_email" = "your.email@example.com" ]; then
+        needs_setup=true
+    fi
+
+    if [ "$needs_setup" = true ]; then
+        echo
+        warn "Git identity not configured (or using placeholder values)"
+        warn "Commits made without proper identity will show incorrect author info."
+        echo
+
+        # Check if we're in an interactive terminal
+        if [ -t 0 ]; then
+            info "Please enter your Git identity:"
+            echo
+
+            # Prompt for name
+            local new_name=""
+            while [ -z "$new_name" ]; do
+                printf "  Full name: "
+                read -r new_name
+                if [ -z "$new_name" ]; then
+                    warn "  Name cannot be empty"
+                fi
+            done
+
+            # Prompt for email
+            local new_email=""
+            while [ -z "$new_email" ]; do
+                printf "  Email address: "
+                read -r new_email
+                if [ -z "$new_email" ]; then
+                    warn "  Email cannot be empty"
+                fi
+            done
+
+            # Set the values
+            git config --global user.name "$new_name"
+            git config --global user.email "$new_email"
+            success "Git identity configured: $new_name <$new_email>"
+        else
+            # Non-interactive mode - just warn
+            warn "Running in non-interactive mode."
+            warn "IMPORTANT: Run these commands to set your Git identity:"
+            warn "  git config --global user.name 'Your Name'"
+            warn "  git config --global user.email 'your.email@example.com'"
+        fi
+    else
+        info "Git identity already configured: $current_name <$current_email>"
+    fi
+}
+
 setup_git_config() {
     section "Setting up Git Configuration"
 
@@ -28,10 +90,6 @@ setup_git_config() {
         if [ ! -f "$gitconfig" ] || [ ! -s "$gitconfig" ]; then
             info "Setting up Git configuration"
             cp "$gitconfig_template" "$gitconfig"
-
-            warn "Remember to update your Git user information:"
-            warn "  git config --global user.name 'Your Name'"
-            warn "  git config --global user.email 'your.email@example.com'"
         else
             info "Git configuration already exists"
         fi
@@ -44,9 +102,8 @@ setup_git_config() {
 # Add machine-specific settings here
 
 [user]
-    # Override personal information if needed
-    # name = Your Actual Name
-    # email = your.actual.email@example.com
+    # User identity is set via: git config --global user.name/email
+    # Those values are stored in ~/.gitconfig and override the template
 
 [credential]
     # macOS keychain
@@ -60,6 +117,9 @@ setup_git_config() {
 #     user = your-work-username
 EOF
         fi
+
+        # Prompt for identity if needed (interactive setup)
+        prompt_git_identity
     else
         warn "Git configuration template not found"
     fi
@@ -260,10 +320,9 @@ main() {
     success "New dotfiles configuration setup completed!"
     echo
     warn "Remember to:"
-    warn "1. Update your Git user information: git config --global user.name/email"
-    warn "2. Add ~/.npm-global/bin to your PATH if not already present"
-    warn "3. Reload your shell: exec \$SHELL"
-    warn "4. Check the README files in each configuration directory"
+    warn "1. Add ~/.npm-global/bin to your PATH if not already present"
+    warn "2. Reload your shell: exec \$SHELL"
+    warn "3. Check the README files in each configuration directory"
 }
 
 # Run main function if script is executed directly

@@ -116,8 +116,10 @@ find_backups() {
 list_backups() {
     section "Available Dotfiles Backups"
 
-    local backups
-    mapfile -t backups < <(find_backups)
+    local backups=()
+    while IFS= read -r backup_dir; do
+        [[ -n "$backup_dir" ]] && backups+=("$backup_dir")
+    done < <(find_backups)
 
     if [ ${#backups[@]} -eq 0 ]; then
         warn "No backups found in $BACKUP_BASE_DIR"
@@ -151,8 +153,10 @@ list_backups() {
 
 # Get the latest backup directory
 get_latest_backup() {
-    local backups
-    mapfile -t backups < <(find_backups)
+    local backups=()
+    while IFS= read -r backup_dir; do
+        [[ -n "$backup_dir" ]] && backups+=("$backup_dir")
+    done < <(find_backups)
 
     if [ ${#backups[@]} -eq 0 ]; then
         return 1
@@ -357,8 +361,10 @@ interactive_restore() {
     section "Interactive Backup Restoration"
 
     # List available backups
-    local backups
-    mapfile -t backups < <(find_backups)
+    local backups=()
+    while IFS= read -r backup_dir; do
+        [[ -n "$backup_dir" ]] && backups+=("$backup_dir")
+    done < <(find_backups)
 
     if [ ${#backups[@]} -eq 0 ]; then
         error "No backups found"

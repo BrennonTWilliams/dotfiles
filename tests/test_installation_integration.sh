@@ -8,6 +8,24 @@
 
 set -euo pipefail
 
+# ------------------------------------------------------------------------------
+# Bash Version Check
+# ------------------------------------------------------------------------------
+# This test suite uses associative arrays (declare -A) which require bash 4.0+
+# macOS ships with bash 3.2 by default. Install newer bash via Homebrew:
+#   brew install bash
+# Then run tests with: /opt/homebrew/bin/bash tests/test_installation_integration.sh
+# ------------------------------------------------------------------------------
+if ((BASH_VERSINFO[0] < 4)); then
+    echo "ERROR: This test suite requires bash 4.0 or later (found: $BASH_VERSION)"
+    echo ""
+    echo "macOS ships with bash 3.2 due to licensing. To run tests:"
+    echo "  1. Install newer bash: brew install bash"
+    echo "  2. Run with Homebrew bash: /opt/homebrew/bin/bash $0"
+    echo "     or on Intel Mac: /usr/local/bin/bash $0"
+    exit 1
+fi
+
 # Test configuration
 TEST_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$TEST_DIR")"
