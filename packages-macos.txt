@@ -72,6 +72,7 @@ sketchybar
 ripgrep
 fd
 fzf
+zoxide
 tree
 unzip
 jq

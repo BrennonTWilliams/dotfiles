@@ -50,6 +50,16 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 # ==============================================================================
+# Zoxide - Smarter cd Command
+# ==============================================================================
+# Modern replacement for z/autojump - tracks directory usage by frecency
+# Usage: z <partial-path>  - jump to best match
+#        zi <partial-path> - interactive selection with fzf
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init bash)"
+fi
+
+# ==============================================================================
 # Terminal Integrations
 # ==============================================================================
 # Kiro shell integration (with command check)

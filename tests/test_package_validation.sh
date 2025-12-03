@@ -162,7 +162,7 @@ validate_package_syntax() {
                 log_error "Line $line_number: Suspected typo in package name: '$package_name' (did you mean ripgrep?)"
                 syntax_errors=$((syntax_errors + 1))
                 ;;
-            "git"|"curl"|"wget"|"stow"|"htop"|"tmux"|"zsh"|"ripgrep"|"fd"|"fzf"|"tree"|"unzip"|"jq"|"python3"|"rectangle"|"iterm2"|"sketchybar"|"mas")
+            "git"|"curl"|"wget"|"stow"|"htop"|"tmux"|"zsh"|"ripgrep"|"fd"|"fzf"|"zoxide"|"tree"|"unzip"|"jq"|"python3"|"rectangle"|"iterm2"|"sketchybar"|"mas")
                 # Known valid packages - always valid
                 ;;
             *)

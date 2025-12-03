@@ -216,43 +216,14 @@ if command -v fzf >/dev/null 2>&1; then
     source <(fzf --zsh)
 fi
 
-# >>> z - jump around (lazy-loaded) >>>
-# !! Lazy-loading wrapper for z - saves 5-15ms on shell startup !!
-# Z will be initialized only when first used
-#
-# This replaces the standard synchronous z init that runs on every shell startup.
-# Instead, we create a placeholder function that initializes z on first use.
-
-# Initialize z when first used
-__z_lazy_init() {
-    # Remove the placeholder function to avoid recursion
-    unfunction z 2>/dev/null
-
-    # Source the z script
-    if [[ -f ~/.local/share/z/z.sh ]]; then
-        . ~/.local/share/z/z.sh
-        # Clean up the lazy init function
-        unfunction __z_lazy_init 2>/dev/null
-        return 0
-    else
-        # Define stub function so future calls fail gracefully
-        z() {
-            echo "[!] z not installed. Install from: https://github.com/rupa/z"
-            return 1
-        }
-        unfunction __z_lazy_init 2>/dev/null
-        return 1
-    fi
-}
-
-# Create a placeholder z function that initializes on first use
-z() {
-    if __z_lazy_init; then
-        # Call the real z command with all arguments
-        z "$@"
-    fi
-}
-# <<< z - jump around (lazy-loaded) <<<
+# >>> zoxide - smarter cd command >>>
+# Modern replacement for z/autojump - tracks directory usage by frecency
+# Usage: z <partial-path>  - jump to best match
+#        zi <partial-path> - interactive selection with fzf
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+fi
+# <<< zoxide <<<
 
 # ==============================================================================
 # BRENENTECH Logo Functions
@@ -407,3 +378,4 @@ eval "$(starship init zsh)"
 # ==============================================================================
 # Source machine-specific configuration last to allow overriding any setting
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+export PATH="$PATH:$(go env GOPATH)/bin"
