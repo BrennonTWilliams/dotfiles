@@ -73,7 +73,8 @@ macos_service_exists() {
 }
 
 macos_service_running() {
-    launchctl list | grep "$SERVICE_NAME" | grep -v "0" >/dev/null 2>&1
+    # Use launchctl list with service name directly - returns exit 0 if loaded
+    launchctl list "$SERVICE_NAME" >/dev/null 2>&1
 }
 
 macos_service_install() {

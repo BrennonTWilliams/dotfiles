@@ -6,8 +6,10 @@
 export PATH="$HOME/.local/bin:$PATH"
 
 # macOS-only library path
+# Note: DYLD_LIBRARY_PATH is stripped by SIP for system binaries in /usr/bin, /bin, etc.
+# This only affects user-installed programs not protected by SIP
 case "$(uname -s)" in
-    Darwin*) export DYLD_LIBRARY_PATH="$HOME/.local/lib:$DYLD_LIBRARY_PATH" ;;
+    Darwin*) [[ -d "$HOME/.local/lib" ]] && export DYLD_LIBRARY_PATH="$HOME/.local/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}" ;;
 esac
 
 # ==============================================================================
@@ -30,14 +32,26 @@ shopt -s globstar 2>/dev/null
 alias cp='cp -i'
 
 # ==============================================================================
+# Homebrew PATH (macOS)
+# ==============================================================================
+if [[ -f /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# ==============================================================================
 # Bash Completion
 # ==============================================================================
-if [[ -r /usr/share/bash-completion/bash_completion ]]; then
+# Check Homebrew paths first on macOS, then fall back to Linux paths
+if [[ -r /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
+    . /opt/homebrew/etc/profile.d/bash_completion.sh
+elif [[ -r /usr/local/etc/profile.d/bash_completion.sh ]]; then
+    . /usr/local/etc/profile.d/bash_completion.sh
+elif [[ -r /usr/share/bash-completion/bash_completion ]]; then
     . /usr/share/bash-completion/bash_completion
 elif [[ -r /etc/bash_completion ]]; then
     . /etc/bash_completion
-elif [[ -r /opt/homebrew/etc/profile.d/bash_completion.sh ]]; then
-    . /opt/homebrew/etc/profile.d/bash_completion.sh
 fi
 
 # ==============================================================================

@@ -64,15 +64,20 @@
 		end if
 	end tell
 
+	-- Launch Ghostty (creates new window if already running)
 	tell application "Ghostty"
 		activate
 	end tell
 
-	-- Wait for Ghostty to be ready
-	delay 0.2
+	-- Wait for Ghostty to be ready and focused
+	delay 0.3
 
-	-- Use osascript to send commands to Ghostty via shell
-	do shell script "open -a Ghostty " &amp; quoted form of currentPath
+	-- Send cd command using System Events keystrokes
+	tell application "System Events"
+		tell process "Ghostty"
+			keystroke "cd " &amp; quoted form of currentPath &amp; return
+		end tell
+	end tell
 
 	return input
 end run</string>

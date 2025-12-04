@@ -5,20 +5,6 @@
 
 [[ "$OSTYPE" != "darwin"* ]] && return 0
 
-# Airport command with deprecation warning (deprecated in newer macOS versions)
-airport() {
-    local airport_path="/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
-    if [[ -f "$airport_path" ]]; then
-        echo "Warning: airport command is deprecated in newer macOS versions"
-        echo "Consider using 'wifi-info' or 'networksetup -listallhardwareports' instead"
-        "$airport_path" "$@"
-    else
-        echo "airport command not found on this macOS version"
-        echo "Use 'wifi-info' for current network information"
-        return 1
-    fi
-}
-
 # CPU temperature with sudo and non-sudo alternatives
 cpu-temp() {
     if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
@@ -30,11 +16,9 @@ cpu-temp() {
     fi
 
     if [[ "$1" == "--no-sudo" ]]; then
-        # Try non-sudo methods first
+        # Try non-sudo methods first (command -v works for both Intel and Apple Silicon paths)
         if command -v osx-cpu-temp >/dev/null 2>&1; then
             osx-cpu-temp
-        elif [[ -f "/usr/local/bin/osx-cpu-temp" ]]; then
-            /usr/local/bin/osx-cpu-temp
         else
             echo "No non-sudo temperature monitoring tools found"
             echo "Install 'osx-cpu-temp' via brew: brew install osx-cpu-temp"
@@ -54,25 +38,19 @@ cpu-temp() {
     fi
 }
 
-# Wi-Fi network scanning
+# Wi-Fi network scanning (uses modern system_profiler API)
 wifi-scan() {
-    local airport_path="/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
-    if [[ -f "$airport_path" ]]; then
-        echo "Scanning Wi-Fi networks (using deprecated airport command)..."
-        "$airport_path" -s
-    else
-        echo "airport command not available on this macOS version"
-        echo "Using modern alternative with networksetup..."
-        # Modern alternative for Wi-Fi scanning
-        local wifi_interface=$(networksetup -listallhardwareports | grep -A1 "Wi-Fi" | grep "Device:" | awk '{print $2}')
-        if [[ -n "$wifi_interface" ]]; then
-            echo "Available Wi-Fi networks for interface $wifi_interface:"
-            sudo /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s 2>/dev/null || \
-            echo "Try: sudo wifi-scan or use 'wifi-info' for current connection info"
-        else
-            echo "Could not find Wi-Fi interface"
-        fi
+    echo "Scanning Wi-Fi networks..."
+    local wifi_if
+    wifi_if=$(networksetup -listallhardwareports | awk '/Wi-Fi/{getline; print $2}')
+    if [[ -z "$wifi_if" ]]; then
+        echo "Error: Could not find Wi-Fi interface"
+        return 1
     fi
+    # Use system_profiler as modern alternative (no deprecated private frameworks)
+    system_profiler SPAirPortDataType 2>/dev/null | grep -A 50 "Other Local Wi-Fi Networks" || {
+        echo "Could not scan networks. Try: networksetup -listpreferredwirelessnetworks $wifi_if"
+    }
 }
 
 # QuickLook files without opening them fully
@@ -82,5 +60,5 @@ ql() {
         echo "Quick Look files without opening them fully"
         return 1
     fi
-    qlmanage -p "$@" >& /dev/null &
+    qlmanage -p "$@" >/dev/null 2>&1 &
 }

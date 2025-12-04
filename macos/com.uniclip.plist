@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    Uniclip LaunchAgent configuration
+    NOTE: The binary path below is dynamically updated by scripts/uniclip-manager during install.
+    Default path shown is for Apple Silicon (/opt/homebrew/bin/).
+    Intel Macs will be updated to use /usr/local/bin/ automatically.
+-->
 <plist version="1.0">
 <dict>
     <key>Label</key>
@@ -7,6 +13,7 @@
 
     <key>ProgramArguments</key>
     <array>
+        <!-- Path is auto-detected by uniclip-manager install -->
         <string>/opt/homebrew/bin/uniclip</string>
         <string>--debug</string>
     </array>

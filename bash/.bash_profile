@@ -33,8 +33,8 @@ conda() {
     conda "$@"
 }
 
-# Add conda bin to PATH for tools that need it before lazy-init
-[[ -d "${HOME}/miniforge3/bin" ]] && export PATH="${HOME}/miniforge3/bin:$PATH"
+# NOTE: Conda PATH is handled by lazy-init above to avoid duplicate PATH entries
+# The conda shell hook at line 21 properly manages PATH when conda is first invoked
 
 # ==============================================================================
 # Platform-Specific Enhancements (macOS)

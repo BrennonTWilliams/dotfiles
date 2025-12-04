@@ -24,6 +24,7 @@ theme = gruvbox-dark-custom
 # ============================================
 
 # Primary font family (IosevkaTerm Nerd Font for CLI compatibility)
+# Verify font name with: fc-list | grep -i iosevka
 font-family = IosevkaTerm Nerd Font
 
 # Font size optimized for Retina displays
@@ -56,9 +57,6 @@ macos-option-as-alt = true
 # ============================================
 # Window Configuration
 # ============================================
-
-# Window decoration for native macOS feel
-window-decoration = true
 
 # Window padding for better readability
 window-padding-x = 8

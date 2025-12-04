@@ -144,11 +144,16 @@ uninstall_quick_actions() {
 refresh_services() {
     print_info "Refreshing Services database..."
 
-    # Flush services cache
-    if /System/Library/CoreServices/pbs -flush 2>/dev/null; then
-        print_success "Services cache flushed"
+    # Flush services cache (pbs may not exist in newer macOS versions)
+    local pbs_path="/System/Library/CoreServices/pbs"
+    if [[ -x "$pbs_path" ]]; then
+        if "$pbs_path" -flush 2>/dev/null; then
+            print_success "Services cache flushed"
+        else
+            print_warning "Could not flush services cache (may require sudo)"
+        fi
     else
-        print_warning "Could not flush services cache (may require sudo)"
+        print_info "Services cache tool not available (normal on newer macOS)"
     fi
 
     # Restart Finder

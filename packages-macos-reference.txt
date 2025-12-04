@@ -39,6 +39,7 @@ fzf
 tree
 unzip
 jq
+zoxide
 
 # ==============================================================================
 # macOS Development Tools - SAFE

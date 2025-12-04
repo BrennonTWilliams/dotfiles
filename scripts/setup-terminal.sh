@@ -19,12 +19,12 @@ source "$SCRIPT_DIR/lib/utils.sh"
 # Configuration
 # ==============================================================================
 
-# Font configurations
+# Font configurations (Nerd Font variants for terminal compatibility)
 FONT_DIR="$HOME/Library/Fonts"
 FONTS_TO_INSTALL=(
-    "JetBrains Mono"
-    "Fira Code"
-    "Source Code Pro"
+    "IosevkaTerm Nerd Font"
+    "JetBrains Mono Nerd Font"
+    "Fira Code Nerd Font"
 )
 
 # ==============================================================================
@@ -39,15 +39,47 @@ install_fonts() {
 
     section "Installing Fonts"
 
+    # Verify brew is available
+    if ! command_exists brew; then
+        warn "Homebrew not found - skipping font installation"
+        warn "Install fonts manually or install Homebrew first"
+        return 1
+    fi
+
     # Create font directory if it doesn't exist
     mkdir -p "$FONT_DIR"
 
     for font in "${FONTS_TO_INSTALL[@]}"; do
         info "Installing font: $font"
 
-        # This is a placeholder - actual font installation would be handled
-        # by downloading from trusted sources or using Homebrew casks
-        warn "Font installation for $font not implemented - please install manually"
+        # Map font names to Homebrew cask names
+        local cask_name=""
+        case "$font" in
+            "IosevkaTerm Nerd Font")
+                cask_name="font-iosevka-term-nerd-font"
+                ;;
+            "JetBrains Mono Nerd Font")
+                cask_name="font-jetbrains-mono-nerd-font"
+                ;;
+            "Fira Code Nerd Font")
+                cask_name="font-fira-code-nerd-font"
+                ;;
+            *)
+                warn "Unknown font: $font - skipping"
+                continue
+                ;;
+        esac
+
+        # Check if already installed
+        if brew list --cask "$cask_name" &>/dev/null; then
+            info "$font already installed"
+        else
+            if brew install --cask "$cask_name"; then
+                success "Installed $font"
+            else
+                warn "Failed to install $font"
+            fi
+        fi
     done
 
     success "Font installation completed"

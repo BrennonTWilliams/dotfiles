@@ -25,12 +25,12 @@ abbr -S brew-cask-upgrade='brew upgrade --cask'
 abbr -S brew-dependencies='brew deps --tree'
 abbr -S brew-uses='brew uses --installed'
 abbr -S brew-info='brew info --json=v2'
-abbr -S brew-stats='brew info --json=v2 | jq -r ".formulae | length" | xargs echo "Installed formulae:"'
+abbr -S brew-stats='echo "Installed formulae: $(brew info --json=v2 | jq -r ".formulae | length")"'
 
 # ==============================================================================
 # System Information
 # ==============================================================================
-abbr -S wifi-info='networksetup -getairportinfo en0'
+abbr -S wifi-info='networksetup -getairportnetwork "$(networksetup -listallhardwareports | awk '\''/Wi-Fi/{getline; print $2}'\'')"'
 abbr -S wifi-list='networksetup -listallhardwareports'
 abbr -S system-info='system_profiler SPHardwareDataType'
 abbr -S battery='pmset -g batt'
@@ -47,9 +47,9 @@ abbr -S power-info='system_profiler SPPowerDataType'
 # ==============================================================================
 # macOS App Shortcuts
 # ==============================================================================
-abbr -S lock='pmset displaysleepnow'
-# --force needed to override /bin/sleep
-abbr -S --force --quiet sleep='pmset sleepnow'
+abbr -S display-sleep='pmset displaysleepnow'
+abbr -S macsleep='pmset sleepnow'
+abbr -S lock='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
 abbr -S screensaver='open -a ScreenSaverEngine'
 
 # ==============================================================================
@@ -82,7 +82,7 @@ abbr -S make-info='make --version'
 # ==============================================================================
 abbr -S ip-info='ifconfig | grep "inet " | grep -v 127.0.0.1'
 abbr -S ip-public='curl -s ifconfig.me || curl -s ipinfo.io/ip'
-abbr -S ip-local='ipconfig getifaddr en0'
+abbr -S ip-local='ipconfig getifaddr "$(networksetup -listallhardwareports | awk '\''/Wi-Fi/{getline; print $2}'\'')" 2>/dev/null || echo "No Wi-Fi interface found"'
 abbr -S dns-servers='scutil --dns | grep "nameserver\[0\]"'
 abbr -S network-interfaces='ifconfig -l'
 abbr -S ping-google='ping -c 4 8.8.8.8'
@@ -118,6 +118,7 @@ abbr -S hide-desktop-icons='defaults write com.apple.finder CreateDesktop NO && 
 # ==============================================================================
 # System Maintenance
 # ==============================================================================
-abbr -S update-macos='sudo softwareupdate -i -a'
+abbr -S update-macos='sudo softwareupdate -l && echo "Run: sudo softwareupdate -i <update-name> to install"'
+abbr -S update-macos-all='sudo softwareupdate -i -a'
 abbr -S clear-logs='echo "Use: sudo log files --clear or journalctl --vacuum-time=1d"'
 abbr -S system-cleanup='echo "Running macOS maintenance..."; brew cleanup; brew doctor; sudo softwareupdate -i -a'

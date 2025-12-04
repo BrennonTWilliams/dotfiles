@@ -643,10 +643,9 @@ setup_platform_aliases() {
             alias ls='ls -G'
             alias ll='ls -laG'
             alias la='ls -laG'
-            # macOS-specific commands
+            # macOS-specific commands (lock is defined in abbreviations/macos.zsh)
             alias show-files='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
             alias hide-files='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
-            alias lock='/System/Library/CoreServices/Menu\\ Extras/User.menu/Contents/Resources/CGSession -suspend'
             ;;
         linux)
             alias ls='ls --color=auto'
@@ -667,7 +666,7 @@ setup_platform_aliases() {
 
 # Cross-platform Uniclip service control
 uniclip_manager() {
-    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local script_dir="$(cd "$(dirname "${(%):-%x}")" && pwd -P)"
     local uniclip_manager="$script_dir/../scripts/uniclip-manager"
 
     if [[ -f "$uniclip_manager" ]]; then
@@ -695,7 +694,7 @@ alias uniclip-disable='uniclip_manager disable'
 
 # Cross-platform development environment setup
 setup_dev_env() {
-    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local script_dir="$(cd "$(dirname "${(%):-%x}")" && pwd -P)"
     local setup_script="$script_dir/../scripts/setup-dev-env"
 
     if [[ -f "$setup_script" ]]; then
@@ -719,7 +718,7 @@ alias dev-dryrun='setup_dev_env --dry-run all'
 
 # Cross-platform health check execution
 dotfiles_health_check() {
-    local script_dir="$(dirname "$(readlink -f "${(%):-%x}")")"
+    local script_dir="$(cd "$(dirname "${(%):-%x}")" && pwd -P)"
     local health_check_script="$script_dir/../scripts/health-check.sh"
 
     if [[ -f "$health_check_script" ]]; then
