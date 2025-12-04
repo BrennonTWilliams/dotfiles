@@ -301,9 +301,7 @@ export DOTFILES_ABBR_MODE="alias"  # Use traditional aliases
 
 Protected commands with confirmation:
 ```bash
-alias rm='rm -i'
 alias cp='cp -i'
-alias mv='mv -i'
 ```
 
 ---
