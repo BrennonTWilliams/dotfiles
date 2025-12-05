@@ -4,10 +4,11 @@ This directory contains NPM configuration files and global package lists managed
 
 ## Files
 
+- `.npmrc` - NPM configuration with safe development defaults
 - `global-packages.txt` - Essential global NPM packages
 - `README.md` - This documentation
 
-**Note:** This module does not include a `.npmrc` file. NPM configuration is typically machine-specific and may contain sensitive information (registry tokens, proxy settings). Create your own `~/.npmrc` as needed.
+**Note:** This module includes a `.npmrc` file with safe development defaults. The file uses environment variable placeholders for author info. Create `~/.npmrc.local` for machine-specific or sensitive settings (registry tokens, proxy settings).
 
 ## Setup
 
