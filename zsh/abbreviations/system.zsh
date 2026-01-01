@@ -5,9 +5,6 @@
 abbr -S h='history'
 abbr -S c='clear'
 
-# Debug output - redirect stderr and stdout to file while displaying
-abbr -S '2>'='2>&1 | tee debug.log'
-
 # Neovim keybindings help
 abbr -S nk='nvim-keys'
 

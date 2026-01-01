@@ -85,3 +85,4 @@ fi
 # Local Overrides
 # ==============================================================================
 [[ -f ~/.bashrc.local ]] && source ~/.bashrc.local
+. "$HOME/.cargo/env"
