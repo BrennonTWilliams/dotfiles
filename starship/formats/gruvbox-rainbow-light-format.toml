@@ -1,37 +1,36 @@
 # ===================================
 # Gruvbox-Rainbow Light Format Configuration
 # ===================================
-# Pastel variant of the gruvbox-rainbow preset for light mode
-# Uses light-tinted backgrounds with dark text for high contrast
+# Light variant of the gruvbox-rainbow preset
 # Optimized for IosevkaTerm Nerd Font
 
 # Command timeout
 command_timeout = 2000
 
-# Pastel rainbow format - light backgrounds with colored tints
+# Gruvbox-rainbow format string with proper background syntax
 format = """
-[](color_light_red)\
+[](color_red)\
 $os\
 $shell\
-[](bg:color_light_orange fg:color_faded_red)\
+[](bg:color_orange fg:color_red)\
 $directory\
-[](fg:color_light_orange bg:color_light_yellow)\
+[](fg:color_orange bg:color_yellow)\
 $git_branch\
 $git_status\
-[](fg:color_light_yellow bg:color_light_green)\
+[](fg:color_yellow bg:color_green)\
 $package\
 $nodejs\
 $python\
 $golang\
 $rust\
 $java\
-[](fg:color_light_green bg:color_light_aqua)\
+[](fg:color_green bg:color_aqua)\
 $docker_context\
 $terraform\
 $kubernetes\
-[](fg:color_light_aqua bg:color_light_purple)\
+[](fg:color_aqua bg:color_purple)\
 $jobs\
-[](fg:color_light_purple bg:color_bg1)\
+[](fg:color_purple bg:color_bg1)\
 $status\
 [ ](fg:color_bg1)\
 $character"""
@@ -42,37 +41,15 @@ right_format = """$cmd_duration$time"""
 # Use the gruvbox palette
 palette = 'gruvbox_rainbow'
 
-# Gruvbox Light color palette - Pastel Rainbow Edition
-# Background colors are light-tinted versions for a soft rainbow effect
-# Foreground colors are faded Gruvbox darks for readability
+# Gruvbox Light color palette
 [palettes.gruvbox_rainbow]
-# Base colors
-color_fg0 = '#3c3836'      # dark1 (primary dark text)
-color_bg1 = '#ebdbb2'      # light2 (neutral light bg)
-color_bg3 = '#a89984'      # gray
-
-# Pastel background colors (light-tinted)
-color_light_red = '#fbf0ef'    # light0 with red tint
-color_light_orange = '#fbf1e8' # light0 with orange tint
-color_light_yellow = '#f9f2dc' # light0 with yellow tint
-color_light_green = '#eff6e8'  # light0 with green tint
-color_light_aqua = '#e8f4f2'   # light0 with aqua tint
-color_light_purple = '#f5eef3' # light0 with purple tint
-
-# Faded accent colors (dark, for text on light backgrounds)
-color_faded_red = '#9d0006'
-color_faded_orange = '#af3a03'
-color_faded_yellow = '#b57614'
-color_faded_green = '#79740e'
-color_faded_aqua = '#427b58'
-color_faded_blue = '#076678'
-color_faded_purple = '#8f3f71'
-
-# Bright accent colors (for special emphasis)
-color_red = '#cc241d'
-color_orange = '#d65d0e'
-color_yellow = '#d79921'
-color_green = '#98971a'
-color_aqua = '#458588'
-color_blue = '#83a598'
-color_purple = '#b16286'
+color_fg0 = '#3c3836'   # dark1 (text on colored bg)
+color_bg1 = '#d5c4a1'   # light3 (muted bg)
+color_bg3 = '#bdae93'   # light4
+color_red = '#9d0006'
+color_orange = '#af3a03'
+color_yellow = '#b57614'
+color_green = '#79740e'
+color_aqua = '#427b58'
+color_blue = '#076678'
+color_purple = '#8f3f71'
