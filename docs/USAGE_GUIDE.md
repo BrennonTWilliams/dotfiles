@@ -7,12 +7,13 @@ This guide provides detailed instructions for managing your dotfiles across mult
 1. [First-Time Setup on New Machine](#first-time-setup-on-new-machine)
 2. [Daily Workflow](#daily-workflow)
 3. [Shell Abbreviations (zsh-abbr)](#shell-abbreviations-zsh-abbr)
-4. [Starship Prompt Customization](#starship-prompt-customization)
-5. [Updating Configurations](#updating-configurations)
-6. [Syncing Across Machines](#syncing-across-machines)
-7. [Linux Uniclip Service](#linux-uniclip-service)
-8. [Security Best Practices](#security-best-practices)
-9. [Troubleshooting](#troubleshooting)
+4. [Theme Switching](#theme-switching)
+5. [Starship Prompt Customization](#starship-prompt-customization)
+6. [Updating Configurations](#updating-configurations)
+7. [Syncing Across Machines](#syncing-across-machines)
+8. [Linux Uniclip Service](#linux-uniclip-service)
+9. [Security Best Practices](#security-best-practices)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -215,6 +216,44 @@ Some abbreviations override system commands using `--force`:
 - `gs` - Overrides Ghostscript (`/opt/homebrew/bin/gs`) -> `git status`
 - `cc` - Overrides C compiler (`/usr/bin/cc`) -> `claude --dangerously-skip-permissions`
 - `sleep` - Overrides `/bin/sleep` -> `pmset sleepnow`
+
+---
+
+## Theme Switching
+
+The dotfiles include full Gruvbox dark and light mode support across all tools, with a central toggle and per-tool controls.
+
+### Central Toggle
+
+```bash
+toggle-theme
+```
+
+This single command:
+1. Flips between dark and light mode
+2. Writes the new theme to Ghostty's `config.local` (auto-reloads)
+3. Switches the Starship symlink to the matching config
+4. Reloads the tmux config (if inside a tmux session)
+5. Persists the choice to `~/.config/theme-mode`
+
+After running, use `exec zsh` to fully reinitialize the shell prompt.
+
+### Per-Tool Controls
+
+| Tool | Command / Keymap | Notes |
+|------|-----------------|-------|
+| Neovim | `<leader>tb` | Toggles `vim.o.background` independently |
+| Starship | `starship-gruvbox-light` / `starship-gruvbox-rainbow` | Switches Starship only |
+| tmux | Reads `$THEME_MODE` env var | Reloaded automatically by `toggle-theme` |
+| Ghostty | Updated via `~/.config/ghostty/config.local` | Auto-reloads on file change |
+
+### Auto-Detection
+
+On shell startup, if no `~/.config/theme-mode` file exists, the theme mode is detected from macOS system appearance (`AppleInterfaceStyle`). Neovim performs its own independent macOS appearance detection at launch.
+
+### State File
+
+The current mode is stored in `~/.config/theme-mode` (plain text, contains `dark` or `light`). Delete this file to revert to auto-detection.
 
 ---
 

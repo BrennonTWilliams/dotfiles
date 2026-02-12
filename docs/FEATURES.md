@@ -18,22 +18,38 @@ Comprehensive documentation of all features included in this dotfiles repository
 
 ## Unified Gruvbox Theme
 
-A consistent, warm color palette across all tools for a cohesive visual experience.
+A consistent, warm color palette across all tools for a cohesive visual experience. Both dark and light modes are fully supported with authentic Gruvbox colors.
 
 ### What's Themed
 
-| Component | Configuration |
-|-----------|---------------|
-| Terminal (Ghostty/Foot) | Gruvbox Dark palette |
-| Starship prompt | Gruvbox-matching colors |
-| Tmux status bar | Gruvbox theme |
-| Neovim | Gruvbox colorscheme |
-| Git diff | Delta with Gruvbox |
+| Component | Dark | Light |
+|-----------|------|-------|
+| Terminal (Ghostty) | `gruvbox-dark-custom` | `gruvbox-light-custom` |
+| Starship prompt | `gruvbox-rainbow` | `gruvbox-rainbow-light` |
+| Tmux status bar | Conditional via `$THEME_MODE` | Conditional via `$THEME_MODE` |
+| Neovim | `vim.o.background = "dark"` | `vim.o.background = "light"` |
+| Obsidian | CSS `.theme-dark` rules | CSS `.theme-light` rules |
+| Git diff | Delta with Gruvbox | Delta with Gruvbox |
 
-### Color Palette
+### Dark/Light Mode Toggle
 
+A central `toggle-theme` shell function switches all tools at once:
+
+```bash
+toggle-theme    # flip between dark and light
 ```
-Background: #282828 (dark0)
+
+This updates Ghostty (via `config.local`), Starship (symlink swap), tmux (config reload), and persists the choice to `~/.config/theme-mode`. Neovim has its own independent toggle via `<leader>tb`.
+
+On shell startup, the theme mode is auto-detected from macOS system appearance if no state file exists.
+
+See the [Usage Guide](USAGE_GUIDE.md#theme-switching) for full details.
+
+### Color Palettes
+
+**Dark mode:**
+```
+Background: #1d2021 (dark0-hard)
 Foreground: #ebdbb2 (light1)
 Red:        #cc241d / #fb4934
 Green:      #98971a / #b8bb26
@@ -42,6 +58,19 @@ Blue:       #458588 / #83a598
 Purple:     #b16286 / #d3869b
 Aqua:       #689d6a / #8ec07c
 Orange:     #d65d0e / #fe8019
+```
+
+**Light mode:**
+```
+Background: #f9f5d7 (light0-hard)
+Foreground: #3c3836 (dark1)
+Red:        #9d0006 / #cc241d
+Green:      #79740e / #98971a
+Yellow:     #b57614 / #d79921
+Blue:       #076678 / #458588
+Purple:     #8f3f71 / #b16286
+Aqua:       #427b58 / #689d6a
+Orange:     #af3a03 / #d65d0e
 ```
 
 ### Nerd Font Icons
