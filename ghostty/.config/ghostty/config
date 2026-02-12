@@ -16,6 +16,9 @@ shell-integration = zsh
 # Theme Configuration
 # ============================================
 
+# Load optional local config for runtime theme switching (toggle-theme)
+config-file = ?config.local
+
 # Custom themes - gruvbox-dark-custom (enhanced Gruvbox palette) as default
 theme = gruvbox-dark-custom
 
