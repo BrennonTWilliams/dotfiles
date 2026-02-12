@@ -1,0 +1,55 @@
+# ===================================
+# Gruvbox-Rainbow Light Format Configuration
+# ===================================
+# Light variant of the gruvbox-rainbow preset
+# Optimized for IosevkaTerm Nerd Font
+
+# Command timeout
+command_timeout = 2000
+
+# Gruvbox-rainbow format string with proper background syntax
+format = """
+[](color_red)\
+$os\
+$shell\
+[](bg:color_orange fg:color_red)\
+$directory\
+[](fg:color_orange bg:color_yellow)\
+$git_branch\
+$git_status\
+[](fg:color_yellow bg:color_green)\
+$package\
+$nodejs\
+$python\
+$golang\
+$rust\
+$java\
+[](fg:color_green bg:color_aqua)\
+$docker_context\
+$terraform\
+$kubernetes\
+[](fg:color_aqua bg:color_purple)\
+$jobs\
+[](fg:color_purple bg:color_bg1)\
+$status\
+[ ](fg:color_bg1)\
+$character"""
+
+# Right side prompt with duration and time
+right_format = """$cmd_duration$time"""
+
+# Use the gruvbox palette
+palette = 'gruvbox_rainbow'
+
+# Gruvbox Light color palette
+[palettes.gruvbox_rainbow]
+color_fg0 = '#3c3836'   # dark1 (text on colored bg)
+color_bg1 = '#d5c4a1'   # light3 (muted bg)
+color_bg3 = '#bdae93'   # light4
+color_red = '#9d0006'
+color_orange = '#af3a03'
+color_yellow = '#b57614'
+color_green = '#79740e'
+color_aqua = '#427b58'
+color_blue = '#076678'
+color_purple = '#8f3f71'

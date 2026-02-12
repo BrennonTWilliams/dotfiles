@@ -1,46 +1,68 @@
 # ==============================================================================
 # Gruvbox Light Custom Theme for Ghostty
 # ==============================================================================
-# High contrast light theme companion to gruvbox-dark-custom
-# Features bright background with dark text and vibrant accent colors
+# Authentic Gruvbox light palette - companion to gruvbox-dark-custom
+# Uses light0-hard background with dark foreground for high contrast
 # ==============================================================================
 
 # ============================================
 # Core Colors
 # ============================================
 
-# Primary colors for light theme
-background = #ffffff
-foreground = #1e1e1e
+# Primary colors - Gruvbox light palette
+# light0-hard - warm cream background
+background = #f9f5d7
+# dark1 - dark foreground text
+foreground = #3c3836
 
-# Selection colors
-selection-background = #f0f0f0
-selection-foreground = #1e1e1e
+# Selection colors - Gruvbox light3 for visible selection
+# light3
+selection-background = #d5c4a1
+# dark1
+selection-foreground = #3c3836
 
-# Cursor colors - matching bren theme aesthetic
-cursor-color = #d65d0e
-cursor-text = #ffffff
+# Cursor colors - orange accent for Gruvbox continuity
+# orange
+cursor-color = #af3a03
+# light0-hard
+cursor-text = #f9f5d7
 
-# 16-color palette optimized for light theme with bren theme accents
-# Standard colors (0-7)
-palette = 0=#ffffff
-palette = 1=#cc3333
-palette = 2=#2d7d2d
-palette = 3=#cc7a33
-palette = 4=#3a5c8a
-palette = 5=#cc5599
-palette = 6=#4a8a8a
-palette = 7=#2d2d2d
+# 16-color palette - Authentic Gruvbox light integration
+# Standard colors (0-7) - Gruvbox light faded/neutral
+# light0-hard - background
+palette = 0=#f9f5d7
+# red (faded)
+palette = 1=#9d0006
+# green (faded)
+palette = 2=#79740e
+# yellow (faded)
+palette = 3=#b57614
+# blue (faded)
+palette = 4=#076678
+# purple (faded)
+palette = 5=#8f3f71
+# aqua (faded)
+palette = 6=#427b58
+# dark4 - dark white
+palette = 7=#7c6f64
 
-# Bright colors (8-15)
-palette = 8=#cccccc
-palette = 9=#dd5555
-palette = 10=#55aa55
-palette = 11=#ddaa55
-palette = 12=#5577dd
-palette = 13=#dd55aa
-palette = 14=#55aaaa
-palette = 15=#1e1e1e
+# Bright colors (8-15) - Gruvbox light neutral/bright
+# gray
+palette = 8=#928374
+# red (neutral)
+palette = 9=#cc241d
+# green (neutral)
+palette = 10=#98971a
+# yellow (neutral)
+palette = 11=#d79921
+# blue (neutral)
+palette = 12=#458588
+# purple (neutral)
+palette = 13=#b16286
+# aqua (neutral)
+palette = 14=#689d6a
+# dark1 - bright white (dark text)
+palette = 15=#3c3836
 
 # Enhanced visual settings for light theme
 # For subtle transparency effect, change background-opacity = 0.95
@@ -49,9 +71,9 @@ background-blur = 0
 
 # ==============================================================================
 # Theme Characteristics:
-# - Light theme companion to gruvbox-dark-custom
-# - Clean white background with dark text for daytime use
-# - Consistent orange accent (#d65d0e) for Gruvbox continuity
-# - Muted colors for reduced eye strain in bright environments
-# - Professional appearance with Gruvbox aesthetic
+# - Authentic Gruvbox light palette (light0-hard background)
+# - Warm cream background (#f9f5d7) instead of generic white
+# - Full 16-color Gruvbox light faded + neutral palette
+# - Orange accent cursor (#af3a03) for Gruvbox continuity
+# - Companion to gruvbox-dark-custom with matching design language
 # ==============================================================================

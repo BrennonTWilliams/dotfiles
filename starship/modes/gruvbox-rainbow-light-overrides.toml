@@ -1,0 +1,206 @@
+# ===================================
+# Gruvbox-Rainbow Light Mode Overrides
+# ===================================
+# Light variant of gruvbox-rainbow preset customizations
+# Optimized for IosevkaTerm Nerd Font
+#
+# Color scheme (rainbow gradient):
+# - color_red:    OS, Shell
+# - color_orange: Directory
+# - color_yellow: Git Branch, Git Status
+# - color_green:  Package, Languages
+# - color_aqua:   Containers
+# - color_purple: Jobs
+# - color_bg1:    Status
+
+# Character configuration
+[character]
+success_symbol = "[❯](color_green)"
+error_symbol = "[❯](color_red)"
+vimcmd_symbol = "[❮](color_green)"
+vimcmd_replace_one_symbol = "[❮](color_purple)"
+vimcmd_replace_symbol = "[❮](color_purple)"
+vimcmd_visual_symbol = "[❮](color_yellow)"
+
+# OS module
+[os]
+format = "[ $symbol]($style)"
+style = "bg:color_red fg:color_fg0"
+disabled = false
+
+[os.symbols]
+Alpine = ""
+Amazon = ""
+Android = ""
+Arch = ""
+Artix = ""
+CentOS = ""
+Debian = ""
+Fedora = ""
+FreeBSD = ""
+Gentoo = ""
+Linux = ""
+Macos = ""
+Manjaro = ""
+Mint = ""
+NixOS = ""
+OpenBSD = ""
+openSUSE = ""
+Pop = ""
+Raspbian = ""
+Redhat = ""
+RedHatEnterprise = ""
+Solus = ""
+SUSE = ""
+Ubuntu = ""
+Unknown = ""
+Windows = ""
+[shell]
+bash_indicator = "bash"
+fish_indicator = "fish"
+zsh_indicator = "zsh"
+powershell_indicator = "pwsh"
+ion_indicator = "ion"
+elvish_indicator = "esh"
+tcsh_indicator = "tsh"
+nu_indicator = "nu"
+cmd_indicator = "cmd"
+unknown_indicator = "mystery shell"
+format = "[$indicator]($style)"
+style = "bg:color_red fg:color_fg0"
+disabled = false
+
+# Directory module
+[directory]
+style = "bg:color_orange fg:color_fg0"
+format = "[ $path]($style)[$read_only]($read_only_style)"
+read_only = " 󰌾"
+read_only_style = "bg:color_orange fg:color_red"
+truncation_length = 3
+truncation_symbol = ".../"
+truncate_to_repo = true
+home_symbol = "󰋜"
+
+# Git branch module
+[git_branch]
+format = "[ $symbol$branch]($style)"
+symbol = " "
+style = "bg:color_yellow fg:color_bg1"
+truncation_length = 20
+truncation_symbol = "..."
+
+# Git status module
+[git_status]
+format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style))"
+style = "bg:color_yellow fg:color_bg1"
+conflicted = "!"
+ahead = "↑"
+behind = "↓"
+diverged = "⚡"
+untracked = "◌"
+stashed = "⚑"
+modified = "•"
+staged = "+"
+renamed = "→"
+deleted = "×"
+
+# Package version
+[package]
+format = "[ $symbol$version]($style)"
+symbol = "󰏗 "
+style = "bg:color_green fg:color_bg1"
+
+# Programming languages
+[nodejs]
+format = "[ $symbol($version)]($style)"
+symbol = " "
+style = "bg:color_green fg:color_bg1"
+
+[python]
+format = "[ ${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style)"
+symbol = " "
+style = "bg:color_green fg:color_bg1"
+pyenv_version_name = false
+pyenv_prefix = "pyenv "
+python_binary = ["python3", "python", "python2"]
+detect_extensions = ["py"]
+detect_files = ["requirements.txt", ".python-version", "pyproject.toml", "Pipfile", "setup.py", "tox.ini"]
+detect_folders = []
+
+[golang]
+format = "[ $symbol($version)]($style)"
+symbol = " "
+style = "bg:color_green fg:color_bg1"
+detect_extensions = ["go"]
+detect_files = ["go.mod", "go.sum", "go.work", "go.work.sum"]
+detect_folders = ["go"]
+
+[rust]
+format = "[ $symbol($version)]($style)"
+symbol = "󱘗 "
+style = "bg:color_green fg:color_bg1"
+detect_extensions = ["rs"]
+detect_files = ["Cargo.toml", "Cargo.lock"]
+detect_folders = []
+
+[java]
+format = "[ ${symbol}(${version})]($style)"
+symbol = " "
+style = "bg:color_green fg:color_bg1"
+detect_extensions = ["java", "class", "jar", "war", "ear"]
+detect_files = ["pom.xml", "build.gradle.kts", "build.sbt", ".java-version"]
+detect_folders = ["src", "target", "pom.xml"]
+
+# Container and build tools
+[docker_context]
+format = "[ $symbol$context]($style)"
+symbol = "󰡨 "
+style = "bg:color_aqua fg:color_bg1"
+detect_extensions = []
+detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile", "docker-compose.dev.yml", "docker-compose.ci.yml"]
+detect_folders = []
+
+[terraform]
+format = "[ $symbol$workspace]($style)"
+symbol = "󰔱 "
+style = "bg:color_aqua fg:color_bg1"
+detect_extensions = ["tf", "tfplan", "tfstate"]
+detect_files = [".terraformrc", ".terraform.lock.hcl"]
+detect_folders = [".terraform"]
+
+[kubernetes]
+format = '[ $symbol$context( \($namespace\))]($style)'
+symbol = "󱃾 "
+style = "bg:color_aqua fg:color_bg1"
+disabled = false
+detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
+detect_folders = []
+detect_extensions = ["yaml", "yml"]
+
+# Background jobs
+[jobs]
+format = "[ $symbol$number]($style)"
+symbol = "󰜎 "
+style = "bg:color_purple fg:color_fg0"
+threshold = 1
+
+# Exit status
+[status]
+format = "[ $symbol$status]($style)"
+symbol = "✗ "
+style = "bg:color_bg1 fg:color_red"
+disabled = false
+
+# Command duration (right prompt)
+[cmd_duration]
+format = "[󱎫 $duration]($style) "
+style = "color_yellow"
+min_time = 2000
+show_milliseconds = false
+
+# Time module (right prompt)
+[time]
+format = "[$time]($style)"
+style = "color_bg3"
+use_12hr = false
+disabled = false

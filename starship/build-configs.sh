@@ -18,7 +18,7 @@ source "$SCRIPT_DIR/../scripts/lib/utils.sh"
 OUTPUT_DIR="$SCRIPT_DIR/.config/starship"
 
 # Modes to build
-MODES=("compact" "standard" "verbose" "gruvbox-rainbow")
+MODES=("compact" "standard" "verbose" "gruvbox-rainbow" "gruvbox-rainbow-light")
 
 # Create aliases for logging functions to match this script's naming convention
 log_info() {

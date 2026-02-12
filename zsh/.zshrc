@@ -330,9 +330,11 @@ _starship_set_mode() {
     exec zsh
 }
 
-starship-compact()  { _starship_set_mode "compact"  "COMPACT (minimal information)" ">"; }
-starship-standard() { _starship_set_mode "standard" "STANDARD (current multi-line layout)" "="; }
-starship-verbose()  { _starship_set_mode "verbose"  "VERBOSE (full context with all details)" "+"; }
+starship-compact()              { _starship_set_mode "compact"              "COMPACT (minimal information)" ">"; }
+starship-standard()             { _starship_set_mode "standard"             "STANDARD (current multi-line layout)" "="; }
+starship-verbose()              { _starship_set_mode "verbose"              "VERBOSE (full context with all details)" "+"; }
+starship-gruvbox-light()        { _starship_set_mode "gruvbox-rainbow-light" "GRUVBOX RAINBOW LIGHT" "*"; }
+starship-gruvbox-rainbow()      { _starship_set_mode "gruvbox-rainbow"       "GRUVBOX RAINBOW (dark)" "#"; }
 
 # Show current Starship display mode
 starship-mode() {
@@ -341,10 +343,12 @@ starship-mode() {
     if [[ -L "$config_file" ]]; then
         local target=$(readlink "$config_file")
         case "$target" in
-            *compact.toml)  echo "[>] Current mode: COMPACT (minimal information)" ;;
-            *standard.toml) echo "[=] Current mode: STANDARD (current multi-line layout)" ;;
-            *verbose.toml)  echo "[+] Current mode: VERBOSE (full context with all details)" ;;
-            *)              echo "[?] Unknown mode - custom configuration" ;;
+            *compact.toml)              echo "[>] Current mode: COMPACT (minimal information)" ;;
+            *standard.toml)             echo "[=] Current mode: STANDARD (current multi-line layout)" ;;
+            *verbose.toml)              echo "[+] Current mode: VERBOSE (full context with all details)" ;;
+            *gruvbox-rainbow-light.toml) echo "[*] Current mode: GRUVBOX RAINBOW LIGHT" ;;
+            *gruvbox-rainbow.toml)      echo "[#] Current mode: GRUVBOX RAINBOW (dark)" ;;
+            *)                          echo "[?] Unknown mode - custom configuration" ;;
         esac
         echo "Active configuration: $target"
     else
@@ -357,6 +361,70 @@ starship-mode() {
 [[ ! -d "$_STARSHIP_CONFIG_DIR" ]] && mkdir -p "$_STARSHIP_CONFIG_DIR"
 [[ ! -L "$_STARSHIP_CONFIG_DIR/starship.toml" ]] && \
     ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+
+# ==============================================================================
+# Theme Mode (dark/light toggle)
+# ==============================================================================
+# State file: ~/.config/theme-mode (contains "dark" or "light")
+
+# Detect macOS appearance on startup
+_detect_theme_mode() {
+    local style
+    style="$(defaults read -g AppleInterfaceStyle 2>/dev/null)"
+    if [[ "$style" == "Dark" ]]; then
+        echo "dark"
+    else
+        echo "light"
+    fi
+}
+
+# Initialize THEME_MODE from state file or macOS appearance
+if [[ -f ~/.config/theme-mode ]]; then
+    export THEME_MODE="$(<~/.config/theme-mode)"
+else
+    export THEME_MODE="$(_detect_theme_mode)"
+fi
+
+# Central theme toggle function
+toggle-theme() {
+    local current="${THEME_MODE:-dark}"
+    local new_mode
+
+    if [[ "$current" == "dark" ]]; then
+        new_mode="light"
+    else
+        new_mode="dark"
+    fi
+
+    # Persist the mode
+    echo "$new_mode" > ~/.config/theme-mode
+    export THEME_MODE="$new_mode"
+
+    # Switch Ghostty theme (write to config.local which ghostty auto-reloads)
+    local ghostty_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty"
+    if [[ -d "$ghostty_config_dir" ]]; then
+        if [[ "$new_mode" == "light" ]]; then
+            echo "theme = gruvbox-light-custom" > "$ghostty_config_dir/config.local"
+        else
+            echo "theme = gruvbox-dark-custom" > "$ghostty_config_dir/config.local"
+        fi
+    fi
+
+    # Switch Starship config
+    if [[ "$new_mode" == "light" ]]; then
+        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow-light.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    else
+        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    fi
+
+    # Reload tmux if running inside a tmux session
+    if [[ -n "$TMUX" ]]; then
+        tmux source-file ~/.tmux.conf 2>/dev/null
+    fi
+
+    echo "[~] Theme switched to: $new_mode"
+    echo "    Restart shell (exec zsh) for full effect"
+}
 
 # ==============================================================================
 # Starship Prompt Integration
@@ -379,3 +447,4 @@ eval "$(starship init zsh)"
 # Source machine-specific configuration last to allow overriding any setting
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 export PATH="$PATH:$(go env GOPATH)/bin"
+export NODE_OPTIONS="--max-old-space-size=8192"
