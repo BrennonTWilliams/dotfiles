@@ -1,31 +1,32 @@
 # ===================================
 # Gruvbox-Rainbow Light Mode Overrides
 # ===================================
-# Light variant of gruvbox-rainbow preset customizations
+# Pastel variant of gruvbox-rainbow preset customizations
+# Uses light-tinted backgrounds with dark text for high contrast
 # Optimized for IosevkaTerm Nerd Font
 #
-# Color scheme (rainbow gradient):
-# - color_red:    OS, Shell
-# - color_orange: Directory
-# - color_yellow: Git Branch, Git Status
-# - color_green:  Package, Languages
-# - color_aqua:   Containers
-# - color_purple: Jobs
-# - color_bg1:    Status
+# Color scheme (pastel rainbow gradient):
+# - color_light_red:    OS, Shell (pinkish tint)
+# - color_light_orange: Directory (peach tint)
+# - color_light_yellow: Git Branch, Git Status (cream tint)
+# - color_light_green:  Package, Languages (mint tint)
+# - color_light_aqua:   Containers (teal tint)
+# - color_light_purple: Jobs (lavender tint)
+# - color_bg1:          Status (neutral light)
 
-# Character configuration
+# Character configuration - use faded colors for subtle prompt
 [character]
-success_symbol = "[❯](color_green)"
-error_symbol = "[❯](color_red)"
-vimcmd_symbol = "[❮](color_green)"
-vimcmd_replace_one_symbol = "[❮](color_purple)"
-vimcmd_replace_symbol = "[❮](color_purple)"
-vimcmd_visual_symbol = "[❮](color_yellow)"
+success_symbol = "[❯](color_faded_green)"
+error_symbol = "[❯](color_faded_red)"
+vimcmd_symbol = "[❮](color_faded_green)"
+vimcmd_replace_one_symbol = "[❮](color_faded_purple)"
+vimcmd_replace_symbol = "[❮](color_faded_purple)"
+vimcmd_visual_symbol = "[❮](color_faded_yellow)"
 
 # OS module
 [os]
 format = "[ $symbol]($style)"
-style = "bg:color_red fg:color_fg0"
+style = "bg:color_light_red fg:color_faded_red"
 disabled = false
 
 [os.symbols]
@@ -67,15 +68,15 @@ nu_indicator = "nu"
 cmd_indicator = "cmd"
 unknown_indicator = "mystery shell"
 format = "[$indicator]($style)"
-style = "bg:color_red fg:color_fg0"
+style = "bg:color_light_red fg:color_faded_red"
 disabled = false
 
 # Directory module
 [directory]
-style = "bg:color_orange fg:color_fg0"
+style = "bg:color_light_orange fg:color_faded_orange"
 format = "[ $path]($style)[$read_only]($read_only_style)"
 read_only = " 󰌾"
-read_only_style = "bg:color_orange fg:color_red"
+read_only_style = "bg:color_light_orange fg:color_faded_red"
 truncation_length = 3
 truncation_symbol = ".../"
 truncate_to_repo = true
@@ -85,14 +86,14 @@ home_symbol = "󰋜"
 [git_branch]
 format = "[ $symbol$branch]($style)"
 symbol = " "
-style = "bg:color_yellow fg:color_bg1"
+style = "bg:color_light_yellow fg:color_faded_yellow"
 truncation_length = 20
 truncation_symbol = "..."
 
 # Git status module
 [git_status]
 format = "([\\[$all_status$ahead_behind$up_to_date\\]]($style))"
-style = "bg:color_yellow fg:color_bg1"
+style = "bg:color_light_yellow fg:color_faded_yellow"
 conflicted = "!"
 ahead = "↑"
 behind = "↓"
@@ -108,18 +109,18 @@ deleted = "×"
 [package]
 format = "[ $symbol$version]($style)"
 symbol = "󰏗 "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 
 # Programming languages
 [nodejs]
 format = "[ $symbol($version)]($style)"
 symbol = " "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 
 [python]
 format = "[ ${symbol}${pyenv_prefix}(${version})(\\($virtualenv\\))]($style)"
 symbol = " "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 pyenv_version_name = false
 pyenv_prefix = "pyenv "
 python_binary = ["python3", "python", "python2"]
@@ -130,7 +131,7 @@ detect_folders = []
 [golang]
 format = "[ $symbol($version)]($style)"
 symbol = " "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 detect_extensions = ["go"]
 detect_files = ["go.mod", "go.sum", "go.work", "go.work.sum"]
 detect_folders = ["go"]
@@ -138,7 +139,7 @@ detect_folders = ["go"]
 [rust]
 format = "[ $symbol($version)]($style)"
 symbol = "󱘗 "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 detect_extensions = ["rs"]
 detect_files = ["Cargo.toml", "Cargo.lock"]
 detect_folders = []
@@ -146,7 +147,7 @@ detect_folders = []
 [java]
 format = "[ ${symbol}(${version})]($style)"
 symbol = " "
-style = "bg:color_green fg:color_bg1"
+style = "bg:color_light_green fg:color_faded_green"
 detect_extensions = ["java", "class", "jar", "war", "ear"]
 detect_files = ["pom.xml", "build.gradle.kts", "build.sbt", ".java-version"]
 detect_folders = ["src", "target", "pom.xml"]
@@ -155,7 +156,7 @@ detect_folders = ["src", "target", "pom.xml"]
 [docker_context]
 format = "[ $symbol$context]($style)"
 symbol = "󰡨 "
-style = "bg:color_aqua fg:color_bg1"
+style = "bg:color_light_aqua fg:color_faded_aqua"
 detect_extensions = []
 detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile", "docker-compose.dev.yml", "docker-compose.ci.yml"]
 detect_folders = []
@@ -163,7 +164,7 @@ detect_folders = []
 [terraform]
 format = "[ $symbol$workspace]($style)"
 symbol = "󰔱 "
-style = "bg:color_aqua fg:color_bg1"
+style = "bg:color_light_aqua fg:color_faded_aqua"
 detect_extensions = ["tf", "tfplan", "tfstate"]
 detect_files = [".terraformrc", ".terraform.lock.hcl"]
 detect_folders = [".terraform"]
@@ -171,7 +172,7 @@ detect_folders = [".terraform"]
 [kubernetes]
 format = '[ $symbol$context( \($namespace\))]($style)'
 symbol = "󱃾 "
-style = "bg:color_aqua fg:color_bg1"
+style = "bg:color_light_aqua fg:color_faded_aqua"
 disabled = false
 detect_files = ["k8s", "kubernetes", "kubeconfig", "k3s", "kubeadm"]
 detect_folders = []
@@ -181,20 +182,20 @@ detect_extensions = ["yaml", "yml"]
 [jobs]
 format = "[ $symbol$number]($style)"
 symbol = "󰜎 "
-style = "bg:color_purple fg:color_fg0"
+style = "bg:color_light_purple fg:color_faded_purple"
 threshold = 1
 
 # Exit status
 [status]
 format = "[ $symbol$status]($style)"
 symbol = "✗ "
-style = "bg:color_bg1 fg:color_red"
+style = "bg:color_bg1 fg:color_faded_red"
 disabled = false
 
 # Command duration (right prompt)
 [cmd_duration]
 format = "[󱎫 $duration]($style) "
-style = "color_yellow"
+style = "color_faded_yellow"
 min_time = 2000
 show_milliseconds = false
 
