@@ -1,3 +1,7 @@
+---
+description: Conduct comprehensive codebase research using parallel sub-agents and synthesize findings
+---
+
 # Research Codebase
 
 You are tasked with conducting comprehensive research across the codebase to answer user questions by spawning parallel sub-agents and synthesizing their findings.
@@ -50,10 +54,6 @@ Then wait for the user's research query.
    - Use the **web-search-researcher** agent for external documentation and resources
    - IF you use web-research agents, instruct them to return LINKS with their findings, and please INCLUDE those links in your final report
 
-   **For Linear tickets (if relevant):**
-   - Use the **linear-ticket-reader** agent to get full details of a specific ticket
-   - Use the **linear-searcher** agent to find related tickets or historical context
-
    The key is to use these agents intelligently:
    - Start with locator agents to find what exists
    - Then use analyzer agents on the most promising findings to document how they work
@@ -73,14 +73,13 @@ Then wait for the user's research query.
 
 5. **Gather metadata for the research document:**
    - Run Bash() tools to generate all relevant metadata
-   - Filename: `thoughts/shared/research/YYYY-MM-DD-ENG-XXXX-description.md`
-     - Format: `YYYY-MM-DD-ENG-XXXX-description.md` where:
+   - Filename: `thoughts/shared/research/YYYY-MM-DD-description.md`
+     - Format: `YYYY-MM-DD-description.md` where:
        - YYYY-MM-DD is today's date
-       - ENG-XXXX is the ticket number (omit if no ticket)
        - description is a brief kebab-case description of the research topic
      - Examples:
-       - With ticket: `2025-01-08-ENG-1478-parent-child-tracking.md`
-       - Without ticket: `2025-01-08-authentication-flow.md`
+       - `2025-01-08-shell-integration-analysis.md`
+       - `2025-01-08-cross-platform-clipboard.md`
 
 6. **Generate research document:**
    - Use the metadata gathered in step 4

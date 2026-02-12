@@ -28,7 +28,7 @@ The goal is to produce a report showing what's in the repo but missing on the ma
 
 2. **List all dotfiles repo directories** to determine comparison scope:
    ```bash
-   ls -d */ | grep -v -E '^\.(git|claude|github)' | grep -v '^(docs|scripts|tests|thoughts|test_results|claudedocs)/'
+   ls -d */ | grep -v -E '^(docs|scripts|tests|thoughts|test_results)/'
    ```
 
 3. **Create a todo list** using TodoWrite to track each comparison area

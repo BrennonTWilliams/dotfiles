@@ -1,3 +1,7 @@
+---
+description: Create a detailed implementation plan through interactive, iterative research and collaboration
+---
+
 # Implementation Plan
 
 You are tasked with creating detailed implementation plans through an interactive, iterative process. You should be skeptical, thorough, and work collaboratively with the user to produce high-quality technical specifications.
@@ -22,8 +26,8 @@ Please provide:
 
 I'll analyze this information and work with you to create a comprehensive plan.
 
-Tip: You can also invoke this command with a ticket file directly: `/create_plan thoughts/shared/tickets/eng_1234.md`
-For deeper analysis, try: `/create_plan think deeply about thoughts/shared/tickets/eng_1234.md`
+Tip: You can also invoke this command with a description directly: `/create_plan add cross-platform clipboard support`
+For deeper analysis, try: `/create_plan think deeply about improving the shell integration tests`
 ```
 
 Then wait for the user's input.
@@ -33,7 +37,7 @@ Then wait for the user's input.
 ### Step 1: Context Gathering & Initial Analysis
 
 1. **Read all mentioned files immediately and FULLY**:
-   - Ticket files (e.g., `thoughts/shared/tickets/eng_1234.md`)
+   - Task descriptions or requirement documents
    - Research documents
    - Related implementation plans
    - Any JSON/data files mentioned
@@ -44,13 +48,12 @@ Then wait for the user's input.
 2. **Spawn initial research tasks to gather context**:
    Before asking the user any questions, use specialized agents to research in parallel:
 
-   - Use the **codebase-locator** agent to find all files related to the ticket/task
+   - Use the **codebase-locator** agent to find all files related to the task
    - Use the **codebase-analyzer** agent to understand how the current implementation works
-   - If a Linear ticket is mentioned, use the **linear-ticket-reader** agent to get full details
 
    These agents will:
    - Find relevant source files, configs, and tests
-   - Identify the specific directories to focus on (e.g., if WUI is mentioned, they'll focus on humanlayer-wui/)
+   - Identify the specific directories to focus on (e.g., Stow packages, scripts/, tests/)
    - Trace data flow and key functions
    - Return detailed explanations with file:line references
 
@@ -102,9 +105,6 @@ After getting initial clarifications:
    - **codebase-locator** - To find more specific files (e.g., "find all files that handle [specific component]")
    - **codebase-analyzer** - To understand implementation details (e.g., "analyze how [system] works")
    - **codebase-pattern-finder** - To find similar features we can model after
-
-   **For related tickets:**
-   - **linear-searcher** - To find similar issues or past implementations
 
    Each agent knows how to:
    - Find the right files and code patterns
@@ -159,14 +159,13 @@ Once aligned on approach:
 
 After structure approval:
 
-1. **Write the plan** to `thoughts/shared/plans/YYYY-MM-DD-ENG-XXXX-description.md`
-   - Format: `YYYY-MM-DD-ENG-XXXX-description.md` where:
+1. **Write the plan** to `thoughts/shared/plans/YYYY-MM-DD-description.md`
+   - Format: `YYYY-MM-DD-description.md` where:
      - YYYY-MM-DD is today's date
-     - ENG-XXXX is the ticket number (omit if no ticket)
      - description is a brief kebab-case description
    - Examples:
-     - With ticket: `2025-01-08-ENG-1478-parent-child-tracking.md`
-     - Without ticket: `2025-01-08-improve-error-handling.md`
+     - `2025-01-08-cross-platform-clipboard.md`
+     - `2025-01-08-improve-shell-integration-tests.md`
 2. **Use this template structure**:
 
 ````markdown
@@ -284,7 +283,7 @@ After structure approval:
 
 ## References
 
-- Original ticket: `thoughts/shared/tickets/eng_XXXX.md`
+- Original task description or requirements
 - Related research: `thoughts/shared/research/[relevant].md`
 - Similar implementation: `[file:line]`
 ````
@@ -330,7 +329,7 @@ After structure approval:
    - Research actual code patterns using parallel sub-tasks
    - Include specific file paths and line numbers
    - Write measurable success criteria with clear automated vs manual distinction
-   - automated steps should use `make` whenever possible - for example `make -C apps/humanlayer-wui check` instead of `cd humanlayer-wui && bun run fmt`
+   - automated steps should use existing scripts or test runners whenever possible - for example `tests/run_all_tests.sh` instead of running individual test files
 
 4. **Be Practical**:
    - Focus on incremental, testable changes
@@ -417,9 +416,9 @@ When spawning research sub-tasks:
    - What information to extract
    - Expected output format
 4. **Be EXTREMELY specific about directories**:
-   - If the ticket mentions "WUI", specify `humanlayer-wui/` directory
-   - If it mentions "daemon", specify `hld/` directory
-   - Never use generic terms like "UI" when you mean "WUI"
+   - Specify exact Stow package directories (e.g., `zsh/`, `tmux/`, `neovim/`)
+   - Reference `scripts/` for installation/maintenance scripts
+   - Reference `tests/` for test files
    - Include the full path context in your prompts
 5. **Specify read-only tools** to use
 6. **Request specific file:line references** in responses
@@ -446,12 +445,12 @@ tasks = [
 User: /create_plan
 Assistant: I'll help you create a detailed implementation plan...
 
-User: We need to add parent-child tracking for Claude sub-tasks. See thoughts/shared/tickets/eng_1478.md
-Assistant: Let me read that ticket file completely first...
+User: We need to add cross-platform clipboard support to the shell configuration.
+Assistant: Let me research the current shell configuration to understand what exists...
 
-[Reads file fully]
+[Spawns codebase-locator and codebase-analyzer agents]
 
-Based on the ticket, I understand we need to track parent-child relationships for Claude sub-task events in the hld daemon. Before I start planning, I have some questions...
+Based on my research, I understand we need to add clipboard integration that works on both macOS (pbcopy/pbpaste) and Linux (xclip/xsel). Before I start planning, I have some questions...
 
 [Interactive process continues...]
 ```
