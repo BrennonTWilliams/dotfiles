@@ -312,13 +312,13 @@ fi
 # Starship Display Mode Functions
 # ==============================================================================
 
-# Cache starship paths once (avoids repeated resolve_platform_path calls)
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    typeset -g _STARSHIP_CONFIG_DIR="$(resolve_platform_path "starship_config")"
-    typeset -g _DOTFILES_STARSHIP_DIR="$(resolve_platform_path "dotfiles")/starship"
+# Cache starship paths once (using symlink resolution for accuracy)
+typeset -g _STARSHIP_CONFIG_DIR="$HOME/.config/starship"
+if [[ -L ~/.zshrc ]]; then
+    # Resolve from symlink - go up from zsh/ to dotfiles root, then to starship/
+    typeset -g _DOTFILES_STARSHIP_DIR="$HOME/$(dirname "$(dirname "$(readlink ~/.zshrc)")")/starship"
 else
-    typeset -g _STARSHIP_CONFIG_DIR="$HOME/.config/starship"
-    typeset -g _DOTFILES_STARSHIP_DIR="$HOME/.dotfiles/starship"
+    typeset -g _DOTFILES_STARSHIP_DIR="${0:A:h:h}/starship"
 fi
 
 # Helper to switch starship mode
@@ -408,6 +408,8 @@ toggle-theme() {
         else
             echo "theme = gruvbox-dark-custom" > "$ghostty_config_dir/config.local"
         fi
+        # Signal Ghostty to reload config (SIGHUP triggers reload)
+        pkill -HUP -f "ghostty" 2>/dev/null || true
     fi
 
     # Switch Starship config
@@ -423,7 +425,9 @@ toggle-theme() {
     fi
 
     echo "[~] Theme switched to: $new_mode"
-    echo "    Restart shell (exec zsh) for full effect"
+    echo "    Ghostty: reloaded via SIGHUP"
+    echo "    Starship: will apply on next shell restart"
+    echo "    Run 'exec zsh' to reload shell with new theme"
 }
 
 # ==============================================================================
