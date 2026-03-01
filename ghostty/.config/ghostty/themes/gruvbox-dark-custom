@@ -18,8 +18,8 @@ foreground = #ebdbb2
 # Selection colors - Enhanced bren theme with darker blue highlight
 # Darker blue for better contrast with white/gold text
 selection-background = #458588
-# Gruvbox dark gold for selected text
-selection-foreground = #d79921
+# Gruvbox light1 - cream foreground for readable selection (gold was 1.7:1)
+selection-foreground = #ebdbb2
 
 # Cursor colors - Enhanced visibility with off-white cursor
 # Off-white cursor for better visibility
@@ -29,10 +29,10 @@ cursor-text = #1d2021
 
 # 16-color palette - Full Gruvbox integration with bren theme enhancement
 # Standard colors (0-7) - Gruvbox dark palette
-# dark0-hard - deep background
-palette = 0=#1d2021
-# red - Gruvbox dark red
-palette = 1=#cc241d
+# dark2 - visible black for CLI compatibility (NOT background; apps expect color 0 = visible)
+palette = 0=#504945
+# red - Gruvbox bright red for readability (neutral #cc241d was only 3.0:1)
+palette = 1=#fb4934
 # green - Gruvbox dark green
 palette = 2=#98971a
 # yellow - Gruvbox dark yellow
@@ -55,8 +55,8 @@ palette = 9=#fb4934
 palette = 10=#b8bb26
 # bright-yellow - electric yellow
 palette = 11=#fabd2f
-# bright-blue - enhanced bren theme blue (darker)
-palette = 12=#458588
+# bright-blue - Gruvbox bright blue (distinct from palette 4)
+palette = 12=#83a598
 # bright-magenta - bren theme magenta
 palette = 13=#d3869b
 # bright-cyan - vibrant cyan

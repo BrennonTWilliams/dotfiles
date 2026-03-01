@@ -29,8 +29,8 @@ cursor-text = #f9f5d7
 
 # 16-color palette - Authentic Gruvbox light integration
 # Standard colors (0-7) - Gruvbox light faded/neutral
-# light0-hard - background
-palette = 0=#f9f5d7
+# dark0 - true black for CLI compatibility (NOT background; apps expect color 0 = dark)
+palette = 0=#282828
 # red (faded)
 palette = 1=#9d0006
 # green (faded)
@@ -51,16 +51,16 @@ palette = 7=#7c6f64
 palette = 8=#928374
 # red (neutral)
 palette = 9=#cc241d
-# green (neutral)
-palette = 10=#98971a
-# yellow (neutral)
-palette = 11=#d79921
+# green (faded) - darkened for light bg contrast (neutral #98971a was 2.8:1)
+palette = 10=#79740e
+# yellow (faded) - darkened for light bg contrast (neutral #d79921 was 2.3:1)
+palette = 11=#b57614
 # blue (neutral)
 palette = 12=#458588
 # purple (neutral)
 palette = 13=#b16286
-# aqua (neutral)
-palette = 14=#689d6a
+# aqua (faded) - darkened for light bg contrast (neutral #689d6a was 2.9:1)
+palette = 14=#427b58
 # dark1 - bright white (dark text)
 palette = 15=#3c3836
 
@@ -68,6 +68,9 @@ palette = 15=#3c3836
 # For subtle transparency effect, change background-opacity = 0.95
 background-opacity = 1.0
 background-blur = 0
+
+# Bold text color - match foreground for consistency (dark theme defines this)
+bold-color = #3c3836
 
 # ==============================================================================
 # Theme Characteristics:
