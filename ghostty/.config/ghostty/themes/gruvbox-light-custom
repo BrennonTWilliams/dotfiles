@@ -22,8 +22,8 @@ selection-background = #d5c4a1
 selection-foreground = #3c3836
 
 # Cursor colors - orange accent for Gruvbox continuity
-# orange
-cursor-color = #af3a03
+# neutral orange - visibly orange on light background
+cursor-color = #d65d0e
 # light0-hard
 cursor-text = #f9f5d7
 
@@ -77,6 +77,6 @@ bold-color = #3c3836
 # - Authentic Gruvbox light palette (light0-hard background)
 # - Warm cream background (#f9f5d7) instead of generic white
 # - Full 16-color Gruvbox light faded + neutral palette
-# - Orange accent cursor (#af3a03) for Gruvbox continuity
+# - Orange accent cursor (#d65d0e) for Gruvbox continuity
 # - Companion to gruvbox-dark-custom with matching design language
 # ==============================================================================
