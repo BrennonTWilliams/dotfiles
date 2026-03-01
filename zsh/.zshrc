@@ -408,8 +408,8 @@ toggle-theme() {
         else
             echo "theme = gruvbox-dark-custom" > "$ghostty_config_dir/config.local"
         fi
-        # Signal Ghostty to reload config (SIGHUP triggers reload)
-        pkill -HUP -f "ghostty" 2>/dev/null || true
+        # Signal Ghostty to reload config (SIGUSR2 triggers reload)
+        killall -USR2 ghostty 2>/dev/null || true
     fi
 
     # Switch Starship config
@@ -425,7 +425,7 @@ toggle-theme() {
     fi
 
     echo "[~] Theme switched to: $new_mode"
-    echo "    Ghostty: reloaded via SIGHUP"
+    echo "    Ghostty: reloaded via SIGUSR2"
     echo "    Starship: will apply on next shell restart"
     echo "    Run 'exec zsh' to reload shell with new theme"
 }
