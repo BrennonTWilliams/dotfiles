@@ -452,3 +452,34 @@ eval "$(starship init zsh)"
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 export PATH="$PATH:$(go env GOPATH)/bin"
 export NODE_OPTIONS="--max-old-space-size=8192"
+
+# ==============================================================================
+# API CLI Wrappers
+# ==============================================================================
+# Pattern: wrap an HTTP API as a shell function using httpie + jq.
+# This is a good model for any API you want fast CLI access to:
+#   - httpie (`http`) gives readable syntax for authenticated POST requests
+#   - jq extracts the relevant text field from the JSON response
+#   - $* forwards all shell arguments as the prompt/input
+#   - The API key is loaded from ~/.zshrc.local (never hardcode keys in tracked files)
+#
+# To add a new API wrapper, copy this pattern:
+#   1. Add `export MY_API_KEY="..."` to ~/.zshrc.local
+#   2. Define a function using `http`, the endpoint, and `jq` to extract output
+#
+# mercury — quick CLI access to Inception Labs (Mercury-2 diffusion LLM)
+# Requires: httpie (brew install httpie), jq
+# Setup:    add `export INCEPTION_API_KEY="sk_..."` to ~/.zshrc.local
+# Usage:    mercury <prompt>
+# Example:  mercury "explain tail call optimization in one sentence"
+mercury() {
+    if [[ -z "$INCEPTION_API_KEY" ]]; then
+        echo "[!] INCEPTION_API_KEY not set — add it to ~/.zshrc.local" >&2
+        return 1
+    fi
+    http POST https://api.inceptionlabs.ai/v1/chat/completions \
+        "Authorization:Bearer $INCEPTION_API_KEY" \
+        model=mercury-2 \
+        messages:="[{\"role\":\"user\",\"content\":\"$*\"}]" \
+        | jq -r '.choices[0].message.content'
+}

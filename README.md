@@ -401,6 +401,9 @@ alias myproject='cd ~/Projects/myproject'
 
 # Override defaults
 export UNICLIP_SERVER="192.168.1.100:38687"
+
+# API keys for CLI wrappers (e.g. the mercury() function)
+export INCEPTION_API_KEY="sk_..."
 ```
 
 **`~/.zshenv.local`** - Sourced from `.zshenv`
