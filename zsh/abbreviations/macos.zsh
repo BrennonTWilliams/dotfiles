@@ -56,8 +56,8 @@ abbr -S screensaver='open -a ScreenSaverEngine'
 # Clipboard
 # ==============================================================================
 abbr -S clipboard='pbpaste'
-abbr -S copy='pbcopy'
 abbr -S clipboard-sync='uniclip ${UNICLIP_SERVER:-localhost:53168}'
+abbr -S pbp='pbpaste >'
 
 # ==============================================================================
 # Quick Look
