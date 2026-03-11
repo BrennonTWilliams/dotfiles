@@ -483,3 +483,46 @@ mercury() {
         messages:="[{\"role\":\"user\",\"content\":\"$*\"}]" \
         | jq -r '.choices[0].message.content'
 }
+
+# lmstudio — quick CLI access to local LM Studio server
+# Requires: httpie (brew install httpie), jq, LM Studio running locally
+# Usage:    lmstudio [-s "system prompt"] [-t|--thinking] <prompt>
+# Examples: lmstudio "explain tail call optimization in one sentence"
+#           lmstudio -s "You are a Go expert" "explain goroutines"
+#           lmstudio -t "explain recursion"  # show thinking tags
+lmstudio() {
+    local host="${LMSTUDIO_HOST:-192.168.1.240:1234}"
+    local model="${LMSTUDIO_MODEL:-qwen3.5-35b-a3b@q6_k_xl}"
+    local system_prompt="You are a helpful assistant."
+    local show_thinking=false
+
+    # Parse flags
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -s)
+                system_prompt="$2"
+                shift 2
+                ;;
+            -t|--thinking)
+                show_thinking=true
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    local response
+    response=$(http POST "http://${host}/v1/chat/completions" \
+        Content-Type:application/json \
+        model="$model" \
+        messages:='[{"role":"system","content":"'"$system_prompt"'"},{"role":"user","content":"'"$*"'"}]' \
+        | jq -r '.choices[0].message.content')
+
+    if [[ "$show_thinking" == true ]]; then
+        echo "$response"
+    else
+        echo "$response" | perl -0777 -pe 's/<think[^>]*>.*?<\/think>//gs' | sed '/^$/d'
+    fi
+}
