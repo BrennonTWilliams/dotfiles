@@ -306,27 +306,16 @@ config.keys = {
     mods = 'CMD|ALT',
     action = wezterm.action.ActivatePaneDirection 'Down',
   },
-  -- Alt+Arrow: mirrors tmux M-Left/Right/Up/Down prefix-free pane switching
-  {
-    key = 'LeftArrow',
-    mods = 'ALT',
-    action = wezterm.action.ActivatePaneDirection 'Left',
-  },
-  {
-    key = 'RightArrow',
-    mods = 'ALT',
-    action = wezterm.action.ActivatePaneDirection 'Right',
-  },
-  {
-    key = 'UpArrow',
-    mods = 'ALT',
-    action = wezterm.action.ActivatePaneDirection 'Up',
-  },
-  {
-    key = 'DownArrow',
-    mods = 'ALT',
-    action = wezterm.action.ActivatePaneDirection 'Down',
-  },
+  -- ALT+Arrow: word navigation (readline ESC+b / ESC+f)
+  -- CMD+ALT+Arrow handles pane switching (see above)
+  { key = 'LeftArrow',  mods = 'ALT', action = wezterm.action.SendString '\x1bb' },
+  { key = 'RightArrow', mods = 'ALT', action = wezterm.action.SendString '\x1bf' },
+
+  -- CMD+Arrow: line navigation and scrollback (macOS Terminal.app conventions)
+  { key = 'LeftArrow',  mods = 'CMD', action = wezterm.action.SendString '\x1bOH' },
+  { key = 'RightArrow', mods = 'CMD', action = wezterm.action.SendString '\x1bOF' },
+  { key = 'UpArrow',    mods = 'CMD', action = wezterm.action.ScrollByPage(-1) },
+  { key = 'DownArrow',  mods = 'CMD', action = wezterm.action.ScrollByPage(1) },
 
   -- Copy mode: Cmd+[ mirrors tmux `prefix + [` to enter vi copy mode
   -- WezTerm copy mode uses vi keys by default (v=select, y=copy, q=quit)
