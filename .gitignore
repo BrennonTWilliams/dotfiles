@@ -150,6 +150,9 @@ node_modules/
 .claude/statsig/
 .claude/settings.local.json
 
+# Claude continuation prompts (session handoff)
+.claude/ll-continue-prompt.md
+
 # Claude documentation artifacts (development only)
 claudedocs/
 
