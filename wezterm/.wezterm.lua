@@ -172,6 +172,14 @@ config.inactive_pane_hsb = {
 -- ============================================
 
 config.keys = {
+  -- Explicit backspace: bypass macOS IME which can intercept Backspace
+  -- and commit composition as a space. SendString injects raw bytes
+  -- directly into the pane, skipping WezTerm's key -> IME pipeline.
+  {
+    key = 'Backspace',
+    mods = '',
+    action = wezterm.action.SendString '\x7f',
+  },
   -- Copy/Paste with Cmd+C/V
   {
     key = 'C',
