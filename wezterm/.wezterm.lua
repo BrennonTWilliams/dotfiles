@@ -2,12 +2,12 @@
 -- WezTerm Terminal Configuration
 -- ==============================================================================
 -- Comprehensive configuration for optimal macOS integration with zsh shell
--- Mirrors Ghostty configuration with Gruvbox theme and proper keybindings
+-- Mirrors tmux configuration with Gruvbox theme and aligned keybindings
 -- ==============================================================================
 
 local wezterm = require 'wezterm'
 
-local config = {}
+local config = wezterm.config_builder()
 
 -- ============================================
 -- Font Configuration
@@ -34,7 +34,7 @@ config.initial_cols = 120
 config.initial_rows = 40
 
 -- Window decorations (native macOS style)
-config.window_decorations = 'RESIZE|MACOS_FORCE_DISABLE_SHADOW'
+config.window_decorations = 'RESIZE'
 
 -- ============================================
 -- Tab Bar Configuration
@@ -75,43 +75,92 @@ config.term = 'xterm-256color'
 config.selection_word_boundary = " \t\n{}[]()\"'`"
 
 -- ============================================
--- Gruvbox Dark Custom Theme
+-- Theme: Auto Dark/Light via macOS Appearance
 -- ============================================
--- Enhanced Gruvbox dark palette with bren theme aesthetic
--- Deep background (#1d2021) for reduced eye strain
+-- Uses wezterm.gui.get_appearance() to detect macOS dark/light mode.
+-- Dark: Gruvbox dark palette (deep #1d2021 bg for reduced eye strain)
+-- Light: Gruvbox light palette (mirrors tmux THEME_MODE=light colors)
 
-config.colors = {
-  foreground = '#ebdbb2',
-  background = '#1d2021',
-  cursor_bg = '#ebdbb2',
-  cursor_fg = '#1d2021',
-  cursor_border = '#ebdbb2',
-  selection_fg = '#ebdbb2',
-  selection_bg = '#458588',
-  scrollbar_thumb = '#504945',
-  split = '#504945',
+local function get_colors()
+  local appearance = wezterm.gui.get_appearance()
+  if appearance:find 'Dark' then
+    return {
+      foreground = '#ebdbb2',
+      background = '#1d2021',
+      cursor_bg = '#ebdbb2',
+      cursor_fg = '#1d2021',
+      cursor_border = '#ebdbb2',
+      selection_fg = '#ebdbb2',
+      selection_bg = '#458588',
+      scrollbar_thumb = '#504945',
+      -- Active pane border matches tmux active border color (#b8bb26 bright green)
+      split = '#b8bb26',
 
-  -- 16-color palette - Full Gruvbox integration
-  ansi = {
-    '#504945', -- black (dark2 - visible for CLI compatibility)
-    '#fb4934', -- red (bright red for readability)
-    '#98971a', -- green (Gruvbox dark green)
-    '#d79921', -- yellow (Gruvbox dark yellow)
-    '#458588', -- blue (darker blue for contrast)
-    '#b16286', -- magenta (Gruvbox dark magenta)
-    '#689d6a', -- cyan (Gruvbox dark cyan)
-    '#a89984', -- white (Gruvbox dark white/light4)
-  },
-  brights = {
-    '#928374', -- bright black (Gruvbox dark2)
-    '#fb4934', -- bright red (enhanced)
-    '#b8bb26', -- bright green (vibrant)
-    '#fabd2f', -- bright yellow (electric)
-    '#83a598', -- bright blue (distinct from regular blue)
-    '#d3869b', -- bright magenta (bren theme)
-    '#8ec07c', -- bright cyan (vibrant)
-    '#ebdbb2', -- bright white (Gruvbox light1)
-  },
+      ansi = {
+        '#504945', -- black (dark2)
+        '#fb4934', -- red
+        '#98971a', -- green
+        '#d79921', -- yellow
+        '#458588', -- blue
+        '#b16286', -- magenta
+        '#689d6a', -- cyan
+        '#a89984', -- white
+      },
+      brights = {
+        '#928374', -- bright black
+        '#fb4934', -- bright red
+        '#b8bb26', -- bright green
+        '#fabd2f', -- bright yellow
+        '#83a598', -- bright blue
+        '#d3869b', -- bright magenta
+        '#8ec07c', -- bright cyan
+        '#ebdbb2', -- bright white
+      },
+    }
+  else
+    -- Gruvbox Light — mirrors tmux light theme values
+    return {
+      foreground = '#3c3836',
+      background = '#f9f5d7',
+      cursor_bg = '#3c3836',
+      cursor_fg = '#f9f5d7',
+      cursor_border = '#3c3836',
+      selection_fg = '#3c3836',
+      selection_bg = '#d5c4a1',
+      scrollbar_thumb = '#bdae93',
+      -- Active pane border: tmux active border in light mode
+      split = '#79740e',
+
+      ansi = {
+        '#3c3836', -- black
+        '#cc241d', -- red
+        '#98971a', -- green
+        '#d79921', -- yellow
+        '#458588', -- blue
+        '#b16286', -- magenta
+        '#689d6a', -- cyan
+        '#7c6f64', -- white
+      },
+      brights = {
+        '#928374', -- bright black
+        '#9d0006', -- bright red
+        '#79740e', -- bright green
+        '#b57614', -- bright yellow
+        '#076678', -- bright blue
+        '#8f3f71', -- bright magenta
+        '#427b58', -- bright cyan
+        '#3c3836', -- bright white
+      },
+    }
+  end
+end
+
+config.colors = get_colors()
+
+-- Dim inactive panes visually (mirrors tmux inactive border dimming)
+config.inactive_pane_hsb = {
+  saturation = 0.8,
+  brightness = 0.7,
 }
 
 -- ============================================
@@ -129,6 +178,13 @@ config.keys = {
     key = 'V',
     mods = 'CMD',
     action = wezterm.action.PasteFrom 'Clipboard',
+  },
+
+  -- Config reload (fixes README claim; WezTerm also auto-reloads on save)
+  {
+    key = 'R',
+    mods = 'CMD',
+    action = wezterm.action.ReloadConfiguration,
   },
 
   -- Tab management
@@ -217,7 +273,7 @@ config.keys = {
     action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
   },
 
-  -- Pane navigation
+  -- Pane navigation: Cmd+Alt+Arrow (original) + Alt+Arrow (tmux M-Arrow muscle memory)
   {
     key = 'LeftArrow',
     mods = 'CMD|ALT',
@@ -237,6 +293,35 @@ config.keys = {
     key = 'DownArrow',
     mods = 'CMD|ALT',
     action = wezterm.action.ActivatePaneDirection 'Down',
+  },
+  -- Alt+Arrow: mirrors tmux M-Left/Right/Up/Down prefix-free pane switching
+  {
+    key = 'LeftArrow',
+    mods = 'ALT',
+    action = wezterm.action.ActivatePaneDirection 'Left',
+  },
+  {
+    key = 'RightArrow',
+    mods = 'ALT',
+    action = wezterm.action.ActivatePaneDirection 'Right',
+  },
+  {
+    key = 'UpArrow',
+    mods = 'ALT',
+    action = wezterm.action.ActivatePaneDirection 'Up',
+  },
+  {
+    key = 'DownArrow',
+    mods = 'ALT',
+    action = wezterm.action.ActivatePaneDirection 'Down',
+  },
+
+  -- Copy mode: Cmd+[ mirrors tmux `prefix + [` to enter vi copy mode
+  -- WezTerm copy mode uses vi keys by default (v=select, y=copy, q=quit)
+  {
+    key = '[',
+    mods = 'CMD',
+    action = wezterm.action.ActivateCopyMode,
   },
 
   -- Font size
@@ -311,11 +396,15 @@ config.front_end = 'WebGpu'
 config.max_fps = 120
 config.enable_scroll_bar = false
 
+-- Align scrollback with tmux (tmux default: 50,000 lines)
+config.scrollback_lines = 50000
+
 -- ============================================
 -- Shell Integration
 -- ============================================
 
 -- Explicit zsh login shell (matches Ghostty command = /bin/zsh)
+-- Note: pane splits inherit cwd automatically when zsh sets OSC 7 in PROMPT
 config.default_prog = { '/bin/zsh', '-l' }
 
 -- ============================================
@@ -326,5 +415,29 @@ config.default_prog = { '/bin/zsh', '-l' }
 config.set_environment_variables = {
   COLORTERM = 'truecolor',
 }
+
+-- ============================================
+-- Status Bar
+-- ============================================
+-- Right status: hostname + current time (mirrors tmux right status)
+-- Left status (tab title) shows workspace name via WezTerm's default tab handling.
+--
+-- NOT PORTED from tmux (limitations):
+--   - CPU/battery: requires polling wezterm.run_child_process — deferred
+--   - Pane synchronization (prefix+S): no native WezTerm equivalent
+--   - Session resurrection: not a terminal emulator feature
+
+wezterm.on('update-right-status', function(window, _pane)
+  local hostname = wezterm.hostname()
+  -- Strip domain suffix for brevity (e.g. "host.local" -> "host")
+  hostname = hostname:gsub('%..*', '')
+
+  local time = wezterm.strftime '%H:%M'
+
+  window:set_right_status(wezterm.format {
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = '  ' .. hostname .. '  ' .. time .. '  ' },
+  })
+end)
 
 return config
