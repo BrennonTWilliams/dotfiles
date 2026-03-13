@@ -198,7 +198,7 @@ config.keys = {
     action = wezterm.action.SpawnTab 'CurrentPaneDomain',
   },
   {
-    key = 'W',
+    key = 'w',
     mods = 'CMD',
     action = wezterm.action.CloseCurrentPane { confirm = false },
   },
@@ -267,7 +267,7 @@ config.keys = {
 
   -- Split panes
   {
-    key = 'D',
+    key = 'd',
     mods = 'CMD',
     action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
   },
