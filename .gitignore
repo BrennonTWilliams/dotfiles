@@ -270,3 +270,9 @@ starship/backups/
 # Allow specific config templates
 !*.example
 !*.template
+
+# little-loops state files
+.auto-manage-state.json
+.parallel-manage-state.json
+.claude/ll-context-state.json
+.claude/ll-sync-state.json

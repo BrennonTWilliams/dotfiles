@@ -49,25 +49,23 @@ config.tab_bar_at_bottom = true
 -- ============================================
 
 -- Block cursor without blinking (matches Ghostty cursor-style = block, cursor-style-blink = false)
-config.default_cursor_style = 'BlinkingBlock'
-config.cursor_blink_rate = 0
-config.cursor_blink_ease_in = 'Constant'
-config.cursor_blink_ease_out = 'Constant'
+config.default_cursor_style = 'SteadyBlock'
 
 -- ============================================
 -- macOS-Specific Settings
 -- ============================================
 
--- Option key behavior (matches Ghostty macos-option-as-alt = true)
-config.send_composed_key_when_left_alt_is_pressed = true
-config.send_composed_key_when_right_alt_is_pressed = true
+-- Option key acts as Alt/Meta (matches Ghostty macos-option-as-alt = true)
+-- false = send ESC sequences; true = send composed characters (accents) — we want ESC
+config.send_composed_key_when_left_alt_is_pressed = false
+config.send_composed_key_when_right_alt_is_pressed = false
 
 -- ============================================
 -- Terminal Settings
 -- ============================================
 
 -- Terminal type (matches Ghostty term = xterm-256color)
-config.term = 'wezterm'
+config.term = 'xterm-256color'
 
 -- ============================================
 -- Selection and Clipboard
@@ -142,6 +140,11 @@ config.keys = {
   {
     key = 'W',
     mods = 'CMD',
+    action = wezterm.action.CloseCurrentPane { confirm = true },
+  },
+  {
+    key = 'W',
+    mods = 'CMD|SHIFT',
     action = wezterm.action.CloseCurrentTab { confirm = true },
   },
   {
@@ -312,7 +315,16 @@ config.enable_scroll_bar = false
 -- Shell Integration
 -- ============================================
 
--- Default shell is zsh (system default)
--- WezTerm automatically uses the user's default shell
+-- Explicit zsh login shell (matches Ghostty command = /bin/zsh)
+config.default_prog = { '/bin/zsh', '-l' }
+
+-- ============================================
+-- Environment Variables
+-- ============================================
+
+-- Explicit truecolor hint (matches Ghostty env = COLORTERM=truecolor)
+config.set_environment_variables = {
+  COLORTERM = 'truecolor',
+}
 
 return config
