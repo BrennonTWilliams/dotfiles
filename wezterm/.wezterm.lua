@@ -60,6 +60,10 @@ config.default_cursor_style = 'SteadyBlock'
 config.send_composed_key_when_left_alt_is_pressed = false
 config.send_composed_key_when_right_alt_is_pressed = false
 
+-- Disable macOS IME: WezTerm 20240203+ defaults use_ime=true which causes
+-- backspace to commit IME composition as a space character instead of deleting.
+config.use_ime = false
+
 -- ============================================
 -- Terminal Settings
 -- ============================================
@@ -196,12 +200,12 @@ config.keys = {
   {
     key = 'W',
     mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = true },
+    action = wezterm.action.CloseCurrentPane { confirm = false },
   },
   {
     key = 'W',
     mods = 'CMD|SHIFT',
-    action = wezterm.action.CloseCurrentTab { confirm = true },
+    action = wezterm.action.EmitEvent 'close-window',
   },
   {
     key = 'Tab',
@@ -438,6 +442,10 @@ wezterm.on('update-right-status', function(window, _pane)
     { Attribute = { Intensity = 'Bold' } },
     { Text = '  ' .. hostname .. '  ' .. time .. '  ' },
   })
+end)
+
+wezterm.on('close-window', function(window)
+  window:close()
 end)
 
 return config
