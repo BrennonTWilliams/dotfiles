@@ -1,0 +1,47 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BrennonTWilliams/little-loops/main/config-schema.json",
+  "project": {
+    "name": "dotfiles",
+    "src_dir": ".",
+    "test_cmd": "tests/run_all_tests.sh",
+    "lint_cmd": "shellcheck",
+    "type_cmd": null,
+    "format_cmd": "shfmt -w ."
+  },
+  "issues": {
+    "base_dir": ".issues",
+    "categories": {
+      "bugs": { "prefix": "BUG", "dir": "bugs", "action": "fix" },
+      "features": { "prefix": "FEAT", "dir": "features", "action": "implement" },
+      "enhancements": { "prefix": "ENH", "dir": "enhancements", "action": "improve" }
+    }
+  },
+  "scan": {
+    "focus_dirs": ["scripts/", "zsh/", "bash/", "neovim/"],
+    "exclude_patterns": [
+      "**/node_modules/**",
+      "**/__pycache__/**",
+      "**/.git/**",
+      "**/vendor/**",
+      "**/dist/**",
+      "**/build/**"
+    ]
+  },
+  "parallel": {
+    "worktree_copy_files": [".env"]
+  },
+  "context_monitor": {
+    "enabled": true
+  },
+  "sync": {
+    "enabled": true
+  },
+  "commands": {
+    "confidence_gate": {
+      "enabled": true
+    }
+  },
+  "sprints": {
+    "default_max_workers": 2
+  }
+}
