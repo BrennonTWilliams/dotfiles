@@ -172,6 +172,12 @@ config.inactive_pane_hsb = {
 -- ============================================
 
 config.keys = {
+  -- Shift+Enter: send newline (0x0a) so apps can distinguish it from plain Enter (0x0d)
+  {
+    key = 'Return',
+    mods = 'SHIFT',
+    action = wezterm.action.SendString '\n',
+  },
   -- Explicit backspace: bypass macOS IME which can intercept Backspace
   -- and commit composition as a space. SendString injects raw bytes
   -- directly into the pane, skipping WezTerm's key -> IME pipeline.
