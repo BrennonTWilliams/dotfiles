@@ -63,9 +63,13 @@ config.default_cursor_style = 'SteadyBlock'
 config.send_composed_key_when_left_alt_is_pressed = false
 config.send_composed_key_when_right_alt_is_pressed = false
 
--- Disable macOS IME: WezTerm 20240203+ defaults use_ime=true which causes
--- backspace to commit IME composition as a space character instead of deleting.
-config.use_ime = false
+-- IME enabled: required for Apple Dictation (NSTextInputClient channel).
+-- NOTE: Dictation still silently fails due to a WezTerm upstream bug — selectedRange()
+-- returns NSNotFound instead of NSRange(0,0). Tracked in WezTerm PR #7453/#7536.
+-- When that fix lands in a stable release, Dictation will work without further changes.
+-- Backspace is explicitly bound below (SendString '\x7f') to bypass the
+-- IME composition pipeline and prevent backspace-commits-composition regressions.
+config.use_ime = true
 
 -- ============================================
 -- Terminal Settings
