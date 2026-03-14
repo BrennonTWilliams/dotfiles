@@ -36,6 +36,9 @@ config.initial_rows = 40
 -- Window decorations (native macOS style)
 config.window_decorations = 'RESIZE'
 
+-- Confirm before closing a window (matches Ghostty confirm-close-surface behavior)
+config.window_close_confirmation = 'AlwaysPrompt'
+
 -- ============================================
 -- Tab Bar Configuration
 -- ============================================
@@ -70,6 +73,12 @@ config.use_ime = false
 
 -- Terminal type (matches Ghostty term = xterm-256color)
 config.term = 'xterm-256color'
+
+-- Kitty keyboard protocol: extended key encoding for Neovim and modern terminal apps
+-- Allows apps to distinguish Esc vs Ctrl+[, Tab vs Ctrl+I, Enter vs Ctrl+M, etc.
+-- Requires apps that opt in (Neovim 0.10+); falls back gracefully for others.
+-- Disable if any tool shows unexpected key output.
+config.enable_kitty_keyboard = true
 
 -- ============================================
 -- Selection and Clipboard
@@ -205,6 +214,21 @@ config.keys = {
     action = wezterm.action.ReloadConfiguration,
   },
 
+  -- CMD+SHIFT+R: rename current tab (mirrors tmux prefix+,)
+  {
+    key = 'R',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.PromptInputLine {
+      description = 'Rename tab:',
+      action = wezterm.action_callback(function(window, _, line)
+        if line then window:active_tab():set_title(line) end
+      end),
+    },
+  },
+
+  -- CMD+Enter: toggle fullscreen (mirrors Ghostty default)
+  { key = 'Return', mods = 'CMD', action = wezterm.action.ToggleFullScreen },
+
   -- Tab management
   {
     key = 'T',
@@ -214,7 +238,7 @@ config.keys = {
   {
     key = 'w',
     mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = false },
+    action = wezterm.action.CloseCurrentPane { confirm = true },
   },
   {
     key = 'W',
@@ -291,6 +315,9 @@ config.keys = {
     action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
   },
 
+  -- CMD+SHIFT+Z: toggle pane zoom (mirrors tmux prefix+z)
+  { key = 'z', mods = 'CMD|SHIFT', action = wezterm.action.TogglePaneZoomState },
+
   -- Pane navigation: Cmd+Alt+Arrow (original) + Alt+Arrow (tmux M-Arrow muscle memory)
   {
     key = 'LeftArrow',
@@ -312,6 +339,12 @@ config.keys = {
     mods = 'CMD|ALT',
     action = wezterm.action.ActivatePaneDirection 'Down',
   },
+  -- CMD+SHIFT+Arrow: resize current pane (5-cell increments)
+  { key = 'UpArrow',    mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Up',    5 } },
+  { key = 'DownArrow',  mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Down',  5 } },
+  { key = 'LeftArrow',  mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Left',  5 } },
+  { key = 'RightArrow', mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Right', 5 } },
+
   -- ALT+Arrow: word navigation (readline ESC+b / ESC+f)
   -- CMD+ALT+Arrow handles pane switching (see above)
   { key = 'LeftArrow',  mods = 'ALT', action = wezterm.action.SendString '\x1bb' },
@@ -322,6 +355,10 @@ config.keys = {
   { key = 'RightArrow', mods = 'CMD', action = wezterm.action.SendString '\x1bOF' },
   { key = 'UpArrow',    mods = 'CMD', action = wezterm.action.ScrollByPage(-1) },
   { key = 'DownArrow',  mods = 'CMD', action = wezterm.action.ScrollByPage(1) },
+
+  -- CMD+Backspace: delete to beginning of line (macOS convention, mirrors Ghostty default)
+  -- Sends \x15 (Ctrl+U / unix-line-discard) which readline/zsh interpret as kill-line.
+  { key = 'Backspace', mods = 'CMD', action = wezterm.action.SendString '\x15' },
 
   -- Copy mode: Cmd+[ mirrors tmux `prefix + [` to enter vi copy mode
   -- WezTerm copy mode uses vi keys by default (v=select, y=copy, q=quit)
@@ -361,6 +398,13 @@ config.keys = {
     mods = 'CMD',
     action = wezterm.action.Search 'CurrentSelectionOrEmptyString',
   },
+
+  -- CMD+Y: Quick Select — highlights URLs/hashes/paths for instant copy (WezTerm-native)
+  -- Y for "yank"; type prefix of highlighted text to copy without entering copy mode
+  { key = 'y', mods = 'CMD', action = wezterm.action.QuickSelect },
+
+  -- CMD+P: command palette — fuzzy search tabs, panes, workspaces, commands
+  { key = 'p', mods = 'CMD', action = wezterm.action.ActivateCommandPalette },
 }
 
 -- ============================================
@@ -433,6 +477,17 @@ config.set_environment_variables = {
 --   - CPU/battery: requires polling wezterm.run_child_process — deferred
 --   - Pane synchronization (prefix+S): no native WezTerm equivalent
 --   - Session resurrection: not a terminal emulator feature
+
+-- Left status: active workspace name (mirrors tmux session name in status-left)
+-- Default workspace is 'default'; named workspaces surface here when set via palette
+wezterm.on('update-left-status', function(window, _)
+  local workspace = window:active_workspace()
+  window:set_left_status(wezterm.format {
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = '  ' .. workspace .. '  ' },
+    { Attribute = { Intensity = 'Normal' } },
+  })
+end)
 
 wezterm.on('update-right-status', function(window, _pane)
   local hostname = wezterm.hostname()
