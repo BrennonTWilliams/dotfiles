@@ -412,12 +412,15 @@ config.keys = {
   { key = 'p', mods = 'CMD', action = wezterm.action.ActivateCommandPalette },
 
   -- CMD+SHIFT+S: manually save current workspace state (resurrect.wezterm)
+  -- Must call write_current_state in addition to save_state so that
+  -- resurrect_on_gui_startup knows which workspace to restore on next launch.
   {
     key = 'S',
     mods = 'CMD|SHIFT',
     action = wezterm.action_callback(function(win, _)
-      local state = resurrect.workspace_state.get_workspace_state()
-      resurrect.state_manager.save_state(state)
+      local workspace = wezterm.mux.get_active_workspace()
+      resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
+      resurrect.state_manager.write_current_state(workspace, 'workspace')
     end),
   },
   -- CMD+SHIFT+L: fuzzy-pick a saved session to restore (resurrect.wezterm)
