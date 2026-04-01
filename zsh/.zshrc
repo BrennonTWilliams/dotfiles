@@ -213,7 +213,14 @@ esac
 
 # Set up fzf key bindings and fuzzy completion
 if command -v fzf >/dev/null 2>&1; then
-    source <(fzf --zsh)
+    if fzf --zsh &>/dev/null; then
+        source <(fzf --zsh)
+    else
+        # Older fzf versions (< 0.48.0) use file-based integration
+        local fzf_share="${FZF_BASE:-/usr/share/doc/fzf/examples}"
+        [[ -f "$fzf_share/key-bindings.zsh" ]] && source "$fzf_share/key-bindings.zsh"
+        [[ -f "$fzf_share/completion.zsh" ]] && source "$fzf_share/completion.zsh"
+    fi
 fi
 
 # >>> zoxide - smarter cd command >>>
@@ -450,7 +457,9 @@ eval "$(starship init zsh)"
 # ==============================================================================
 # Source machine-specific configuration last to allow overriding any setting
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-export PATH="$PATH:$(go env GOPATH)/bin"
+if command -v go >/dev/null 2>&1; then
+    export PATH="$PATH:$(go env GOPATH)/bin"
+fi
 export NODE_OPTIONS="--max-old-space-size=8192"
 
 # ==============================================================================

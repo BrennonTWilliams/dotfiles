@@ -48,5 +48,7 @@ fi
 if [ -f "$HOME/.zprofile.local" ]; then
     source "$HOME/.zprofile.local"
 fi
-# Added by Obsidian
-export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+# Obsidian CLI (macOS only)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
+fi
