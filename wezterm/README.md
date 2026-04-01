@@ -16,6 +16,7 @@ WezTerm terminal configuration matching Ghostty setup with Gruvbox dark custom t
 - Kitty keyboard protocol (extended key encoding for Neovim)
 - Left status bar showing active workspace name
 - Right status bar showing hostname and time
+- Session persistence via resurrect.wezterm (auto-save every 5 minutes, restore on startup)
 
 ## Keybindings
 
@@ -70,6 +71,15 @@ WezTerm terminal configuration matching Ghostty setup with Gruvbox dark custom t
 | `CMD+P` | Command palette (fuzzy search tabs/panes/commands) |
 | `CMD+=` / `CMD+-` / `CMD+0` | Increase / decrease / reset font size |
 
+### Session Persistence
+
+| Key | Action |
+|-----|--------|
+| `CMD+SHIFT+S` | Manually save current workspace state |
+| `CMD+SHIFT+L` | Fuzzy-pick a saved session to restore |
+
+Sessions are auto-saved every 5 minutes and restored automatically on the next WezTerm launch. The plugin (`resurrect.wezterm`) is downloaded from GitHub on first use and cached in `~/.local/share/wezterm/plugins/`.
+
 ## Installation
 
 ```bash
@@ -103,3 +113,5 @@ After stowing, verify:
 - CMD+P opens the command palette fuzzy finder
 - Left side of tab bar shows the workspace name ('default' by default)
 - In Neovim: Ctrl+[ and Esc are distinguishable (kitty keyboard protocol)
+- Open 3+ tabs in different directories, wait 5 minutes (or CMD+SHIFT+S), quit, relaunch — tabs reopen in their saved directories
+- CMD+SHIFT+L shows a fuzzy picker of all saved sessions

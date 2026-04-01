@@ -6,6 +6,7 @@
 -- ==============================================================================
 
 local wezterm = require 'wezterm'
+local resurrect = wezterm.plugin.require 'https://github.com/MLFlexer/resurrect.wezterm'
 
 local config = wezterm.config_builder()
 
@@ -409,6 +410,34 @@ config.keys = {
 
   -- CMD+P: command palette — fuzzy search tabs, panes, workspaces, commands
   { key = 'p', mods = 'CMD', action = wezterm.action.ActivateCommandPalette },
+
+  -- CMD+SHIFT+S: manually save current workspace state (resurrect.wezterm)
+  {
+    key = 'S',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action_callback(function(win, _)
+      local state = resurrect.workspace_state.get_workspace_state()
+      resurrect.state_manager.save_state(state)
+    end),
+  },
+  -- CMD+SHIFT+L: fuzzy-pick a saved session to restore (resurrect.wezterm)
+  {
+    key = 'L',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action_callback(function(win, pane)
+      resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, _)
+        local session_type = string.match(id, '([a-z]+)/.+')
+        local state = resurrect.state_manager.load_state(id, session_type)
+        if session_type == 'workspace' then
+          resurrect.workspace_state.restore_workspace(state, { window = win:mux_window() })
+        elseif session_type == 'window' then
+          resurrect.window_state.restore_window(win:mux_window(), state)
+        elseif session_type == 'tab' then
+          resurrect.tab_state.restore_tab(win:active_tab(), state)
+        end
+      end)
+    end),
+  },
 }
 
 -- ============================================
@@ -470,6 +499,25 @@ config.default_prog = { '/bin/zsh', '-l' }
 config.set_environment_variables = {
   COLORTERM = 'truecolor',
 }
+
+-- ============================================
+-- Session Persistence
+-- ============================================
+-- resurrect.wezterm: auto-saves workspace/tab/pane state every 5 minutes.
+-- On next launch, gui-startup restores the last saved session automatically.
+-- Plugin is cloned to ~/.local/share/wezterm/plugins/ on first use.
+-- State files (JSON) live in the plugin's data directory within that path.
+
+-- Auto-save every 5 minutes
+resurrect.state_manager.periodic_save {
+  interval_seconds = 300,
+  save_workspaces = true,
+  save_windows = true,
+  save_tabs = true,
+}
+
+-- Auto-restore on startup
+wezterm.on('gui-startup', resurrect.state_manager.resurrect_on_gui_startup)
 
 -- ============================================
 -- Status Bar
