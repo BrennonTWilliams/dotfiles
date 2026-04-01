@@ -22,3 +22,6 @@ abbr -S llp='ll-parallel'
 abbr -S g='glow'
 abbr -S npmrd='npm run dev'
 abbr -S npmr='npm run dev'
+
+# Terminal repair
+abbr -S kkp='printf "\x1b[<u"'

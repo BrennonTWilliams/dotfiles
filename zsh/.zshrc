@@ -491,8 +491,8 @@ mercury() {
 #           lmstudio -s "You are a Go expert" "explain goroutines"
 #           lmstudio -t "explain recursion"  # show thinking tags
 lmstudio() {
-    local host="${LMSTUDIO_HOST:-192.168.1.240:1234}"
-    local model="${LMSTUDIO_MODEL:-qwen3.5-35b-a3b@q6_k_xl}"
+    local host="${LMSTUDIO_HOST:-192.168.1.238:1234}"
+    local model="${LMSTUDIO_MODEL:-qwen/qwen3.5-9b}"
     local system_prompt="You are a helpful assistant."
     local show_thinking=false
 
