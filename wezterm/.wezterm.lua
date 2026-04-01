@@ -144,7 +144,7 @@ local function get_colors()
       cursor_fg = '#f9f5d7',
       cursor_border = '#3c3836',
       selection_fg = '#3c3836',
-      selection_bg = '#d5c4a1',
+      selection_bg = '#bdae93',
       scrollbar_thumb = '#bdae93',
       -- Active pane border: tmux active border in light mode
       split = '#79740e',
@@ -152,21 +152,21 @@ local function get_colors()
       ansi = {
         '#3c3836', -- black
         '#cc241d', -- red
-        '#98971a', -- green
-        '#d79921', -- yellow
-        '#458588', -- blue
-        '#b16286', -- magenta
-        '#689d6a', -- cyan
-        '#7c6f64', -- white
+        '#6f6908', -- green   (was #79740e at 4.41:1 — just below AA; #6f6908 → 5.15:1)
+        '#886000', -- yellow  (5.14:1 — dark ochre; Gruvbox palette yellows all fail AA on cream bg)
+        '#076678', -- blue    (was #458588 neutral; faded variant has ~6.0:1 vs ~3.8:1)
+        '#8f3f71', -- magenta (was #b16286 neutral; faded variant has ~6.1:1 vs ~3.8:1)
+        '#3d7253', -- cyan    (was #427b58 at 4.53:1 — too close to floor; #3d7253 → 5.11:1)
+        '#5a524a', -- white   (was #7c6f64; darkened 1 stop to ~6.5:1 vs ~4.4:1)
       },
       brights = {
-        '#928374', -- bright black
+        '#796c61', -- bright black  (was #7c6f64 at 4.42:1 — just below AA; #796c61 → 4.62:1)
         '#9d0006', -- bright red
-        '#79740e', -- bright green
-        '#b57614', -- bright yellow
+        '#6f6908', -- bright green  (matches ansi green; 5.15:1)
+        '#9a6208', -- bright yellow  (was #b57614 at 3.43:1 — AA fail; #9a6208 → 4.63:1)
         '#076678', -- bright blue
         '#8f3f71', -- bright magenta
-        '#427b58', -- bright cyan
+        '#3d7253', -- bright cyan
         '#3c3836', -- bright white
       },
     }
