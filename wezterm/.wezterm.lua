@@ -489,6 +489,7 @@ config.keys = {
     action = wezterm.action_callback(function(win, pane)
       resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, _)
         local session_type = string.match(id, '([a-z]+)/.+')
+        if not session_type then return end
         local state = resurrect.state_manager.load_state(id, session_type)
         if not state then return end
         if session_type == 'workspace' then
