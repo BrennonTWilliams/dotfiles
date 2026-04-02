@@ -46,7 +46,7 @@ config.window_close_confirmation = 'AlwaysPrompt'
 
 -- Auto-hide tab bar when only one tab (matches Ghostty window-show-tab-bar = auto)
 config.hide_tab_bar_if_only_one_tab = true
-config.tab_bar_at_bottom = true
+config.tab_bar_at_bottom = false
 -- Retro (flat) tab bar unlocks full tab_bar color control via config.colors.tab_bar
 config.use_fancy_tab_bar = false
 -- Retro tabs default to 16 chars; 128 gives enough room for long process names
