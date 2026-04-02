@@ -101,6 +101,7 @@ config.enable_kitty_keyboard = true
 -- ============================================
 
 -- Copy on select behavior (matches Ghostty copy-on-select = true)
+config.copy_on_select = true
 config.selection_word_boundary = " \t\n{}[]()\"'`"
 
 -- ============================================
