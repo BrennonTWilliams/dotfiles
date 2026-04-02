@@ -51,6 +51,11 @@ config.tab_bar_at_bottom = false
 config.use_fancy_tab_bar = false
 -- Retro tabs default to 16 chars; 128 gives enough room for long process names
 config.tab_max_width = 256
+-- Tab bar font size (independent of terminal body font) — controls tab height
+config.window_frame = {
+  font      = wezterm.font('IosevkaTerm Nerd Font'),
+  font_size = 20.0,
+}
 
 -- ============================================
 -- Cursor Configuration
@@ -734,20 +739,23 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
   local colors = tab_seg_colors()
 
   -- Resolve label: user-set title wins; otherwise derive from process / cwd
-  local icon, label
+  local icon, label, is_path
   local user_title = tab.tab_title
   if user_title and user_title ~= '' then
-    icon  = DEFAULT_ICON
-    label = user_title
+    icon    = DEFAULT_ICON
+    label   = user_title
+    is_path = false
   else
     local proc_name = pane.foreground_process_name or ''
     local proc      = proc_name:match('([^/\\]+)$') or ''
     if proc == '' then proc = pane.title end
     icon = PROC_ICONS[proc] or DEFAULT_ICON
     if SHELL_PROCS[proc] then
-      label = short_path(pane.current_working_dir)
+      label   = short_path(pane.current_working_dir)
+      is_path = true
     else
-      label = proc
+      label   = proc
+      is_path = false
     end
   end
 
@@ -761,10 +769,17 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     if p.has_unseen_output then has_activity = true; break end
   end
 
-  -- Truncate label to fit within max_width
+  -- Truncate label to fit within max_width.
+  -- Path labels clip from the left (…/dirname) so the directory name stays visible.
+  -- Process and user-set labels clip from the right as usual.
   local reserved = 4 + #pane_suffix + (has_activity and 2 or 0)
   if #label > max_width - reserved then
-    label = wezterm.truncate_right(label, max_width - reserved - 1) .. '\u{2026}'
+    local avail = max_width - reserved - 1
+    if is_path then
+      label = '\u{2026}' .. wezterm.truncate_left(label, avail)
+    else
+      label = wezterm.truncate_right(label, avail) .. '\u{2026}'
+    end
   end
 
   -- Build colored segments
