@@ -33,13 +33,13 @@ Having the directory always visible in the tab label gives consistent spatial or
 ## Integration Map
 
 ### Files to Modify
-- `wezterm/.config/wezterm/tab.lua` or `wezterm/.config/wezterm/tabs.lua` - tab title formatting and process-to-glyph logic
+- `wezterm/.wezterm.lua` — single-file config; tab title logic lives in the `format-tab-title` event handler at line 741
 
 ### Dependent Files (Callers/Importers)
-- TBD - use grep to find references: `grep -r "tab_title\|format_tab\|tab_bar" wezterm/`
+- None — `format-tab-title` is a WezTerm event callback, not called by other Lua code in the repo
 
 ### Similar Patterns
-- TBD - search for existing process-to-glyph mappings: `grep -r "process_name\|foreground_process" wezterm/`
+- `wezterm/.wezterm.lua:762–763` — the `SHELL_PROCS` branch already uses `short_path(pane.current_working_dir)` for the idle-shell case; the fix simply applies this same path to the non-shell branch
 
 ### Tests
 - N/A - WezTerm Lua config has no automated test suite
@@ -50,14 +50,25 @@ Having the directory always visible in the tab label gives consistent spatial or
 ### Configuration
 - N/A
 
+### Codebase Research Findings
+
+_Added by `/ll:refine-issue` — based on codebase analysis:_
+
+- `wezterm/.wezterm.lua:622–704` — `PROC_ICONS` table already maps 40+ processes to Nerd Font glyphs (nvim, git, python, claude, docker, etc.) — no new mappings needed
+- `wezterm/.wezterm.lua:705` — `DEFAULT_ICON` fallback: `\u{f489}` (nf-fa-terminal)
+- `wezterm/.wezterm.lua:707` — `SHELL_PROCS` table `{ zsh, bash, fish, sh, claude }` — becomes dead code after the fix since the label will always be the directory regardless of process
+- `wezterm/.wezterm.lua:710–719` — `short_path(cwd_uri)` function already exists; shortens paths to `~/a/b` form (last 2 components); used in the idle-shell case today
+- `wezterm/.wezterm.lua:741–821` — `format-tab-title` event handler: full tab label rendering pipeline
+- `wezterm/.wezterm.lua:746–768` — label resolution block: the bug is isolated to lines 765–767 (the `else` branch sets `label = proc` instead of `short_path(...)`)
+- `wezterm/.wezterm.lua:782–799` — truncation logic: already handles `is_path = true` (clips from left with `…/dirname`) vs `is_path = false` (clips from right); setting `is_path = true` in the fix gets correct truncation behavior for free
+
 ## Implementation Steps
 
-1. Locate the tab title formatting logic in `wezterm/.config/wezterm/` (likely in `tab.lua` or `tabs.lua`)
-2. Identify where the label text is set based on process info
-3. Decouple process detection from label text — label should always use the directory path
-4. Route process detection to the icon/glyph selection logic only
-5. Map common processes (nvim, git, python, claude, etc.) to appropriate Nerd Font glyphs
-6. Test with several running processes to confirm label stays as directory and icon updates
+1. In `wezterm/.wezterm.lua` at line 765, change `label = proc` → `label = short_path(pane.current_working_dir)` and on line 766 change `is_path = false` → `is_path = true`
+2. Remove (or comment out) the `SHELL_PROCS` table at line 707 and the `if SHELL_PROCS[proc] then ... else` conditional at lines 762–768, collapsing to a single assignment — both branches now have the same label logic
+3. Leave the `icon = PROC_ICONS[proc] or DEFAULT_ICON` assignment at line 761 untouched — icon selection already works correctly
+4. Optionally remove `claude` from `PROC_ICONS` if it was only there to make claude behave like a shell proc (it is genuinely in PROC_ICONS for its wand icon, so keep it)
+5. Load WezTerm and open tabs running `nvim`, `git log`, `python3` — verify label stays as the directory while the icon changes per process
 
 ## Scope Boundaries
 
@@ -90,5 +101,6 @@ _No documents linked. Run `/ll:normalize-issues` to discover and link relevant d
 **Open** | Created: 2026-04-02 | Priority: P3
 
 ## Session Log
+- `/ll:refine-issue` - 2026-04-02T22:42:57 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/87e55059-d7ad-48b4-a4c8-deff5ec1c337.jsonl`
 - `/ll:format-issue` - 2026-04-02T22:20:58 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/26af31df-ef62-49ac-85fc-be5aa87d9c17.jsonl`
 - `/ll:capture-issue` - 2026-04-02T00:00:00Z - `~/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/4abda147-9d9a-47dc-888a-fc02a8e5726e.jsonl`
