@@ -1,8 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/BrennonTWilliams/little-loops/main/config-schema.json",
   "project": {
-    "name": "dotfiles",
-    "src_dir": "src/"
+    "name": "dotfiles"
   },
   "issues": {
     "base_dir": ".issues"
