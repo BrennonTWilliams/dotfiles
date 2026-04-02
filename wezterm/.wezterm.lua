@@ -780,7 +780,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
   -- Path labels clip from the left (…/dirname) so the directory name stays visible.
   -- Process and user-set labels clip from the right as usual.
   local reserved = 4 + #pane_suffix + (has_activity and 2 or 0)
-  if #label > max_width - reserved then
+  if wezterm.column_width(label) > max_width - reserved then
     local avail = max_width - reserved - 1
     if is_path then
       label = '\u{2026}' .. wezterm.truncate_left(label, avail)
@@ -791,8 +791,9 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
 
   -- Pad label to fill the full max_width allocation so tabs expand to use available width
   local avail = max_width - reserved
-  if #label < avail then
-    label = label .. string.rep(' ', avail - #label)
+  local lw = wezterm.column_width(label)
+  if lw < avail then
+    label = label .. string.rep(' ', avail - lw)
   end
 
   -- Build colored segments
