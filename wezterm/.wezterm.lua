@@ -49,12 +49,14 @@ config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = false
 -- Retro (flat) tab bar unlocks full tab_bar color control via config.colors.tab_bar
 config.use_fancy_tab_bar = false
+-- Maximum font size for tab bar — caps bar height regardless of display size
+local MAX_TAB_BAR_FONT_SIZE = 24.0
 -- Retro tabs default to 16 chars; 128 gives enough room for long process names
 config.tab_max_width = 256
 -- Tab bar font size (independent of terminal body font) — controls tab height
 config.window_frame = {
   font      = wezterm.font('IosevkaTerm Nerd Font'),
-  font_size = 20.0,
+  font_size = MAX_TAB_BAR_FONT_SIZE,
 }
 
 -- ============================================
@@ -780,6 +782,12 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     else
       label = wezterm.truncate_right(label, avail) .. '\u{2026}'
     end
+  end
+
+  -- Pad label to fill the full max_width allocation so tabs expand to use available width
+  local avail = max_width - reserved
+  if #label < avail then
+    label = label .. string.rep(' ', avail - #label)
   end
 
   -- Build colored segments
