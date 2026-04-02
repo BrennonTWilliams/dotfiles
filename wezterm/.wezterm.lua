@@ -609,19 +609,184 @@ wezterm.on('update-right-status', function(window, _pane)
   })
 end)
 
--- Tab title: terminal glyph (nf-fa-terminal) + 1-based index + foreground process name
-wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
-  local pane = tab.active_pane
-  local proc_name = pane.foreground_process_name or ''
-  local proc = proc_name:match('([^/\\]+)$') or pane.title
-  if proc == '' then proc = pane.title end
-  local index = tab.tab_index + 1
-  local title = '  ' .. index .. ': ' .. proc .. ' '
-  -- Truncate with ellipsis if the composed title exceeds the available width
-  if #title > max_width then
-    title = wezterm.truncate_right(title, max_width - 1) .. ''
+-- Per-process Nerd Font icon map (IosevkaTerm Nerd Font code points)
+local PROC_ICONS = {
+  -- Editors
+  nvim    = '\u{e62b}',  -- nf-custom-vim
+  vim     = '\u{e62b}',
+  vi      = '\u{e62b}',
+
+  -- AI tools
+  claude  = '\u{f0d0}',  -- nf-fa-magic (wand)
+
+  -- Version control
+  git     = '\u{e702}',  -- nf-dev-git
+  lazygit = '\u{e702}',  -- nf-dev-git (lazygit is a git TUI)
+  gh      = '\u{e709}',  -- nf-dev-github
+
+  -- Python
+  python  = '\u{e73c}',  -- nf-dev-python
+  python3 = '\u{e73c}',
+
+  -- JavaScript / Node ecosystem
+  node    = '\u{e718}',  -- nf-dev-nodejs_small
+  npm     = '\u{e718}',
+  yarn    = '\u{e718}',
+  pnpm    = '\u{e718}',
+  bun     = '\u{e718}',
+  deno    = '\u{e718}',
+
+  -- Go
+  go      = '\u{e724}',  -- nf-dev-go
+
+  -- Java / JVM
+  java    = '\u{e738}',  -- nf-dev-java
+  javac   = '\u{e738}',
+  mvn     = '\u{e738}',
+  gradle  = '\u{e738}',
+
+  -- Rust
+  cargo   = '\u{e7a8}',  -- nf-dev-rust
+  rust    = '\u{e7a8}',
+
+  -- Ruby
+  ruby    = '\u{e739}',  -- nf-dev-ruby
+
+  -- Lua
+  lua     = '\u{e620}',  -- nf-dev-lua
+
+  -- Systems / build
+  make    = '\u{e779}',  -- nf-dev-gnu
+  ssh     = '\u{f233}',  -- nf-fa-server
+
+  -- Containers / devops
+  docker  = '\u{f308}',  -- nf-linux-docker
+  kubectl = '\u{f308}',  -- nf-linux-docker (K8s is container-adjacent)
+  k9s     = '\u{f308}',
+  helm    = '\u{f308}',
+  terraform = '\u{f0c2}',  -- nf-fa-cloud
+
+  -- Databases
+  psql    = '\u{f1c0}',  -- nf-fa-database
+  mysql   = '\u{f1c0}',
+  sqlite3 = '\u{f1c0}',
+  mongosh = '\u{f1c0}',
+  ['redis-cli'] = '\u{f1c0}',
+
+  -- Network tools
+  curl    = '\u{f0ac}',  -- nf-fa-globe
+  wget    = '\u{f0ac}',
+
+  -- Search / fuzzy find
+  fzf     = '\u{f002}',  -- nf-fa-search
+  rg      = '\u{f002}',
+
+  -- System monitors
+  htop    = '\u{f080}',  -- nf-fa-bar-chart
+  top     = '\u{f080}',
+  btop    = '\u{f080}',
+
+  -- Pagers / docs
+  man     = '\u{f02d}',  -- nf-fa-book
+  less    = '\u{f02d}',
+
+  -- Package managers (non-Node)
+  brew    = '\u{f0fc}',  -- nf-fa-beer
+}
+local DEFAULT_ICON = '\u{f489}'  -- nf-fa-terminal (fallback)
+-- Processes considered "idle shell" — show CWD instead of process name
+local SHELL_PROCS = { zsh = true, bash = true, fish = true, sh = true }
+
+-- Shorten a cwd Uri to a compact display path (~/a/b form, last 2 components)
+local function short_path(cwd_uri)
+  if not cwd_uri then return '~' end
+  local path = cwd_uri.file_path or ''
+  if path == '' then return '~' end
+  local home = os.getenv('HOME') or ''
+  if home ~= '' and path:sub(1, #home) == home then
+    path = '~' .. path:sub(#home + 1)
   end
-  return { { Text = title } }
+  return path:match('[^/]+/[^/]+$') or path:match('[^/]+$') or path
+end
+
+-- Theme-aware colors for tab label segments
+local function tab_seg_colors()
+  if wezterm.gui.get_appearance():find 'Dark' then
+    return {
+      icon     = '#83a598',  -- muted bright-blue
+      label    = '#ebdbb2',  -- cream (primary)
+      meta     = '#928374',  -- dim gray (pane count)
+      activity = '#fabd2f',  -- bright yellow (activity dot)
+    }
+  else
+    return {
+      icon     = '#076678',  -- deep teal
+      label    = '#3c3836',  -- dark (primary)
+      meta     = '#7c6f64',  -- medium gray
+      activity = '#b57614',  -- amber
+    }
+  end
+end
+
+-- Tab title: icon + label (cwd when idle, process when busy) + pane count + activity dot
+wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
+  local pane   = tab.active_pane
+  local colors = tab_seg_colors()
+
+  -- Resolve label: user-set title wins; otherwise derive from process / cwd
+  local icon, label
+  local user_title = tab.tab_title
+  if user_title and user_title ~= '' then
+    icon  = DEFAULT_ICON
+    label = user_title
+  else
+    local proc_name = pane.foreground_process_name or ''
+    local proc      = proc_name:match('([^/\\]+)$') or ''
+    if proc == '' then proc = pane.title end
+    icon = PROC_ICONS[proc] or DEFAULT_ICON
+    if SHELL_PROCS[proc] then
+      label = short_path(pane.current_working_dir)
+    else
+      label = proc
+    end
+  end
+
+  -- Pane count badge (shown only when tab has splits)
+  local pane_count  = #panes
+  local pane_suffix = pane_count > 1 and (' [' .. pane_count .. ']') or ''
+
+  -- Activity dot: any pane with unseen output
+  local has_activity = false
+  for _, p in ipairs(panes) do
+    if p.has_unseen_output then has_activity = true; break end
+  end
+
+  -- Truncate label to fit within max_width
+  local reserved = 4 + #pane_suffix + (has_activity and 2 or 0)
+  if #label > max_width - reserved then
+    label = wezterm.truncate_right(label, max_width - reserved - 1) .. '\u{2026}'
+  end
+
+  -- Build colored segments
+  local seg = {
+    { Text = ' ' },
+    { Foreground = { Color = colors.icon } },
+    { Text = icon },
+    { Foreground = { Color = colors.label } },
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = ' ' .. label },
+    { Attribute = { Intensity = 'Normal' } },
+  }
+  if pane_suffix ~= '' then
+    table.insert(seg, { Foreground = { Color = colors.meta } })
+    table.insert(seg, { Text = pane_suffix })
+  end
+  if has_activity then
+    table.insert(seg, { Foreground = { Color = colors.activity } })
+    table.insert(seg, { Text = ' \u{25cf}' })  -- ●
+  end
+  table.insert(seg, { Text = '  ' })
+  return seg
 end)
 
 wezterm.on('close-window', function(window)
