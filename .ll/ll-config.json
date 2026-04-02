@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BrennonTWilliams/little-loops/main/config-schema.json",
+  "project": {
+    "name": "dotfiles",
+    "src_dir": "src/"
+  },
+  "issues": {
+    "base_dir": ".issues"
+  },
+  "scan": {
+    "focus_dirs": ["src/", "lib/"],
+    "exclude_patterns": [
+      "**/node_modules/**",
+      "**/__pycache__/**",
+      "**/.git/**",
+      "**/vendor/**",
+      "**/dist/**",
+      "**/build/**"
+    ]
+  }
+}

@@ -276,3 +276,4 @@ starship/backups/
 .parallel-manage-state.json
 .claude/ll-context-state.json
 .claude/ll-sync-state.json
+.ll/ll-continue-prompt.md
