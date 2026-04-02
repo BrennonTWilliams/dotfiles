@@ -702,7 +702,7 @@ local PROC_ICONS = {
 }
 local DEFAULT_ICON = '\u{f489}'  -- nf-fa-terminal (fallback)
 -- Processes considered "idle shell" — show CWD instead of process name
-local SHELL_PROCS = { zsh = true, bash = true, fish = true, sh = true }
+local SHELL_PROCS = { zsh = true, bash = true, fish = true, sh = true, claude = true }
 
 -- Shorten a cwd Uri to a compact display path (~/a/b form, last 2 components)
 local function short_path(cwd_uri)
@@ -751,6 +751,11 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     local proc_name = pane.foreground_process_name or ''
     local proc      = proc_name:match('([^/\\]+)$') or ''
     if proc == '' then proc = pane.title end
+    -- Normalize Claude Code: its process title is a version string (e.g. "2.1.90")
+    -- but the full path still contains "claude", so detect by path prefix.
+    if proc_name:find('/claude') or proc_name:find('claude%-code') then
+      proc = 'claude'
+    end
     icon = PROC_ICONS[proc] or DEFAULT_ICON
     if SHELL_PROCS[proc] then
       label   = short_path(pane.current_working_dir)

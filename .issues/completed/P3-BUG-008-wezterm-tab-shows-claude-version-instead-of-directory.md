@@ -3,7 +3,7 @@ id: BUG-008
 title: "WezTerm tab shows Claude Code version string instead of directory"
 type: BUG
 priority: P3
-status: open
+status: fixed
 discovered_date: 2026-04-02
 discovered_by: capture-issue
 confidence_score: 100
@@ -144,6 +144,21 @@ _Added by `/ll:refine-issue` — based on codebase analysis:_
 
 - `.issues/bugs/P2-BUG-002-wezterm-label-utf8-byte-width-not-display-columns.md` — related WezTerm tab label bug; touches the same `PROC_ICONS`/`SHELL_PROCS`/`format-tab-title` code path
 
+## Resolution
+
+**Status**: Fixed
+**Date**: 2026-04-02
+**Approach**: Path-based Claude detection + SHELL_PROCS inclusion
+
+### Changes Made
+1. `wezterm/.wezterm.lua:705` -- Added `claude = true` to `SHELL_PROCS` so Claude Code tabs show CWD as label
+2. `wezterm/.wezterm.lua:754-758` -- Inserted path-based detection: if `proc_name` contains `/claude` or `claude-code`, normalize `proc` to `"claude"` before `PROC_ICONS`/`SHELL_PROCS` lookups
+
+### Verification
+- Lua syntax check (`luac -p`): PASS
+- Pre-existing test failures: unrelated (shell integration, tmux, macOS env)
+- Manual verification required: launch `claude` in WezTerm, confirm tab shows CWD with magic wand glyph
+
 ## Labels
 
 `bug`, `wezterm`, `tab-bar`, `captured`
@@ -151,6 +166,7 @@ _Added by `/ll:refine-issue` — based on codebase analysis:_
 ---
 
 ## Session Log
+- `/ll:ready-issue` - 2026-04-02T21:29:06 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/adcb1f16-ad9f-4f3a-aad3-4d16362fbe81.jsonl`
 - `/ll:refine-issue` - 2026-04-02T21:22:50 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/af03b9cd-552d-487e-bd26-9ae2f65f1c3c.jsonl`
 - `/ll:confidence-check` - 2026-04-02T22:00:00 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/af03b9cd-552d-487e-bd26-9ae2f65f1c3c.jsonl`
 - `/ll:refine-issue` - 2026-04-02T21:19:14 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/af03b9cd-552d-487e-bd26-9ae2f65f1c3c.jsonl`
