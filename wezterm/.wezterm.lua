@@ -47,6 +47,10 @@ config.window_close_confirmation = 'AlwaysPrompt'
 -- Auto-hide tab bar when only one tab (matches Ghostty window-show-tab-bar = auto)
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_bar_at_bottom = true
+-- Retro (flat) tab bar unlocks full tab_bar color control via config.colors.tab_bar
+config.use_fancy_tab_bar = false
+-- Retro tabs default to 16 chars; 128 gives enough room for long process names
+config.tab_max_width = 256
 
 -- ============================================
 -- Cursor Configuration
@@ -134,6 +138,30 @@ local function get_colors()
         '#8ec07c', -- bright cyan
         '#ebdbb2', -- bright white
       },
+      tab_bar = {
+        background = '#1d2021',
+        active_tab = {
+          bg_color  = '#458588',
+          fg_color  = '#1d2021',
+          intensity = 'Bold',
+        },
+        inactive_tab = {
+          bg_color = '#3c3836',
+          fg_color = '#a89984',
+        },
+        inactive_tab_hover = {
+          bg_color = '#504945',
+          fg_color = '#ebdbb2',
+        },
+        new_tab = {
+          bg_color = '#1d2021',
+          fg_color = '#a89984',
+        },
+        new_tab_hover = {
+          bg_color = '#3c3836',
+          fg_color = '#ebdbb2',
+        },
+      },
     }
   else
     -- Gruvbox Light — mirrors tmux light theme values
@@ -168,6 +196,30 @@ local function get_colors()
         '#8f3f71', -- bright magenta
         '#3d7253', -- bright cyan
         '#3c3836', -- bright white
+      },
+      tab_bar = {
+        background = '#f9f5d7',
+        active_tab = {
+          bg_color  = '#076678',
+          fg_color  = '#f9f5d7',
+          intensity = 'Bold',
+        },
+        inactive_tab = {
+          bg_color = '#ebdbb2',
+          fg_color = '#3c3836',
+        },
+        inactive_tab_hover = {
+          bg_color = '#d5c4a1',
+          fg_color = '#3c3836',
+        },
+        new_tab = {
+          bg_color = '#f9f5d7',
+          fg_color = '#7c6f64',
+        },
+        new_tab_hover = {
+          bg_color = '#ebdbb2',
+          fg_color = '#3c3836',
+        },
       },
     }
   end
@@ -555,6 +607,21 @@ wezterm.on('update-right-status', function(window, _pane)
     { Attribute = { Intensity = 'Bold' } },
     { Text = '  ' .. hostname .. '  ' .. time .. '  ' },
   })
+end)
+
+-- Tab title: terminal glyph (nf-fa-terminal) + 1-based index + foreground process name
+wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
+  local pane = tab.active_pane
+  local proc_name = pane.foreground_process_name or ''
+  local proc = proc_name:match('([^/\\]+)$') or pane.title
+  if proc == '' then proc = pane.title end
+  local index = tab.tab_index + 1
+  local title = '  ' .. index .. ': ' .. proc .. ' '
+  -- Truncate with ellipsis if the composed title exceeds the available width
+  if #title > max_width then
+    title = wezterm.truncate_right(title, max_width - 1) .. ''
+  end
+  return { { Text = title } }
 end)
 
 wezterm.on('close-window', function(window)
