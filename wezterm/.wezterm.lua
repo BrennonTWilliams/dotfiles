@@ -50,7 +50,7 @@ config.tab_bar_at_bottom = false
 -- Retro (flat) tab bar unlocks full tab_bar color control via config.colors.tab_bar
 config.use_fancy_tab_bar = false
 -- Maximum font size for tab bar — caps bar height regardless of display size
-local MAX_TAB_BAR_FONT_SIZE = 24.0
+local MAX_TAB_BAR_FONT_SIZE = 36.0
 -- Retro tabs default to 16 chars; 128 gives enough room for long process names
 config.tab_max_width = 256
 -- Tab bar font size (independent of terminal body font) — controls tab height
