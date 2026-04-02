@@ -490,6 +490,7 @@ config.keys = {
       resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, _)
         local session_type = string.match(id, '([a-z]+)/.+')
         local state = resurrect.state_manager.load_state(id, session_type)
+        if not state then return end
         if session_type == 'workspace' then
           resurrect.workspace_state.restore_workspace(state, { window = win:mux_window() })
         elseif session_type == 'window' then
