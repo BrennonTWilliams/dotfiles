@@ -272,6 +272,7 @@ starship/backups/
 !*.template
 
 # little-loops state files
+.loops/
 .auto-manage-state.json
 .parallel-manage-state.json
 .claude/ll-context-state.json
