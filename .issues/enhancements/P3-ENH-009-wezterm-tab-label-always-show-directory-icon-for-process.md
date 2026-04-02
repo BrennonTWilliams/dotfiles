@@ -24,11 +24,31 @@ Having the directory always visible in the tab label gives consistent spatial or
 - Tab label shows directory when no process is running
 - Tab label changes to process name (e.g., `nvim`, `python`, `claude`) when a foreground process is active
 
-## Desired Behavior
+## Expected Behavior
 
 - Tab label always shows current working directory (no change from idle state)
 - Nerd Font glyph icon in the tab changes to reflect the running process
 - Directory label remains stable regardless of foreground process
+
+## Integration Map
+
+### Files to Modify
+- `wezterm/.config/wezterm/tab.lua` or `wezterm/.config/wezterm/tabs.lua` - tab title formatting and process-to-glyph logic
+
+### Dependent Files (Callers/Importers)
+- TBD - use grep to find references: `grep -r "tab_title\|format_tab\|tab_bar" wezterm/`
+
+### Similar Patterns
+- TBD - search for existing process-to-glyph mappings: `grep -r "process_name\|foreground_process" wezterm/`
+
+### Tests
+- N/A - WezTerm Lua config has no automated test suite
+
+### Documentation
+- N/A
+
+### Configuration
+- N/A
 
 ## Implementation Steps
 
@@ -38,6 +58,22 @@ Having the directory always visible in the tab label gives consistent spatial or
 4. Route process detection to the icon/glyph selection logic only
 5. Map common processes (nvim, git, python, claude, etc.) to appropriate Nerd Font glyphs
 6. Test with several running processes to confirm label stays as directory and icon updates
+
+## Scope Boundaries
+
+- **In scope**: Decoupling tab label text from running process name; routing process detection to icon/glyph selection only; mapping common foreground processes (nvim, git, python, claude) to Nerd Font glyphs
+- **Out of scope**: Adding new process-to-glyph mappings beyond commonly used ones; changing tab bar layout or other visual properties; altering session resurrection or tab persistence logic
+
+## API/Interface
+
+N/A - No public API changes (internal WezTerm Lua config only)
+
+## Impact
+
+- **Priority**: P3 - Low-urgency UX improvement; reduces cognitive overhead when tracking directory context across multiple tabs
+- **Effort**: Small - Localised change to tab title formatting logic in a single Lua file
+- **Risk**: Low - Tab label display is isolated from session state and persistence logic
+- **Breaking Change**: No
 
 ## Related Key Documentation
 
@@ -54,4 +90,5 @@ _No documents linked. Run `/ll:normalize-issues` to discover and link relevant d
 **Open** | Created: 2026-04-02 | Priority: P3
 
 ## Session Log
+- `/ll:format-issue` - 2026-04-02T22:20:58 - `/Users/brennon/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/26af31df-ef62-49ac-85fc-be5aa87d9c17.jsonl`
 - `/ll:capture-issue` - 2026-04-02T00:00:00Z - `~/.claude/projects/-Users-brennon-AIProjects-ai-workspaces-dotfiles/4abda147-9d9a-47dc-888a-fc02a8e5726e.jsonl`
