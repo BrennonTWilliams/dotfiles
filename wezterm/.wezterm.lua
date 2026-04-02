@@ -821,6 +821,16 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
   return seg
 end)
 
+-- Re-apply terminal body colors whenever the config reloads.
+-- WezTerm triggers a config reload automatically when macOS appearance changes
+-- (Dark ↔ Light), so this keeps the terminal body in sync with the tab bar
+-- which already recomputes colors via tab_seg_colors() on every format-tab-title call.
+wezterm.on('window-config-reloaded', function(window, _)
+  local overrides = window:get_config_overrides() or {}
+  overrides.colors = get_colors()
+  window:set_config_overrides(overrides)
+end)
+
 wezterm.on('close-window', function(window)
   window:close()
 end)
