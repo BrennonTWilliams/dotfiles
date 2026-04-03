@@ -53,7 +53,7 @@ config.use_fancy_tab_bar = false
 config.tab_max_width = 256
 -- Tab bar font size (independent of terminal body font) — controls tab height
 -- 36.0 is intentional; renders ~12pt visually on Retina/HiDPI displays
-local TAB_BAR_FONT_SIZE = 36.0
+local TAB_BAR_FONT_SIZE = 32.0
 config.window_frame = {
   font      = wezterm.font('IosevkaTerm Nerd Font'),
   font_size = TAB_BAR_FONT_SIZE,
