@@ -628,6 +628,10 @@ local PROC_ICONS = {
   -- AI tools
   claude  = '\u{f167a}',  -- nf-md-robot_outline
 
+  -- little-loops CLI tools
+  -- Add any project/local CLI tool here; hyphenated names use bracket syntax
+  ['ll-loop'] = '\u{ef0b}',  -- nf-oct-sync (loop/cycle icon)
+
   -- Version control
   git     = '\u{e702}',  -- nf-dev-git
   lazygit = '\u{e702}',  -- nf-dev-git (lazygit is a git TUI)
