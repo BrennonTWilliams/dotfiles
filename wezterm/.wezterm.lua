@@ -53,7 +53,7 @@ config.use_fancy_tab_bar = false
 config.tab_max_width = 256
 -- Tab bar font size (independent of terminal body font) — controls tab height
 -- 36.0 is intentional; renders ~12pt visually on Retina/HiDPI displays
-local TAB_BAR_FONT_SIZE = 32.0
+local TAB_BAR_FONT_SIZE = 22.0
 config.window_frame = {
   font      = wezterm.font('IosevkaTerm Nerd Font'),
   font_size = TAB_BAR_FONT_SIZE,
@@ -626,7 +626,7 @@ local PROC_ICONS = {
   vi      = '\u{e62b}',
 
   -- AI tools
-  claude  = '\u{f0d0}',  -- nf-fa-magic (wand)
+  claude  = '\u{f167a}',  -- nf-md-robot_outline
 
   -- Version control
   git     = '\u{e702}',  -- nf-dev-git
@@ -703,9 +703,6 @@ local PROC_ICONS = {
   brew    = '\u{f0fc}',  -- nf-fa-beer
 }
 local DEFAULT_ICON = '\u{f489}'  -- nf-fa-terminal (fallback)
--- Processes considered "idle shell" — show CWD instead of process name
-local SHELL_PROCS = { zsh = true, bash = true, fish = true, sh = true, claude = true }
-
 -- Shorten a cwd Uri to a compact display path (~/a/b form, last 2 components)
 local function short_path(cwd_uri)
   if not cwd_uri then return '~' end
@@ -758,14 +755,21 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     if proc_name:find('/claude') or proc_name:find('claude%-code') then
       proc = 'claude'
     end
-    icon = PROC_ICONS[proc] or DEFAULT_ICON
-    if SHELL_PROCS[proc] then
-      label   = short_path(pane.current_working_dir)
-      is_path = true
-    else
-      label   = proc
-      is_path = false
+    -- Normalize version-tagged names before lookup:
+    --   python3.12 → python3 (strip .minor)
+    --   python3    → python3 (direct hit)
+    --   node18     → node    (strip trailing digits)
+    local function resolve_proc_icon(p)
+      if PROC_ICONS[p] then return PROC_ICONS[p] end
+      local stripped = p:match('^(.+)%.[0-9]+$')
+      if stripped and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
+      stripped = p:match('^([^0-9]+)')
+      if stripped and stripped ~= '' and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
+      return DEFAULT_ICON
     end
+    icon    = resolve_proc_icon(proc)
+    label   = short_path(pane.current_working_dir)
+    is_path = true
   end
 
   -- Pane count badge (shown only when tab has splits)
