@@ -631,6 +631,10 @@ local PROC_ICONS = {
   -- little-loops CLI tools
   -- Add any project/local CLI tool here; hyphenated names use bracket syntax
   ['ll-loop'] = '\u{ef0b}',  -- nf-oct-sync (loop/cycle icon)
+  ['ll-issues'] = '\u{f145}',
+  ['ll-auto'] = '\u{f006a}',  -- nf-md-autorenew
+  ['ll-parallel'] = '\u{f1860}',  -- nf-md-format_list_group 
+  ['ll-sprint'] = '\u{eb97}',  -- nf-cod-group_by_ref_type 
 
   -- Version control
   git     = '\u{e702}',  -- nf-dev-git
@@ -763,12 +767,27 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     --   python3.12 → python3 (strip .minor)
     --   python3    → python3 (direct hit)
     --   node18     → node    (strip trailing digits)
+    -- For script interpreters (python, node, ruby, perl), probe argv[2] to
+    -- detect pip/npm/etc entry-point scripts (e.g. python3.12 running ll-loop).
+    -- argv is 1-indexed: argv[1] = interpreter path, argv[2] = script path.
+    local SCRIPT_INTERP = { python = true, node = true, ruby = true, perl = true }
     local function resolve_proc_icon(p)
       if PROC_ICONS[p] then return PROC_ICONS[p] end
       local stripped = p:match('^(.+)%.[0-9]+$')
       if stripped and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
-      stripped = p:match('^([^0-9]+)')
-      if stripped and stripped ~= '' and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
+      local base = p:match('^([^0-9]+)')
+      if base and base ~= '' and PROC_ICONS[base] then return PROC_ICONS[base] end
+      -- Argv probe: only for interpreter processes where normal lookup failed
+      if SCRIPT_INTERP[(base or ''):lower()] then
+        local ok, mux_pane = pcall(wezterm.mux.get_pane, pane.pane_id)
+        if ok and mux_pane then
+          local ok2, info = pcall(function() return mux_pane:get_foreground_process_info() end)
+          if ok2 and info and info.argv and #info.argv >= 2 then
+            local script_name = info.argv[2]:match('([^/\\]+)$') or ''
+            if PROC_ICONS[script_name] then return PROC_ICONS[script_name] end
+          end
+        end
+      end
       return DEFAULT_ICON
     end
     icon    = resolve_proc_icon(proc)
