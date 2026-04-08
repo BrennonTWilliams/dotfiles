@@ -774,11 +774,12 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
     local function resolve_proc_icon(p)
       if PROC_ICONS[p] then return PROC_ICONS[p] end
       local stripped = p:match('^(.+)%.[0-9]+$')
-      if stripped and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
-      local base = p:match('^([^0-9]+)')
-      if base and base ~= '' and PROC_ICONS[base] then return PROC_ICONS[base] end
-      -- Argv probe: only for interpreter processes where normal lookup failed
-      if SCRIPT_INTERP[(base or ''):lower()] then
+      local base     = p:match('^([^0-9]+)')
+      local base_key = (base or ''):lower()
+      -- For interpreter processes, probe argv BEFORE falling back to the interpreter icon.
+      -- This ensures "python3.12 running ll-loop" → ll-loop icon, not Python icon.
+      -- Without this ordering, PROC_ICONS['python3'] would fire first and short-circuit.
+      if SCRIPT_INTERP[base_key] then
         local ok, mux_pane = pcall(wezterm.mux.get_pane, pane.pane_id)
         if ok and mux_pane then
           local ok2, info = pcall(function() return mux_pane:get_foreground_process_info() end)
@@ -788,6 +789,8 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
           end
         end
       end
+      if stripped and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
+      if base and base ~= '' and PROC_ICONS[base] then return PROC_ICONS[base] end
       return DEFAULT_ICON
     end
     icon    = resolve_proc_icon(proc)
