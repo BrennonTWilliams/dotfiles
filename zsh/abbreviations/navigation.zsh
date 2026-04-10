@@ -11,6 +11,3 @@ abbr -S ..='cd ..'
 abbr -S ...='cd ../..'
 abbr -S ....='cd ../../..'
 abbr -S .....='cd ../../../..'
-
-# Directory tree views
-abbr -S tredir='eza -T -D --git-ignore'
