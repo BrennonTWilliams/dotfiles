@@ -13,7 +13,9 @@ abbr -S gl='git log --oneline --graph --decorate'
 abbr -S gd='git diff'
 abbr -S gco='git checkout'
 abbr -S gcb='git checkout -b'
+abbr -S gcob='git checkout -b'
 abbr -S gb='git branch'
+abbr -S gcl='git clone'
 
 # -- Analysis
 abbr -S glchurn="git log --after=\"1 year ago\" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -nr | head -20"
