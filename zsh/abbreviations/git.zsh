@@ -16,6 +16,7 @@ abbr -S gcb='git checkout -b'
 abbr -S gcob='git checkout -b'
 abbr -S gb='git branch'
 abbr -S gcl='git clone'
+abbr -S gpl='git pull'
 
 # -- Analysis
 abbr -S glchurn="git log --after=\"1 year ago\" --name-only --pretty=format: | grep -v '^$' | sort | uniq -c | sort -nr | head -20"

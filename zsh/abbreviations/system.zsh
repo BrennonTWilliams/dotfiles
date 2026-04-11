@@ -17,6 +17,9 @@ abbr -S tre='eza -T'
 # Directory tree views
 abbr -S tredir='eza -T -D --git-ignore'
 
+# ls
+abbr -S lsa='ls -a'
+
 # Mindfulness
 abbr -S breath='zenta now --quick'
 abbr -S breathe='zenta now'
