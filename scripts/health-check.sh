@@ -25,17 +25,17 @@ WARNED_CHECKS=0
 # Override success, warn, and error functions to include counters
 success() {
     echo -e "${GREEN}${BOLD}✓${NC} $1"
-    ((PASSED_CHECKS++))
+    PASSED_CHECKS=$((PASSED_CHECKS + 1))
 }
 
 warn() {
     echo -e "${YELLOW}${BOLD}⚠${NC} $1"
-    ((WARNED_CHECKS++))
+    WARNED_CHECKS=$((WARNED_CHECKS + 1))
 }
 
 error() {
     echo -e "${RED}${BOLD}✗${NC} $1"
-    ((FAILED_CHECKS++))
+    FAILED_CHECKS=$((FAILED_CHECKS + 1))
 }
 
 header() {
@@ -44,7 +44,7 @@ header() {
 }
 
 check_start() {
-    ((TOTAL_CHECKS++))
+    TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     echo -e "Checking: $1..."
 }
 
@@ -252,12 +252,13 @@ check_platform_specific() {
 check_dotfiles_symlinks() {
     header "Dotfiles Symlink Structure"
 
-    local dotfiles_dirs=("zsh" "tmux" "starship" "ghostty" "vscode" "git")
+    local dotfiles_dirs=("zsh" "tmux" "starship" "ghostty" "wezterm" "vscode" "git")
     local expected_configs=(
         "$HOME/.zshrc:zsh/.zshrc"
         "$HOME/.tmux.conf:tmux/.tmux.conf"
         "$HOME/.config/starship.toml:starship/starship.toml"
         "$HOME/.config/ghostty/config:ghostty/.config/ghostty/config"
+        "$HOME/.wezterm.lua:wezterm/.wezterm.lua"
         "$HOME/.config/Code/User/settings.json:vscode/settings.json"
         "$HOME/.gitconfig:git/.gitconfig"
     )

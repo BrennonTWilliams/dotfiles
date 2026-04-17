@@ -303,6 +303,13 @@ if [[ "$TERM_PROGRAM" == "kiro" ]]; then
     unset kiro_integration kiro_cache cache_dir
 fi
 
+# WezTerm shell integration
+if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
+    local wezterm_integration="/Applications/WezTerm.app/Contents/Resources/wezterm.sh"
+    [[ -f "$wezterm_integration" ]] && . "$wezterm_integration"
+    unset wezterm_integration
+fi
+
 
 
 
@@ -424,8 +431,16 @@ toggle-theme() {
         tmux source-file ~/.tmux.conf 2>/dev/null
     fi
 
+    # Reload WezTerm config if running in WezTerm
+    if [[ -n "$WEZTERM_CONFIG_FILE" ]]; then
+        wezterm cli reload-config 2>/dev/null || killall -USR1 wezterm 2>/dev/null || true
+    fi
+
     echo "[~] Theme switched to: $new_mode"
     echo "    Ghostty: reloaded via SIGUSR2"
+    if [[ -n "$WEZTERM_CONFIG_FILE" ]]; then
+        echo "    WezTerm: config reloaded"
+    fi
     echo "    Starship: will apply on next shell restart"
     echo "    Run 'exec zsh' to reload shell with new theme"
 }
@@ -441,6 +456,10 @@ toggle-theme() {
 unset PROMPT
 unset RPROMPT
 unset PROMPT_COMMAND
+
+# Ensure STARSHIP_CONFIG is not set to empty string (breaks config discovery)
+# If you want a custom config path, set it explicitly in .zshrc.local
+unset STARSHIP_CONFIG 2>/dev/null
 
 # Initialize Starship
 eval "$(starship init zsh)"

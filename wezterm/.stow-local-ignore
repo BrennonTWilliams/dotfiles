@@ -1,0 +1,8 @@
+# Stow local ignore file for wezterm package
+# These files will not be symlinked to $HOME
+
+# Template files
+config.local.template
+
+# Documentation
+README.md

@@ -172,6 +172,22 @@ setup_ghostty() {
     fi
 }
 
+setup_wezterm() {
+    section "Setting up WezTerm Terminal"
+
+    if [ "$OS" = "macos" ]; then
+        if [ -d "/Applications/WezTerm.app" ]; then
+            info "WezTerm is installed"
+            info "WezTerm configuration will be installed by stow"
+        else
+            info "Installing WezTerm via Homebrew cask..."
+            brew install --cask wezterm
+        fi
+    else
+        info "WezTerm setup only applicable to macOS (install via package manager on Linux)"
+    fi
+}
+
 # ==============================================================================
 # Main Function
 # ==============================================================================
@@ -187,6 +203,7 @@ main() {
     setup_starship
     setup_tmux
     setup_ghostty
+    setup_wezterm
     install_fonts
 
     success "Terminal setup completed successfully"

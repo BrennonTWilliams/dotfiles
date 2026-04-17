@@ -1,0 +1,16 @@
+-- ==============================================================================
+-- WezTerm Local Configuration Template
+-- ==============================================================================
+-- Copy this file to ~/.wezterm.local.lua and customize for your machine
+-- This file is ignored by git and can contain machine-specific settings
+-- ==============================================================================
+
+-- Example: Override font size for a specific display
+-- local wezterm = require 'wezterm'
+-- local config = {}
+--
+-- config.font_size = 14  -- Smaller font for laptop display
+--
+-- return config
+
+return {}

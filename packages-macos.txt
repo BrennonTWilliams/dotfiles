@@ -54,6 +54,7 @@ rectangle
 # Terminal emulator (alternative to foot)
 # iTerm2
 ghostty
+wezterm
 
 # Status bar (alternative to Waybar)
 # sketchybar - requires special tap: FelixKratz/formulae (handled by install.sh)
