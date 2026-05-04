@@ -71,23 +71,9 @@ fi
 # Using add-zsh-hook to avoid conflicts with Starship and other prompt systems
 autoload -Uz add-zsh-hook
 
-# Function to set title before command execution
-_set_title_preexec() {
-    # Respect a pinned title set by tab-title()
-    [[ -n "$MANUAL_TAB_TITLE" ]] && return
-    print -Pn "\e]0;%~: $1\a"
-}
-
-# Function to set title after command completion
-_set_title_precmd() {
-    # Respect a pinned title set by tab-title()
-    [[ -n "$MANUAL_TAB_TITLE" ]] && return
-    print -Pn "\e]0;%~\a"
-}
-
-# Register hooks (allows multiple functions to use precmd/preexec)
-add-zsh-hook preexec _set_title_preexec
-add-zsh-hook precmd _set_title_precmd
+# Register auto tab-title hooks (implementations in functions/terminal.zsh)
+add-zsh-hook preexec _tab_title_preexec
+add-zsh-hook precmd _tab_title_precmd
 
 # Python environment management
 # Using conda for Python environment management
