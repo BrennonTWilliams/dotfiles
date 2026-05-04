@@ -73,13 +73,15 @@ autoload -Uz add-zsh-hook
 
 # Function to set title before command execution
 _set_title_preexec() {
-    # Set terminal title to "directory: command"
+    # Respect a pinned title set by tab-title()
+    [[ -n "$MANUAL_TAB_TITLE" ]] && return
     print -Pn "\e]0;%~: $1\a"
 }
 
 # Function to set title after command completion
 _set_title_precmd() {
-    # Set title to current directory when command finishes
+    # Respect a pinned title set by tab-title()
+    [[ -n "$MANUAL_TAB_TITLE" ]] && return
     print -Pn "\e]0;%~\a"
 }
 
