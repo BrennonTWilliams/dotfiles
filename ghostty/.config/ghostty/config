@@ -173,7 +173,7 @@ clipboard-write = allow
 # Bell and Notifications
 # ============================================
 
-audible-bell = false
+bell-features = no-system
 
 # ============================================
 # Cursor Configuration
@@ -199,14 +199,14 @@ copy-on-select = true
 # ============================================
 
 # Shell command for new terminals
-command = /bin/zsh
+command = /opt/homebrew/bin/tmux new-session -A -s main
 
 # Working directory - start in home directory
 # Defaults to $HOME if not specified
 # working-directory = ~
 
 # Scrollback buffer (~50k lines equivalent)
-scrollback-limit = 10mb
+scrollback-limit = 10000000
 
 # Terminal type
 term = xterm-256color
