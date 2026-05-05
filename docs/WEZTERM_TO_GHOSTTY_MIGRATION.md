@@ -52,7 +52,7 @@ These are already present in `ghostty/.config/ghostty/config`:
 
 ---
 
-## Phase 1 — One-line Ports
+## Phase 1 — One-line Ports ✓ DONE
 
 | WezTerm | Ghostty |
 |---|---|
@@ -64,7 +64,7 @@ These are already present in `ghostty/.config/ghostty/config`:
 
 ---
 
-## Phase 2 — Keybinding Port
+## Phase 2 — Keybinding Port ✓ DONE
 
 Port directly as `keybind = TRIGGER=ACTION` lines. Items marked **(default)** are already Ghostty defaults and only need to be set if you want to override.
 
@@ -92,7 +92,7 @@ The WezTerm config sends `\x7f` explicitly to bypass the macOS IME composition p
 
 ---
 
-## Phase 3 — Workarounds
+## Phase 3 — Workarounds ✓ DONE
 
 ### Tab rename (`cmd+shift+r`)
 Ghostty has no built-in rename prompt. Replacement: a zsh function that emits OSC 2.
@@ -128,7 +128,7 @@ Ghostty uses native NSWindow tabs on macOS — tab font and height follow the sy
 
 ---
 
-## Phase 4 — Architectural Replacements
+## Phase 4 — Architectural Replacements ✓ DONE
 
 These features require moving functionality out of the terminal emulator entirely.
 
@@ -215,7 +215,7 @@ A successful migration means:
 - [ ] Apple Dictation works inside the terminal (the whole point)
 - [ ] All current keybindings either work natively, are intentionally accepted as lost, or have a documented workaround
 - [ ] Theme auto-switches between Gruvbox dark/light with macOS appearance
-- [ ] tmux-resurrect restores sessions across restarts
+- [x] tmux-resurrect restores sessions across restarts
 - [ ] Tab titles show per-process icons + short cwd via OSC 2
 - [ ] tmux status line shows session name (left) and hostname+time (right)
 - [ ] No regressions in existing Ghostty config consumers (Automator quick action, finder integration)
@@ -238,22 +238,32 @@ Documented here so they don't resurface as bugs:
 
 ## Effort Estimate
 
-| Phase | Effort |
-|---|---|
-| Phase 1 (one-line ports) | 15 min |
-| Phase 2 (keybinding port) | 1–2 hours |
-| Phase 3 (workarounds) | 1 hour |
-| Phase 4a (tmux-resurrect) | 30 min if plugins already wired |
-| Phase 4b (tmux status verification) | 30 min |
-| Phase 4c (zsh tab-title helper) | 2–4 hours to match current fidelity |
-| **Total** | **~1 day** |
+| Phase | Effort | Status |
+|---|---|---|
+| Phase 1 (one-line ports) | 15 min | Done |
+| Phase 2 (keybinding port) | 1–2 hours | Done |
+| Phase 3 (workarounds) | 1 hour | Done |
+| Phase 4a (tmux-resurrect) | 30 min if plugins already wired | Done |
+| Phase 4b (tmux status verification) | 30 min | Done |
+| Phase 4c (zsh tab-title helper) | 2–4 hours to match current fidelity | Done |
+| Phase 5 (validation + removal) | ~1 week daily use | **In progress** |
 
 ---
 
-## Rollout
+## Phase 5 — Validation & WezTerm Removal
 
-1. Create a branch; make changes additively in `ghostty/.config/ghostty/config` and `zsh/`
-2. Keep `wezterm/` package intact for parallel use during validation
-3. Validate Dictation, key bindings, tmux session restore, theme switch
-4. Once stable for ~1 week: remove `wezterm/` package, update `README.md` and `docs/GETTING_STARTED.md`
-5. Archive `.wezterm.lua` in git history (don't delete the commit reference)
+**Gate: do not proceed until all Acceptance Criteria above are checked off.**
+
+Both terminal emulators are active in parallel during this phase. WezTerm remains fully functional as a fallback while Ghostty is validated in daily use.
+
+### Validation steps
+1. Use Ghostty as your primary terminal for at least one week
+2. Verify each acceptance criterion against real usage (not just smoke tests)
+3. Confirm no regressions in Automator quick action or Finder integration
+
+### Removal steps (only after validation is complete)
+1. Unstow the wezterm package: `stow -D wezterm`
+2. `git rm wezterm/.wezterm.lua` — the file is archived in git history; do not purge it
+3. Update `wezterm/README.md` to a migration notice pointing at Ghostty
+4. Close any open WezTerm issues as superseded
+5. Commit and push
