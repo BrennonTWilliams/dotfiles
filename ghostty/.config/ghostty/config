@@ -96,16 +96,22 @@ keybind = super+r=reload_config
 keybind = shift+enter=text:\n
 
 # Window / tab management
+# Native Ghostty tabs are replaced by tmux windows — all shortcuts send tmux key sequences.
+# prefix = ctrl+a (\x01); Ghostty window close (cmd+shift+w) is the only native tab action kept.
+keybind = super+t=text:\x01c
+keybind = super+w=text:\x01x
 keybind = super+shift+w=close_window
-keybind = super+one=goto_tab:1
-keybind = super+two=goto_tab:2
-keybind = super+three=goto_tab:3
-keybind = super+four=goto_tab:4
-keybind = super+five=goto_tab:5
-keybind = super+six=goto_tab:6
-keybind = super+seven=goto_tab:7
-keybind = super+eight=goto_tab:8
-keybind = super+nine=last_tab
+keybind = ctrl+tab=text:\x01n
+keybind = ctrl+shift+tab=text:\x01p
+keybind = super+one=text:\x011
+keybind = super+two=text:\x012
+keybind = super+three=text:\x013
+keybind = super+four=text:\x014
+keybind = super+five=text:\x015
+keybind = super+six=text:\x016
+keybind = super+seven=text:\x017
+keybind = super+eight=text:\x018
+keybind = super+nine=text:\x019
 
 # Splits
 keybind = super+d=new_split:right
