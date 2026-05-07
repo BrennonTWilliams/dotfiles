@@ -97,7 +97,19 @@ setup_git_config() {
         # Create local config if it doesn't exist
         if [ ! -f "$HOME/.gitconfig.local" ]; then
             info "Creating local Git configuration file"
-            cat > "$HOME/.gitconfig.local" << 'EOF'
+
+            # Select credential helper based on platform
+            local credential_helper=""
+            case "$(uname -s)" in
+                Darwin*)
+                    credential_helper="osxkeychain"
+                    ;;
+                Linux*)
+                    credential_helper="store"
+                    ;;
+            esac
+
+            cat > "$HOME/.gitconfig.local" << EOF
 # Local Git configuration
 # Add machine-specific settings here
 
@@ -106,11 +118,7 @@ setup_git_config() {
     # Those values are stored in ~/.gitconfig and override the template
 
 [credential]
-    # macOS keychain
-    helper = osxkeychain
-
-    # Linux (uncomment if needed)
-    # helper = manager
+    helper = ${credential_helper}
 
 # Work-specific configurations
 # [github]

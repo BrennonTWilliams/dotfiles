@@ -46,4 +46,4 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 fi
 
 export PATH
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"

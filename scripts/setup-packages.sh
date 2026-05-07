@@ -130,13 +130,13 @@ get_platform_packages() {
     local platform_packages=""
     case "$OS" in
         debian|ubuntu|linuxmint|pop)
-            platform_packages="git curl wget vim build-essential stow zsh tmux"
+            platform_packages="git curl wget vim build-essential stow zsh tmux fzf jq ripgrep fd-find zoxide net-tools"
             ;;
         redhat|fedora|rhel|centos|rocky|almalinux)
-            platform_packages="git curl wget vim make gcc stow zsh tmux"
+            platform_packages="git curl wget vim make gcc stow zsh tmux fzf jq ripgrep fd-find zoxide net-tools"
             ;;
         arch|manjaro|endeavouros|garuda)
-            platform_packages="git curl wget vim base-devel stow zsh tmux"
+            platform_packages="git curl wget vim base-devel stow zsh tmux fzf jq ripgrep fd zoxide net-tools"
             ;;
         macos)
             platform_packages="git curl wget vim stow zsh tmux bash"

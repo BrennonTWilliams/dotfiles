@@ -1,47 +1,28 @@
 -- ==============================================================================
--- WezTerm Configuration
+-- WezTerm Terminal Configuration
 -- ==============================================================================
--- Ported from Ghostty configuration with Gruvbox custom themes
--- Supports macOS with automatic dark/light theme switching
+-- Comprehensive configuration for optimal macOS integration with zsh shell
+-- Mirrors tmux configuration with Gruvbox theme and aligned keybindings
 -- ==============================================================================
 
 local wezterm = require 'wezterm'
+local resurrect = wezterm.plugin.require 'https://github.com/MLFlexer/resurrect.wezterm'
 
--- Initialize config table
-local config = {}
+local config = wezterm.config_builder()
 
--- ==============================================================================
+-- ============================================
 -- Font Configuration
--- ==============================================================================
+-- ============================================
 
 -- Primary font family (IosevkaTerm Nerd Font for CLI compatibility)
 config.font = wezterm.font('IosevkaTerm Nerd Font')
-config.font_size = 16
+config.font_size = 16.0
 
--- Font variants for bold and italic
-config.font_rules = {
-  {
-    intensity = 'Bold',
-    italic = false,
-    font = wezterm.font('IosevkaTerm Nerd Font', { weight = 'Bold' }),
-  },
-  {
-    intensity = 'Bold',
-    italic = true,
-    font = wezterm.font('IosevkaTerm Nerd Font', { weight = 'Bold', style = 'Italic' }),
-  },
-  {
-    intensity = 'Normal',
-    italic = true,
-    font = wezterm.font('IosevkaTerm Nerd Font', { style = 'Italic' }),
-  },
-}
-
--- ==============================================================================
+-- ============================================
 -- Window Configuration
--- ==============================================================================
+-- ============================================
 
--- Window padding (8px all sides)
+-- Window padding for better readability
 config.window_padding = {
   left = 8,
   right = 8,
@@ -53,270 +34,834 @@ config.window_padding = {
 config.initial_cols = 120
 config.initial_rows = 40
 
--- Window decorations (native title bar)
+-- Window decorations (native macOS style)
 config.window_decorations = 'RESIZE'
 
--- Native tab bar style (minimal, like Ghostty)
-config.use_fancy_tab_bar = false
-config.tab_bar_at_bottom = false
+-- Confirm before closing a window (matches Ghostty confirm-close-surface behavior)
+config.window_close_confirmation = 'AlwaysPrompt'
 
--- Resize overlay configuration
-config.window_resize_animation = {
-  char_resize_animation = 'none',
-  char_resize_delay = 0,
+-- ============================================
+-- Tab Bar Configuration
+-- ============================================
+
+-- Auto-hide tab bar when only one tab (matches Ghostty window-show-tab-bar = auto)
+config.hide_tab_bar_if_only_one_tab = true
+config.tab_bar_at_bottom = false
+-- Retro (flat) tab bar unlocks full tab_bar color control via config.colors.tab_bar
+config.use_fancy_tab_bar = false
+-- Retro tabs default to 16 chars; 128 gives enough room for long process names
+config.tab_max_width = 256
+-- Tab bar font size (independent of terminal body font) — controls tab height
+-- 36.0 is intentional; renders ~12pt visually on Retina/HiDPI displays
+local TAB_BAR_FONT_SIZE = 22.0
+config.window_frame = {
+  font      = wezterm.font('IosevkaTerm Nerd Font'),
+  font_size = TAB_BAR_FONT_SIZE,
 }
 
--- ==============================================================================
+-- ============================================
 -- Cursor Configuration
--- ==============================================================================
+-- ============================================
 
--- Steady block cursor (no blink)
+-- Block cursor without blinking (matches Ghostty cursor-style = block, cursor-style-blink = false)
 config.default_cursor_style = 'SteadyBlock'
 
--- ==============================================================================
--- Shell and Terminal Configuration
--- ==============================================================================
+-- ============================================
+-- macOS-Specific Settings
+-- ============================================
 
--- Default shell
-config.default_prog = { '/bin/zsh' }
+-- Option key acts as Alt/Meta (matches Ghostty macos-option-as-alt = true)
+-- false = send ESC sequences; true = send composed characters (accents) — we want ESC
+config.send_composed_key_when_left_alt_is_pressed = false
+config.send_composed_key_when_right_alt_is_pressed = false
 
--- Terminal type
+-- IME enabled: required for Apple Dictation (NSTextInputClient channel).
+-- NOTE: Dictation still silently fails due to a WezTerm upstream bug — selectedRange()
+-- returns NSNotFound instead of NSRange(0,0). Tracked in WezTerm PR #7453/#7536.
+-- When that fix lands in a stable release, Dictation will work without further changes.
+-- Backspace is explicitly bound below (SendString '\x7f') to bypass the
+-- IME composition pipeline and prevent backspace-commits-composition regressions.
+config.use_ime = true
+
+-- ============================================
+-- Terminal Settings
+-- ============================================
+
+-- Terminal type (matches Ghostty term = xterm-256color)
 config.term = 'xterm-256color'
 
--- Environment variables
+-- Kitty keyboard protocol: extended key encoding for Neovim and modern terminal apps
+-- Allows apps to distinguish Esc vs Ctrl+[, Tab vs Ctrl+I, Enter vs Ctrl+M, etc.
+-- Requires apps that opt in (Neovim 0.10+); falls back gracefully for others.
+-- Disable if any tool shows unexpected key output.
+config.enable_kitty_keyboard = true
+
+-- ============================================
+-- Selection and Clipboard
+-- ============================================
+
+-- Copy on select behavior (matches Ghostty copy-on-select = true)
+config.selection_word_boundary = " \t\n{}[]()\"'`"
+
+-- ============================================
+-- Theme: Auto Dark/Light via macOS Appearance
+-- ============================================
+-- Uses wezterm.gui.get_appearance() to detect macOS dark/light mode.
+-- Dark: Gruvbox dark palette (deep #1d2021 bg for reduced eye strain)
+-- Light: Gruvbox light palette (mirrors tmux THEME_MODE=light colors)
+
+local function get_colors()
+  local appearance = wezterm.gui.get_appearance()
+  if appearance:find 'Dark' then
+    return {
+      foreground = '#ebdbb2',
+      background = '#1d2021',
+      cursor_bg = '#ebdbb2',
+      cursor_fg = '#1d2021',
+      cursor_border = '#ebdbb2',
+      selection_fg = '#ebdbb2',
+      selection_bg = '#458588',
+      scrollbar_thumb = '#504945',
+      -- Active pane border matches tmux active border color (#b8bb26 bright green)
+      split = '#b8bb26',
+
+      ansi = {
+        '#504945', -- black (dark2)
+        '#fb4934', -- red
+        '#98971a', -- green
+        '#d79921', -- yellow
+        '#458588', -- blue
+        '#b16286', -- magenta
+        '#689d6a', -- cyan
+        '#a89984', -- white
+      },
+      brights = {
+        '#928374', -- bright black
+        '#fb4934', -- bright red
+        '#b8bb26', -- bright green
+        '#fabd2f', -- bright yellow
+        '#83a598', -- bright blue
+        '#d3869b', -- bright magenta
+        '#8ec07c', -- bright cyan
+        '#ebdbb2', -- bright white
+      },
+      tab_bar = {
+        background = '#1d2021',
+        active_tab = {
+          bg_color  = '#458588',
+          fg_color  = '#1d2021',
+          intensity = 'Bold',
+        },
+        inactive_tab = {
+          bg_color = '#3c3836',
+          fg_color = '#a89984',
+        },
+        inactive_tab_hover = {
+          bg_color = '#504945',
+          fg_color = '#ebdbb2',
+        },
+        new_tab = {
+          bg_color = '#1d2021',
+          fg_color = '#a89984',
+        },
+        new_tab_hover = {
+          bg_color = '#3c3836',
+          fg_color = '#ebdbb2',
+        },
+      },
+    }
+  else
+    -- Gruvbox Light — mirrors tmux light theme values
+    return {
+      foreground = '#3c3836',
+      background = '#f9f5d7',
+      cursor_bg = '#3c3836',
+      cursor_fg = '#f9f5d7',
+      cursor_border = '#3c3836',
+      selection_fg = '#3c3836',
+      selection_bg = '#bdae93',
+      scrollbar_thumb = '#bdae93',
+      -- Active pane border: tmux active border in light mode
+      split = '#79740e',
+
+      ansi = {
+        '#3c3836', -- black
+        '#cc241d', -- red
+        '#6f6908', -- green   (was #79740e at 4.41:1 — just below AA; #6f6908 → 5.15:1)
+        '#886000', -- yellow  (5.14:1 — dark ochre; Gruvbox palette yellows all fail AA on cream bg)
+        '#076678', -- blue    (was #458588 neutral; faded variant has ~6.0:1 vs ~3.8:1)
+        '#8f3f71', -- magenta (was #b16286 neutral; faded variant has ~6.1:1 vs ~3.8:1)
+        '#3d7253', -- cyan    (was #427b58 at 4.53:1 — too close to floor; #3d7253 → 5.11:1)
+        '#5a524a', -- white   (was #7c6f64; darkened 1 stop to ~6.5:1 vs ~4.4:1)
+      },
+      brights = {
+        '#796c61', -- bright black  (was #7c6f64 at 4.42:1 — just below AA; #796c61 → 4.62:1)
+        '#9d0006', -- bright red
+        '#6f6908', -- bright green  (matches ansi green; 5.15:1)
+        '#9a6208', -- bright yellow  (was #b57614 at 3.43:1 — AA fail; #9a6208 → 4.63:1)
+        '#076678', -- bright blue
+        '#8f3f71', -- bright magenta
+        '#3d7253', -- bright cyan
+        '#3c3836', -- bright white
+      },
+      tab_bar = {
+        background = '#f9f5d7',
+        active_tab = {
+          bg_color  = '#076678',
+          fg_color  = '#f9f5d7',
+          intensity = 'Bold',
+        },
+        inactive_tab = {
+          bg_color = '#ebdbb2',
+          fg_color = '#3c3836',
+        },
+        inactive_tab_hover = {
+          bg_color = '#d5c4a1',
+          fg_color = '#3c3836',
+        },
+        new_tab = {
+          bg_color = '#f9f5d7',
+          fg_color = '#7c6f64',
+        },
+        new_tab_hover = {
+          bg_color = '#ebdbb2',
+          fg_color = '#3c3836',
+        },
+      },
+    }
+  end
+end
+
+config.colors = get_colors()
+
+-- Dim inactive panes visually (mirrors tmux inactive border dimming)
+config.inactive_pane_hsb = {
+  saturation = 0.8,
+  brightness = 0.7,
+}
+
+-- ============================================
+-- Key Bindings
+-- ============================================
+
+config.keys = {
+  -- Shift+Enter: send newline (0x0a) so apps can distinguish it from plain Enter (0x0d)
+  {
+    key = 'Return',
+    mods = 'SHIFT',
+    action = wezterm.action.SendString '\n',
+  },
+  -- Explicit backspace: bypass macOS IME which can intercept Backspace
+  -- and commit composition as a space. SendString injects raw bytes
+  -- directly into the pane, skipping WezTerm's key -> IME pipeline.
+  {
+    key = 'Backspace',
+    mods = '',
+    action = wezterm.action.SendString '\x7f',
+  },
+  -- Copy/Paste with Cmd+C/V
+  {
+    key = 'C',
+    mods = 'CMD',
+    action = wezterm.action.CopyTo 'Clipboard',
+  },
+  {
+    key = 'V',
+    mods = 'CMD',
+    action = wezterm.action.PasteFrom 'Clipboard',
+  },
+
+  -- Config reload (fixes README claim; WezTerm also auto-reloads on save)
+  {
+    key = 'R',
+    mods = 'CMD',
+    action = wezterm.action.ReloadConfiguration,
+  },
+
+  -- CMD+SHIFT+R: rename current tab (mirrors tmux prefix+,)
+  {
+    key = 'R',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.PromptInputLine {
+      description = 'Rename tab:',
+      action = wezterm.action_callback(function(window, _, line)
+        if line then window:active_tab():set_title(line) end
+      end),
+    },
+  },
+
+  -- CMD+Enter: toggle fullscreen (mirrors Ghostty default)
+  { key = 'Return', mods = 'CMD', action = wezterm.action.ToggleFullScreen },
+
+  -- Tab management
+  {
+    key = 'T',
+    mods = 'CMD',
+    action = wezterm.action.SpawnTab 'CurrentPaneDomain',
+  },
+  {
+    key = 'w',
+    mods = 'CMD',
+    action = wezterm.action.CloseCurrentPane { confirm = true },
+  },
+  {
+    key = 'W',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.EmitEvent 'close-window',
+  },
+  {
+    key = 'Tab',
+    mods = 'CTRL',
+    action = wezterm.action.ActivateTabRelative(1),
+  },
+  {
+    key = 'Tab',
+    mods = 'CTRL|SHIFT',
+    action = wezterm.action.ActivateTabRelative(-1),
+  },
+
+  -- Tab navigation with Cmd+number
+  {
+    key = '1',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(0),
+  },
+  {
+    key = '2',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(1),
+  },
+  {
+    key = '3',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(2),
+  },
+  {
+    key = '4',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(3),
+  },
+  {
+    key = '5',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(4),
+  },
+  {
+    key = '6',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(5),
+  },
+  {
+    key = '7',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(6),
+  },
+  {
+    key = '8',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(7),
+  },
+  {
+    key = '9',
+    mods = 'CMD',
+    action = wezterm.action.ActivateTab(-1),
+  },
+
+  -- Split panes
+  {
+    key = 'd',
+    mods = 'CMD',
+    action = wezterm.action.SplitHorizontal { domain = 'CurrentPaneDomain' },
+  },
+  {
+    key = 'D',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action.SplitVertical { domain = 'CurrentPaneDomain' },
+  },
+
+  -- CMD+SHIFT+Z: toggle pane zoom (mirrors tmux prefix+z)
+  { key = 'z', mods = 'CMD|SHIFT', action = wezterm.action.TogglePaneZoomState },
+
+  -- Pane navigation: Cmd+Alt+Arrow (original) + Alt+Arrow (tmux M-Arrow muscle memory)
+  {
+    key = 'LeftArrow',
+    mods = 'CMD|ALT',
+    action = wezterm.action.ActivatePaneDirection 'Left',
+  },
+  {
+    key = 'RightArrow',
+    mods = 'CMD|ALT',
+    action = wezterm.action.ActivatePaneDirection 'Right',
+  },
+  {
+    key = 'UpArrow',
+    mods = 'CMD|ALT',
+    action = wezterm.action.ActivatePaneDirection 'Up',
+  },
+  {
+    key = 'DownArrow',
+    mods = 'CMD|ALT',
+    action = wezterm.action.ActivatePaneDirection 'Down',
+  },
+  -- CMD+SHIFT+Arrow: resize current pane (5-cell increments)
+  { key = 'UpArrow',    mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Up',    5 } },
+  { key = 'DownArrow',  mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Down',  5 } },
+  { key = 'LeftArrow',  mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Left',  5 } },
+  { key = 'RightArrow', mods = 'CMD|SHIFT', action = wezterm.action.AdjustPaneSize { 'Right', 5 } },
+
+  -- ALT+Arrow: word navigation (readline ESC+b / ESC+f)
+  -- CMD+ALT+Arrow handles pane switching (see above)
+  { key = 'LeftArrow',  mods = 'ALT', action = wezterm.action.SendString '\x1bb' },
+  { key = 'RightArrow', mods = 'ALT', action = wezterm.action.SendString '\x1bf' },
+
+  -- CMD+Arrow: line navigation and scrollback (macOS Terminal.app conventions)
+  { key = 'LeftArrow',  mods = 'CMD', action = wezterm.action.SendString '\x1bOH' },
+  { key = 'RightArrow', mods = 'CMD', action = wezterm.action.SendString '\x1bOF' },
+  { key = 'UpArrow',    mods = 'CMD', action = wezterm.action.ScrollByPage(-1) },
+  { key = 'DownArrow',  mods = 'CMD', action = wezterm.action.ScrollByPage(1) },
+
+  -- CMD+Backspace: delete to beginning of line (macOS convention, mirrors Ghostty default)
+  -- Sends \x15 (Ctrl+U / unix-line-discard) which readline/zsh interpret as kill-line.
+  { key = 'Backspace', mods = 'CMD', action = wezterm.action.SendString '\x15' },
+
+  -- Copy mode: Cmd+[ mirrors tmux `prefix + [` to enter vi copy mode
+  -- WezTerm copy mode uses vi keys by default (v=select, y=copy, q=quit)
+  {
+    key = '[',
+    mods = 'CMD',
+    action = wezterm.action.ActivateCopyMode,
+  },
+
+  -- Font size
+  {
+    key = '=',
+    mods = 'CMD',
+    action = wezterm.action.IncreaseFontSize,
+  },
+  {
+    key = '-',
+    mods = 'CMD',
+    action = wezterm.action.DecreaseFontSize,
+  },
+  {
+    key = '0',
+    mods = 'CMD',
+    action = wezterm.action.ResetFontSize,
+  },
+
+  -- Clear scrollback and screen
+  {
+    key = 'K',
+    mods = 'CMD',
+    action = wezterm.action.ClearScrollback 'ScrollbackAndViewport',
+  },
+
+  -- Search
+  {
+    key = 'F',
+    mods = 'CMD',
+    action = wezterm.action.Search 'CurrentSelectionOrEmptyString',
+  },
+
+  -- CMD+Y: Quick Select — highlights URLs/hashes/paths for instant copy (WezTerm-native)
+  -- Y for "yank"; type prefix of highlighted text to copy without entering copy mode
+  { key = 'y', mods = 'CMD', action = wezterm.action.QuickSelect },
+
+  -- CMD+P: command palette — fuzzy search tabs, panes, workspaces, commands
+  { key = 'p', mods = 'CMD', action = wezterm.action.ActivateCommandPalette },
+
+  -- CMD+SHIFT+S: manually save current workspace state (resurrect.wezterm)
+  -- Must call write_current_state in addition to save_state so that
+  -- resurrect_on_gui_startup knows which workspace to restore on next launch.
+  {
+    key = 'S',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action_callback(function(win, _)
+      local workspace = wezterm.mux.get_active_workspace()
+      resurrect.state_manager.save_state(resurrect.workspace_state.get_workspace_state())
+      resurrect.state_manager.write_current_state(workspace, 'workspace')
+    end),
+  },
+  -- CMD+SHIFT+L: fuzzy-pick a saved session to restore (resurrect.wezterm)
+  {
+    key = 'L',
+    mods = 'CMD|SHIFT',
+    action = wezterm.action_callback(function(win, pane)
+      resurrect.fuzzy_loader.fuzzy_load(win, pane, function(id, _)
+        local session_type = string.match(id, '([a-z]+)/.+')
+        if not session_type then return end
+        local state = resurrect.state_manager.load_state(id, session_type)
+        if not state then return end
+        if session_type == 'workspace' then
+          resurrect.workspace_state.restore_workspace(state, { window = win:mux_window() })
+        elseif session_type == 'window' then
+          resurrect.window_state.restore_window(win:mux_window(), state)
+        elseif session_type == 'tab' then
+          resurrect.tab_state.restore_tab(win:active_tab(), state)
+        end
+      end)
+    end),
+  },
+}
+
+-- ============================================
+-- Mouse Bindings
+-- ============================================
+
+-- Copy on select (matches Ghostty behavior)
+config.mouse_bindings = {
+  -- Copy selection to clipboard on release
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'NONE',
+    action = wezterm.action.CompleteSelection 'ClipboardAndPrimarySelection',
+  },
+  -- Open links with Cmd+Click
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'CMD',
+    action = wezterm.action.OpenLinkAtMouseCursor,
+  },
+}
+
+-- ============================================
+-- Bell Configuration
+-- ============================================
+
+config.audible_bell = 'Disabled'
+config.visual_bell = {
+  fade_in_function = 'EaseIn',
+  fade_in_duration_ms = 75,
+  fade_out_function = 'EaseOut',
+  fade_out_duration_ms = 150,
+}
+
+-- ============================================
+-- Performance Settings
+-- ============================================
+
+config.front_end = 'WebGpu'
+config.max_fps = 120
+config.enable_scroll_bar = false
+
+-- Align scrollback with tmux (tmux default: 50,000 lines)
+config.scrollback_lines = 50000
+
+-- ============================================
+-- Shell Integration
+-- ============================================
+
+-- Explicit zsh login shell (matches Ghostty command = /bin/zsh)
+-- Note: pane splits inherit cwd automatically when zsh sets OSC 7 in PROMPT
+config.default_prog = { '/bin/zsh', '-l' }
+
+-- ============================================
+-- Environment Variables
+-- ============================================
+
+-- Explicit truecolor hint (matches Ghostty env = COLORTERM=truecolor)
 config.set_environment_variables = {
-  TERM = 'xterm-256color',
   COLORTERM = 'truecolor',
 }
 
--- Confirm close when processes are running
-config.window_close_confirmation = 'AlwaysPrompt'
-config.skip_close_confirmation_for_processes_named = {
-  'bash', 'sh', 'zsh', 'fish', 'tmux', 'nu', 'cmd.exe', 'pwsh.exe',
+-- ============================================
+-- Session Persistence
+-- ============================================
+-- resurrect.wezterm: auto-saves workspace/tab/pane state every 5 minutes.
+-- On next launch, gui-startup restores the last saved session automatically.
+-- Plugin is cloned to ~/.local/share/wezterm/plugins/ on first use.
+-- State files (JSON) live in the plugin's data directory within that path.
+
+-- Auto-save every 5 minutes
+resurrect.state_manager.periodic_save {
+  interval_seconds = 300,
+  save_workspaces = true,
+  save_windows = true,
+  save_tabs = true,
 }
 
--- ==============================================================================
--- macOS-Specific Settings
--- ==============================================================================
+-- Auto-restore on startup
+wezterm.on('gui-startup', resurrect.state_manager.resurrect_on_gui_startup)
 
--- Option key as Alt
-config.send_composed_key_when_left_alt_is_pressed = true
-config.send_composed_key_when_right_alt_is_pressed = true
+-- ============================================
+-- Status Bar
+-- ============================================
+-- Right status: hostname + current time (mirrors tmux right status)
+-- Left status (tab title) shows workspace name via WezTerm's default tab handling.
+--
+-- NOT PORTED from tmux (limitations):
+--   - CPU/battery: requires polling wezterm.run_child_process — deferred
+--   - Pane synchronization (prefix+S): no native WezTerm equivalent
+--   - Session resurrection: not a terminal emulator feature
 
--- ==============================================================================
--- Color Schemes
--- ==============================================================================
-
--- Gruvbox Dark Custom (ported from Ghostty theme)
-config.color_schemes = {
-  ['Gruvbox Dark Custom'] = {
-    -- Core colors
-    background = '#1d2021',
-    foreground = '#ebdbb2',
-
-    -- Selection colors
-    selection_bg = '#458588',
-    selection_fg = '#ebdbb2',
-
-    -- Cursor colors
-    cursor_bg = '#ebdbb2',
-    cursor_fg = '#1d2021',
-    cursor_border = '#ebdbb2',
-
-    -- 16-color palette (Gruvbox dark)
-    ansi = {
-      '#504945', -- black (dark2)
-      '#fb4934', -- red (bright)
-      '#98971a', -- green
-      '#d79921', -- yellow
-      '#458588', -- blue
-      '#b16286', -- magenta
-      '#689d6a', -- cyan
-      '#a89984', -- white (light4)
-    },
-    brights = {
-      '#928374', -- bright black
-      '#fb4934', -- bright red
-      '#b8bb26', -- bright green
-      '#fabd2f', -- bright yellow
-      '#83a598', -- bright blue
-      '#d3869b', -- bright magenta
-      '#8ec07c', -- bright cyan
-      '#ebdbb2', -- bright white (light1)
-    },
-
-    -- Bold color
-    compose_cursor = '#ebdbb2',
-  },
-
-  ['Gruvbox Light Custom'] = {
-    -- Core colors
-    background = '#f9f5d7',
-    foreground = '#3c3836',
-
-    -- Selection colors
-    selection_bg = '#d5c4a1',
-    selection_fg = '#3c3836',
-
-    -- Cursor colors
-    cursor_bg = '#d65d0e',
-    cursor_fg = '#f9f5d7',
-    cursor_border = '#d65d0e',
-
-    -- 16-color palette (Gruvbox light)
-    ansi = {
-      '#282828', -- black (dark0)
-      '#9d0006', -- red (faded)
-      '#79740e', -- green (faded)
-      '#b57614', -- yellow (faded)
-      '#076678', -- blue (faded)
-      '#8f3f71', -- purple (faded)
-      '#427b58', -- aqua (faded)
-      '#7c6f64', -- white (dark4)
-    },
-    brights = {
-      '#928374', -- bright black (gray)
-      '#cc241d', -- bright red (neutral)
-      '#79740e', -- bright green (faded)
-      '#b57614', -- bright yellow (faded)
-      '#458588', -- bright blue (neutral)
-      '#b16286', -- bright purple (neutral)
-      '#427b58', -- bright cyan (faded)
-      '#3c3836', -- bright white (dark1)
-    },
-
-    -- Bold color
-    compose_cursor = '#3c3836',
-  },
-}
-
--- ==============================================================================
--- Dynamic Theme Switching
--- ==============================================================================
-
--- Function to get color scheme based on theme-mode file or system appearance
-local function get_color_scheme()
-  -- First, check for explicit theme-mode file (set by toggle-theme)
-  local home = os.getenv('HOME') or ''
-  local theme_file = home .. '/.config/theme-mode'
-
-  local file = io.open(theme_file, 'r')
-  if file then
-    local mode = file:read('*l')
-    file:close()
-    if mode == 'light' then
-      return 'Gruvbox Light Custom'
-    elseif mode == 'dark' then
-      return 'Gruvbox Dark Custom'
-    end
-  end
-
-  -- Fall back to system appearance if no theme file
-  local appearance = wezterm.gui.get_appearance()
-  if appearance:find('Dark') then
-    return 'Gruvbox Dark Custom'
-  else
-    return 'Gruvbox Light Custom'
-  end
-end
-
--- Apply color scheme
-config.color_scheme = get_color_scheme()
-
--- Event handler for appearance changes
-wezterm.on('window-config-reloaded', function(window, pane)
-  local overrides = window:get_config_overrides() or {}
-  local scheme = get_color_scheme()
-  if overrides.color_scheme ~= scheme then
-    overrides.color_scheme = scheme
-    window:set_config_overrides(overrides)
-  end
+-- Left status: active workspace name (mirrors tmux session name in status-left)
+-- Default workspace is 'default'; named workspaces surface here when set via palette
+wezterm.on('update-left-status', function(window, _)
+  local workspace = window:active_workspace()
+  window:set_left_status(wezterm.format {
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = '  ' .. workspace .. '  ' },
+    { Attribute = { Intensity = 'Normal' } },
+  })
 end)
 
--- ==============================================================================
--- Selection and Clipboard
--- ==============================================================================
+wezterm.on('update-right-status', function(window, _pane)
+  local hostname = wezterm.hostname()
+  -- Strip domain suffix for brevity (e.g. "host.local" -> "host")
+  hostname = hostname:gsub('%..*', '')
 
--- Copy on select (similar to Ghostty)
-config.selection_word_boundary = " \t\n{}[]()\"'`"
-config.audible_bell = 'Disabled'
+  local time = wezterm.strftime '%H:%M'
 
--- ==============================================================================
--- Mouse Configuration
--- ==============================================================================
+  window:set_right_status(wezterm.format {
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = '  ' .. hostname .. '  ' .. time .. '  ' },
+  })
+end)
 
--- Focus follows mouse
-config.pane_focus_follows_mouse = false
+-- Per-process Nerd Font icon map (IosevkaTerm Nerd Font code points)
+local PROC_ICONS = {
+  -- Editors
+  nvim    = '\u{e62b}',  -- nf-custom-vim
+  vim     = '\u{e62b}',
+  vi      = '\u{e62b}',
 
--- ==============================================================================
--- Additional Settings
--- ==============================================================================
+  -- AI tools
+  claude  = '\u{f167a}',  -- nf-md-robot_outline
 
--- Scrollback
-config.scrollback_lines = 10000
+  -- little-loops CLI tools
+  -- Add any project/local CLI tool here; hyphenated names use bracket syntax
+  ['ll-loop'] = '\u{ef0b}',  -- nf-oct-sync (loop/cycle icon)
+  ['ll-issues'] = '\u{f145}',
+  ['ll-auto'] = '\u{f006a}',  -- nf-md-autorenew
+  ['ll-parallel'] = '\u{f1860}',  -- nf-md-format_list_group 
+  ['ll-sprint'] = '\u{eb97}',  -- nf-cod-group_by_ref_type 
 
--- Enable true color
-config.enable_term256_colors = true
+  -- Version control
+  git     = '\u{e702}',  -- nf-dev-git
+  lazygit = '\u{e702}',  -- nf-dev-git (lazygit is a git TUI)
+  gh      = '\u{e709}',  -- nf-dev-github
 
--- Tab bar styling
-config.colors = {
-  tab_bar = {
-    background = 'transparent',
-  },
+  -- Python
+  python  = '\u{e73c}',  -- nf-dev-python
+  python3 = '\u{e73c}',
+
+  -- JavaScript / Node ecosystem
+  node    = '\u{e718}',  -- nf-dev-nodejs_small
+  npm     = '\u{e718}',
+  yarn    = '\u{e718}',
+  pnpm    = '\u{e718}',
+  bun     = '\u{e718}',
+  deno    = '\u{e718}',
+
+  -- Go
+  go      = '\u{e724}',  -- nf-dev-go
+
+  -- Java / JVM
+  java    = '\u{e738}',  -- nf-dev-java
+  javac   = '\u{e738}',
+  mvn     = '\u{e738}',
+  gradle  = '\u{e738}',
+
+  -- Rust
+  cargo   = '\u{e7a8}',  -- nf-dev-rust
+  rust    = '\u{e7a8}',
+
+  -- Ruby
+  ruby    = '\u{e739}',  -- nf-dev-ruby
+
+  -- Lua
+  lua     = '\u{e620}',  -- nf-dev-lua
+
+  -- Systems / build
+  make    = '\u{e779}',  -- nf-dev-gnu
+  ssh     = '\u{f233}',  -- nf-fa-server
+
+  -- Containers / devops
+  docker  = '\u{f308}',  -- nf-linux-docker
+  kubectl = '\u{f308}',  -- nf-linux-docker (K8s is container-adjacent)
+  k9s     = '\u{f308}',
+  helm    = '\u{f308}',
+  terraform = '\u{f0c2}',  -- nf-fa-cloud
+
+  -- Databases
+  psql    = '\u{f1c0}',  -- nf-fa-database
+  mysql   = '\u{f1c0}',
+  sqlite3 = '\u{f1c0}',
+  mongosh = '\u{f1c0}',
+  ['redis-cli'] = '\u{f1c0}',
+
+  -- Network tools
+  curl    = '\u{f0ac}',  -- nf-fa-globe
+  wget    = '\u{f0ac}',
+
+  -- Search / fuzzy find
+  fzf     = '\u{f002}',  -- nf-fa-search
+  rg      = '\u{f002}',
+
+  -- System monitors
+  htop    = '\u{f080}',  -- nf-fa-bar-chart
+  top     = '\u{f080}',
+  btop    = '\u{f080}',
+
+  -- Pagers / docs
+  man     = '\u{f02d}',  -- nf-fa-book
+  less    = '\u{f02d}',
+
+  -- Package managers (non-Node)
+  brew    = '\u{f0fc}',  -- nf-fa-beer
 }
+local DEFAULT_ICON = '\u{f489}'  -- nf-fa-terminal (fallback)
+-- Shorten a cwd Uri to a compact display path (~/a/b form, last 2 components)
+local function short_path(cwd_uri)
+  if not cwd_uri then return '~' end
+  local path = cwd_uri.file_path or ''
+  if path == '' then return '~' end
+  local home = os.getenv('HOME') or ''
+  if home ~= '' and path:sub(1, #home) == home then
+    path = '~' .. path:sub(#home + 1)
+  end
+  return path:match('[^/]+/[^/]+$') or path:match('[^/]+$') or path
+end
 
--- ==============================================================================
--- Key Bindings
--- ==============================================================================
-
-config.keys = {
-  -- CMD+D: Horizontal split (side by side)
-  {
-    key = 'd',
-    mods = 'CMD',
-    action = wezterm.action.SplitHorizontal({ domain = 'CurrentPaneDomain' }),
-  },
-  -- CMD+Shift+D: Vertical split (stacked)
-  {
-    key = 'd',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.SplitVertical({ domain = 'CurrentPaneDomain' }),
-  },
-  -- CMD+W: Close current pane
-  {
-    key = 'w',
-    mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane({ confirm = true }),
-  },
-  -- CMD+Shift+W: Close current window
-  {
-    key = 'w',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.CloseCurrentWindow({ confirm = true }),
-  },
-  -- CMD+Enter: Send newline to terminal app (for Claude Code multiline input)
-  {
-    key = 'Enter',
-    mods = 'CMD',
-    action = wezterm.action.SendKey({ key = 'Enter', mods = 'ALT' }),
-  },
-}
-
--- ==============================================================================
--- Machine-Local Overrides
--- ==============================================================================
-
-local home = os.getenv('HOME') or ''
-local local_config = home .. '/.wezterm.local.lua'
-local f = io.open(local_config, 'r')
-if f then
-  f:close()
-  local local_overrides = dofile(local_config)
-  if type(local_overrides) == 'table' then
-    for k, v in pairs(local_overrides) do
-      config[k] = v
-    end
+-- Theme-aware colors for tab label segments
+local function tab_seg_colors()
+  if wezterm.gui.get_appearance():find 'Dark' then
+    return {
+      icon     = '#83a598',  -- muted bright-blue
+      label    = '#ebdbb2',  -- cream (primary)
+      meta     = '#928374',  -- dim gray (pane count)
+      activity = '#fabd2f',  -- bright yellow (activity dot)
+    }
+  else
+    return {
+      icon     = '#076678',  -- deep teal
+      label    = '#3c3836',  -- dark (primary)
+      meta     = '#7c6f64',  -- medium gray
+      activity = '#b57614',  -- amber
+    }
   end
 end
+
+-- Tab title: icon + label (cwd when idle, process when busy) + pane count + activity dot
+wezterm.on('format-tab-title', function(tab, tabs, panes, cfg, hover, max_width)
+  local pane   = tab.active_pane
+  local colors = tab_seg_colors()
+
+  -- Resolve label: user-set title wins; otherwise derive from process / cwd
+  local icon, label, is_path
+  local user_title = tab.tab_title
+  if user_title and user_title ~= '' then
+    icon    = DEFAULT_ICON
+    label   = user_title
+    is_path = false
+  else
+    local proc_name = pane.foreground_process_name or ''
+    local proc      = proc_name:match('([^/\\]+)$') or ''
+    if proc == '' then proc = pane.title end
+    -- Normalize Claude Code: its process title is a version string (e.g. "2.1.90")
+    -- but the full path still contains "claude", so detect by path prefix.
+    if proc_name:find('/claude') or proc_name:find('claude%-code') then
+      proc = 'claude'
+    end
+    -- Normalize version-tagged names before lookup:
+    --   python3.12 → python3 (strip .minor)
+    --   python3    → python3 (direct hit)
+    --   node18     → node    (strip trailing digits)
+    -- For script interpreters (python, node, ruby, perl), probe argv[2] to
+    -- detect pip/npm/etc entry-point scripts (e.g. python3.12 running ll-loop).
+    -- argv is 1-indexed: argv[1] = interpreter path, argv[2] = script path.
+    local SCRIPT_INTERP = { python = true, node = true, ruby = true, perl = true }
+    local function resolve_proc_icon(p)
+      if PROC_ICONS[p] then return PROC_ICONS[p] end
+      local stripped = p:match('^(.+)%.[0-9]+$')
+      local base     = p:match('^([^0-9]+)')
+      local base_key = (base or ''):lower()
+      -- For interpreter processes, probe argv BEFORE falling back to the interpreter icon.
+      -- This ensures "python3.12 running ll-loop" → ll-loop icon, not Python icon.
+      -- Without this ordering, PROC_ICONS['python3'] would fire first and short-circuit.
+      if SCRIPT_INTERP[base_key] then
+        local ok, mux_pane = pcall(wezterm.mux.get_pane, pane.pane_id)
+        if ok and mux_pane then
+          local ok2, info = pcall(function() return mux_pane:get_foreground_process_info() end)
+          if ok2 and info and info.argv and #info.argv >= 2 then
+            local script_name = info.argv[2]:match('([^/\\]+)$') or ''
+            if PROC_ICONS[script_name] then return PROC_ICONS[script_name] end
+          end
+        end
+      end
+      if stripped and PROC_ICONS[stripped] then return PROC_ICONS[stripped] end
+      if base and base ~= '' and PROC_ICONS[base] then return PROC_ICONS[base] end
+      return DEFAULT_ICON
+    end
+    icon    = resolve_proc_icon(proc)
+    label   = short_path(pane.current_working_dir)
+    is_path = true
+  end
+
+  -- Pane count badge (shown only when tab has splits)
+  local pane_count  = #panes
+  local pane_suffix = pane_count > 1 and (' [' .. pane_count .. ']') or ''
+
+  -- Activity dot: any pane with unseen output
+  local has_activity = false
+  for _, p in ipairs(panes) do
+    if p.has_unseen_output then has_activity = true; break end
+  end
+
+  -- Truncate label to fit within max_width.
+  -- Path labels clip from the left (…/dirname) so the directory name stays visible.
+  -- Process and user-set labels clip from the right as usual.
+  local reserved = 4 + #pane_suffix + (has_activity and 2 or 0)
+  if wezterm.column_width(label) > max_width - reserved then
+    local avail = max_width - reserved - 1
+    if is_path then
+      label = '\u{2026}' .. wezterm.truncate_left(label, avail)
+    else
+      label = wezterm.truncate_right(label, avail) .. '\u{2026}'
+    end
+  end
+
+  -- Pad label to fill the full max_width allocation so tabs expand to use available width
+  local avail = max_width - reserved
+  local lw = wezterm.column_width(label)
+  if lw < avail then
+    label = label .. string.rep(' ', avail - lw)
+  end
+
+  -- Build colored segments
+  local seg = {
+    { Text = ' ' },
+    { Foreground = { Color = colors.icon } },
+    { Text = icon },
+    { Foreground = { Color = colors.label } },
+    { Attribute = { Intensity = 'Bold' } },
+    { Text = ' ' .. label },
+    { Attribute = { Intensity = 'Normal' } },
+  }
+  if pane_suffix ~= '' then
+    table.insert(seg, { Foreground = { Color = colors.meta } })
+    table.insert(seg, { Text = pane_suffix })
+  end
+  if has_activity then
+    table.insert(seg, { Foreground = { Color = colors.activity } })
+    table.insert(seg, { Text = ' \u{25cf}' })  -- ●
+  end
+  table.insert(seg, { Text = '  ' })
+  return seg
+end)
+
+-- Re-apply terminal body colors whenever the config reloads.
+-- WezTerm triggers a config reload automatically when macOS appearance changes
+-- (Dark ↔ Light), so this keeps the terminal body in sync with the tab bar
+-- which already recomputes colors via tab_seg_colors() on every format-tab-title call.
+wezterm.on('window-config-reloaded', function(window, _)
+  local overrides = window:get_config_overrides() or {}
+  overrides.colors = get_colors()
+  window:set_config_overrides(overrides)
+end)
+
+wezterm.on('close-window', function(window)
+  window:close()
+end)
 
 return config

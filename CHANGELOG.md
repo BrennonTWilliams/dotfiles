@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (WezTerm)
+- **Pane zoom** (`CMD+SHIFT+Z`): toggle current pane to fill the window, mirrors tmux `prefix+z`
+- **Fullscreen toggle** (`CMD+Enter`): mirrors Ghostty default
+- **Pane resize** (`CMD+SHIFT+Arrow`): resize pane in 5-cell increments in any direction
+- **Tab rename** (`CMD+SHIFT+R`): prompt to rename the current tab, mirrors tmux `prefix+,`
+- **Quick Select** (`CMD+Y`): WezTerm-native overlay highlighting URLs, hashes, and paths for instant copy
+- **Command palette** (`CMD+P`): fuzzy search over all tabs, panes, workspaces, and commands
+- **Left status bar**: displays active workspace name alongside existing hostname+time right status
+- **Kitty keyboard protocol** (`enable_kitty_keyboard = true`): extended key encoding for Neovim 0.10+ — distinguishes Esc/Ctrl+[, Tab/Ctrl+I, Enter/Ctrl+M
+
+### Changed (WezTerm)
+- **Pane close confirmation**: `CMD+w` now prompts before closing (`confirm = true`)
+- **Window close confirmation**: `window_close_confirmation = 'AlwaysPrompt'` — matches Ghostty `confirm-close-surface` behavior
+
 ## [1.1.0] - 2025-11-19 - Repository Cleanup & Consolidation Release
 
 ### Added

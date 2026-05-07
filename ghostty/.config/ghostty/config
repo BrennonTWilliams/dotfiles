@@ -16,7 +16,7 @@ shell-integration = zsh
 # Theme Configuration
 # ============================================
 
-# Custom themes - gruvbox-dark-custom (enhanced Gruvbox palette) as default
+# Dark theme: Gruvbox (amber/green palette, consistent across light/dark mode)
 theme = gruvbox-dark-custom
 
 # Load optional local config for runtime theme switching (toggle-theme)
@@ -184,7 +184,7 @@ env = COLORTERM=truecolor
 #
 # This configuration provides:
 # - Optimal macOS integration with native features
-# - Custom bren dark theme with full Gruvbox color palette for comfortable coding
+# - Gruvbox dark theme with amber/green palette for comfortable coding
 # - GPU-accelerated rendering for smooth performance
 # - Proper zsh shell integration without conflicts
 # - Comprehensive keybindings for productivity

@@ -150,6 +150,9 @@ node_modules/
 .claude/statsig/
 .claude/settings.local.json
 
+# Claude continuation prompts (session handoff)
+.claude/ll-continue-prompt.md
+
 # Claude documentation artifacts (development only)
 claudedocs/
 
@@ -267,3 +270,13 @@ starship/backups/
 # Allow specific config templates
 !*.example
 !*.template
+
+# little-loops state files
+.loops/
+.auto-manage-state.json
+.parallel-manage-state.json
+.claude/ll-context-state.json
+.claude/ll-sync-state.json
+.ll/ll-context-state.json
+.ll/ll-sync-state.json
+.ll/ll-continue-prompt.md
