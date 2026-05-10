@@ -1,0 +1,103 @@
+# Process name → Nerd Font glyph map.
+# Format: <name><TAB><glyph>   (lines starting with # and blank lines are ignored)
+# Special key: _default is the fallback when no name matches (or arg is empty).
+#
+# Consumed by:
+#   - scripts/process-icon   (tmux window-status-format via #(...))
+#   - zsh/functions/terminal.zsh  (OSC 2 tab title via preexec/precmd)
+#
+# When adding a new entry, find the glyph at https://www.nerdfonts.com/cheat-sheet
+# and paste the literal character — both readers consume raw UTF-8.
+
+
+# Fallback (idle terminal)
+_default	
+
+# Editors
+nvim	
+vim	
+vi	
+
+# AI
+claude	󱙺
+
+# little-loops
+ll-loop	
+ll-issues	
+ll-auto	󰁪
+ll-parallel	󱡠
+ll-sprint	
+
+# VCS
+git	
+lazygit	
+gh	
+
+# Python
+python	
+python3	
+
+# Node / JS runtimes
+node	
+npm	
+yarn	
+pnpm	
+bun	
+deno	
+
+# Go
+go	
+
+# JVM
+java	
+javac	
+mvn	
+gradle	
+
+# Rust
+cargo	
+rust	
+
+# Ruby
+ruby	
+
+# Lua
+lua	
+
+# Build / system
+make	
+ssh	
+
+# Containers / cloud
+docker	
+kubectl	
+k9s	
+helm	
+terraform	
+
+# Databases
+psql	
+mysql	
+sqlite3	
+mongosh	
+redis-cli	
+
+# Net
+curl	
+wget	
+
+# Search
+fzf	
+rg	
+
+# Process viewers
+htop	
+top	
+btop	
+
+# Docs / pagers
+man	
+less	
+
+# Package managers
+brew	

@@ -1,0 +1,35 @@
+#!/bin/sh
+# Print a Nerd Font glyph for a process name.
+#
+# Consumed by tmux's window-status-format via #(...) and shared with
+# zsh/functions/terminal.zsh, both of which read scripts/lib/process-icons.tsv.
+#
+# Usage:
+#   process-icon <process-name>
+#
+# Behavior:
+#   - Empty arg or unknown name → falls back to the _default entry.
+#   - Output has NO trailing newline (so tmux's #() and zsh's OSC 2 both render
+#     a single glyph followed by a space inserted by the caller).
+#   - Exits 0 even when the TSV is missing, emitting "?" — keeps tmux's status
+#     bar quiet if the dotfiles repo is unstowed or moved.
+
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+tsv="$script_dir/lib/process-icons.tsv"
+
+if [ ! -r "$tsv" ]; then
+    printf '?'
+    exit 0
+fi
+
+key=${1:-}
+[ -z "$key" ] && key=_default
+
+awk -F '\t' -v key="$key" '
+    /^[[:space:]]*#/ || NF < 2 { next }
+    $1 == "_default" { def = $2 }
+    $1 == key        { hit = $2 }
+    END { printf "%s", (hit != "" ? hit : def) }
+' "$tsv"

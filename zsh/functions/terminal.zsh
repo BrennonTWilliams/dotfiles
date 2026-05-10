@@ -23,85 +23,28 @@ tab-title-reset() {
 # Auto Tab Title (OSC 2, preexec/precmd hooks)
 # ==============================================================================
 # Sends a Nerd Font process icon + short cwd as the tab/window title via OSC 2.
-# Ported from the PROC_ICONS map in wezterm/.wezterm.lua.
-#
-# Unicode: BMP PUA codepoints (<=U+FFFF) use $'\uXXXX'.
-# Supplementary PUA-A (U+F0000-U+FFFFF) use $'\Uxxxxxxxx'.
+# Process → glyph map lives in scripts/lib/process-icons.tsv (single source of
+# truth; also read by scripts/process-icon for tmux's window-status-format).
 
-typeset -gA _TAB_ICONS=(
-  nvim        $''   # nf-custom-vim
-  vim         $''
-  vi          $''
+typeset -gA _TAB_ICONS=()
+_TAB_ICON_DEFAULT=''
 
-  claude      $'\U000f167a'  # nf-md-robot_outline (supplementary PUA-A)
-
-  ll-loop     $''   # nf-oct-sync
-  ll-issues   $''
-  ll-auto     $'\U000f006a'  # nf-md-autorenew (supplementary PUA-A)
-  ll-parallel $'\U000f1860'  # nf-md-format_list_group (supplementary PUA-A)
-  ll-sprint   $''   # nf-cod-group_by_ref_type
-
-  git         $''   # nf-dev-git
-  lazygit     $''
-  gh          $''   # nf-dev-github
-
-  python      $''   # nf-dev-python
-  python3     $''
-
-  node        $''   # nf-dev-nodejs_small
-  npm         $''
-  yarn        $''
-  pnpm        $''
-  bun         $''
-  deno        $''
-
-  go          $''   # nf-dev-go
-
-  java        $''   # nf-dev-java
-  javac       $''
-  mvn         $''
-  gradle      $''
-
-  cargo       $''   # nf-dev-rust
-  rust        $''
-
-  ruby        $''   # nf-dev-ruby
-
-  lua         $''   # nf-dev-lua
-
-  make        $''   # nf-dev-gnu
-  ssh         $''   # nf-fa-server
-
-  docker      $''   # nf-linux-docker
-  kubectl     $''
-  k9s         $''
-  helm        $''
-  terraform   $''   # nf-fa-cloud
-
-  psql        $''   # nf-fa-database
-  mysql       $''
-  sqlite3     $''
-  mongosh     $''
-  redis-cli   $''
-
-  curl        $''   # nf-fa-globe
-  wget        $''
-
-  fzf         $''   # nf-fa-search
-  rg          $''
-
-  htop        $''   # nf-fa-bar-chart
-  top         $''
-  btop        $''
-
-  man         $''   # nf-fa-book
-  less        $''
-
-  brew        $''   # nf-fa-beer
-)
-
-# nf-fa-terminal U+F489 — shown when idle (no command running)
-_TAB_ICON_DEFAULT=$''
+# Load the map once at shell startup. Anonymous function keeps `tsv`/`name`/
+# `glyph` out of the global namespace; ${(%):-%x} resolves to this file's path
+# so we can find the repo root regardless of how zsh was invoked.
+() {
+    local tsv="${${(%):-%x}:A:h:h:h}/scripts/lib/process-icons.tsv"
+    [[ -r $tsv ]] || return
+    local name glyph
+    while IFS=$'\t' read -r name glyph; do
+        [[ -z $name || $name == \#* ]] && continue
+        if [[ $name == _default ]]; then
+            _TAB_ICON_DEFAULT=$glyph
+        else
+            _TAB_ICONS[$name]=$glyph
+        fi
+    done < $tsv
+}
 
 # Emits OSC 2 with icon + short cwd. No subshells — runs on every prompt.
 # Shows last 2 path components; substitutes $HOME with ~.
