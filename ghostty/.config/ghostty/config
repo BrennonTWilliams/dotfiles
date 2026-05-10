@@ -100,6 +100,8 @@ keybind = super+w=text:\x01x
 keybind = super+shift+w=close_window
 keybind = ctrl+tab=text:\x01n
 keybind = ctrl+shift+tab=text:\x01p
+keybind = super+shift+]=text:\x01n   # macOS intercepts these; setup-terminal.sh remaps the Window menu items
+keybind = super+shift+[=text:\x01p   # to free these combos — restart Ghostty after running that script
 keybind = super+one=text:\x011
 keybind = super+two=text:\x012
 keybind = super+three=text:\x013
