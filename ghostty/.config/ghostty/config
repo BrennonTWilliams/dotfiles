@@ -100,8 +100,11 @@ keybind = super+w=text:\x01x
 keybind = super+shift+w=close_window
 keybind = ctrl+tab=text:\x01n
 keybind = ctrl+shift+tab=text:\x01p
-keybind = super+shift+]=text:\x01n   # macOS intercepts these; setup-terminal.sh remaps the Window menu items
-keybind = super+shift+[=text:\x01p   # to free these combos — restart Ghostty after running that script
+# macOS intercepts these; setup-terminal.sh remaps the Window menu items
+# to free these combos — restart Ghostty after running that script.
+# NOTE: Ghostty's `text:` value runs to end-of-line; never put trailing `#` comments on these.
+keybind = super+shift+]=text:\x01n
+keybind = super+shift+[=text:\x01p
 keybind = super+one=text:\x011
 keybind = super+two=text:\x012
 keybind = super+three=text:\x013
@@ -120,6 +123,12 @@ keybind = super+alt+left=text:\x01h
 keybind = super+alt+right=text:\x01l
 keybind = super+alt+up=text:\x01k
 keybind = super+alt+down=text:\x01j
+
+# Pane resize → tmux (capital H/J/K/L after prefix; -r-repeatable in tmux)
+keybind = super+shift+left=text:\x01H
+keybind = super+shift+down=text:\x01J
+keybind = super+shift+up=text:\x01K
+keybind = super+shift+right=text:\x01L
 
 # Line navigation (Home/End escape sequences for readline / shell editors)
 keybind = super+left=text:\x1bOH
