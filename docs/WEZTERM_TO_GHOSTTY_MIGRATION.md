@@ -213,11 +213,11 @@ Acceptable retentions:
 
 A successful migration means:
 - [ ] Apple Dictation works inside the terminal (the whole point)
-- [ ] All current keybindings either work natively, are intentionally accepted as lost, or have a documented workaround
-- [ ] Theme auto-switches between Gruvbox dark/light with macOS appearance
+- [x] All current keybindings either work natively, are intentionally accepted as lost, or have a documented workaround
+- [x] Theme auto-switches between Gruvbox dark/light with macOS appearance
 - [x] tmux-resurrect restores sessions across restarts
-- [ ] Tab titles show per-process icons + short cwd via OSC 2
-- [ ] tmux status line shows session name (left) and hostname+time (right)
+- [x] Tab titles show per-process icons + short cwd via OSC 2
+- [x] tmux status line shows session name (left) and hostname+time (right)
 - [ ] No regressions in existing Ghostty config consumers (Automator quick action, finder integration)
 
 ---
