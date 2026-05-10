@@ -216,7 +216,7 @@ command = /opt/homebrew/bin/tmux new-session -A -s main
 # working-directory = ~
 
 # Scrollback buffer (~50k lines equivalent)
-scrollback-limit = 10000000
+scrollback-limit = 1000
 
 # Terminal type
 term = xterm-256color
@@ -232,7 +232,6 @@ focus-follows-mouse = false
 # ============================================
 
 # Environment variables for Ghostty sessions
-env = TERM=xterm-256color
 env = COLORTERM=truecolor
 
 # ============================================
