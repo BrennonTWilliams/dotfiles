@@ -64,6 +64,7 @@ macos-option-as-alt = true
 # Window padding for better readability
 window-padding-x = 8
 window-padding-y = 8
+window-padding-color = extend
 
 # Tab bar configuration for status-like functionality
 window-show-tab-bar = auto
@@ -145,8 +146,8 @@ keybind = alt+right=text:\x1bf
 # Kill line (ctrl+u / readline backward-kill-line)
 keybind = super+backspace=text:\x15
 
-# Clear scrollback
-keybind = super+k=clear_screen
+# Clear scrollback: sends C-a C-l to tmux (prefix + C-l fires the clear-history bind)
+keybind = super+k=text:\x01\x0c
 
 # Command palette
 keybind = super+shift+p=toggle_command_palette
@@ -155,6 +156,10 @@ keybind = super+shift+p=toggle_command_palette
 # Use the shell function instead: tab-title my-task
 # Bind cmd+shift+r to type the function name as a convenience starter.
 keybind = super+shift+r=text:tab-title
+
+# System-wide quick terminal (works from any macOS app; Cmd+backtick)
+# Note: if it doesn't fire, check System Settings > Keyboard Shortcuts for conflicts
+keybind = global:super+grave=toggle_quick_terminal
 
 # ============================================
 # Clipboard Integration
@@ -209,13 +214,18 @@ copy-on-select = false
 # ============================================
 
 # Shell command for new terminals
-command = /opt/homebrew/bin/tmux new-session -A -s main
+command = /usr/bin/env tmux new-session -A -s main
+
+# Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
+quick-terminal-position = bottom
+quick-terminal-size = 60%
+quick-terminal-animation-duration = 0.1
 
 # Working directory - start in home directory
 # Defaults to $HOME if not specified
 # working-directory = ~
 
-# Scrollback buffer (~50k lines equivalent)
+# Ghostty scrollback kept minimal; tmux owns scrollback (history-limit 50000)
 scrollback-limit = 1000
 
 # Terminal type
