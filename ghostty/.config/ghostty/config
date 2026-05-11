@@ -228,8 +228,9 @@ quick-terminal-animation-duration = 0.1
 # Ghostty scrollback kept minimal; tmux owns scrollback (history-limit 50000)
 scrollback-limit = 1000
 
-# Terminal type
-term = xterm-256color
+# TERM is intentionally unset — Ghostty advertises xterm-ghostty natively,
+# which carries undercurl, kitty-graphics, and modern OSC support. Tmux
+# overrides $TERM to tmux-256color inside sessions regardless.
 
 # Confirm exit on active processes
 confirm-close-surface = true
