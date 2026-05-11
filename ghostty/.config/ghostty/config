@@ -215,7 +215,7 @@ copy-on-select = false
 # ============================================
 
 # Shell command for new terminals
-command = /usr/bin/env tmux new-session -A -s main
+command = /bin/zsh -l -c "exec tmux new-session -A -s main"
 
 # Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
 quick-terminal-position = bottom
