@@ -139,6 +139,13 @@ keybind = super+right=text:\x1bOF
 keybind = super+up=scroll_page_up
 keybind = super+down=scroll_page_down
 
+# Prompt navigation (requires shell-integration; walks OSC prompt marks)
+keybind = ctrl+shift+up=jump_to_prompt:-1
+keybind = ctrl+shift+down=jump_to_prompt:1
+
+# Dump Ghostty scrollback to a temp file and open it (editor-grade selection)
+keybind = super+shift+o=write_scrollback_file:open
+
 # Readline word navigation (option as alt is set globally; these ensure \x1bb/\x1bf)
 keybind = alt+left=text:\x1bb
 keybind = alt+right=text:\x1bf
