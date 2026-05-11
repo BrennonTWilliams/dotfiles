@@ -159,7 +159,7 @@ keybind = super+shift+r=text:tab-title
 
 # System-wide quick terminal (works from any macOS app; Cmd+backtick)
 # Note: if it doesn't fire, check System Settings > Keyboard Shortcuts for conflicts
-keybind = global:super+grave=toggle_quick_terminal
+keybind = global:super+backquote=toggle_quick_terminal
 
 # ============================================
 # Clipboard Integration
@@ -182,7 +182,8 @@ clipboard-write = allow
 # Mouse Configuration
 # ============================================
 
-# Mouse settings are handled automatically by Ghostty
+# Hide mouse cursor while typing
+mouse-hide-while-typing = true
 
 # ============================================
 # Bell and Notifications
