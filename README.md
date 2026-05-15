@@ -55,6 +55,7 @@ cd ~/.dotfiles
 - [Installation](#installation)
 - [First Steps After Install](#first-steps-after-install)
 - [Quick Reference](#quick-reference)
+- [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md)
 - [Machine-Specific Configuration](#machine-specific-configuration)
 - [Updating & Maintenance](#updating--maintenance)
 - [Troubleshooting](#troubleshooting)
@@ -333,6 +334,8 @@ Verifies all installations and reports any issues.
 
 ## Quick Reference
 
+> **Terminal keybindings?** See the [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md) for the full reference — windows, panes, copy mode, scroll, sessions, and more.
+
 ### Starship Display Modes
 
 ```bash
@@ -530,6 +533,7 @@ For more issues, see [Troubleshooting Guide](TROUBLESHOOTING.md).
 - [System Requirements](docs/SYSTEM_REQUIREMENTS.md) - Version requirements and package lists
 
 ### Configuration Guides
+- [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md) - Keybinding reference for windows, panes, copy mode, and more
 - [Starship Configuration](docs/STARSHIP_CONFIGURATION.md) - Prompt customization and modes
 - [Cross-Platform Utilities](docs/CROSS_PLATFORM_UTILITIES.md) - Path resolution and platform detection
 - [Health Check System](docs/HEALTH_CHECK_SYSTEM.md) - Post-installation validation
