@@ -26,7 +26,8 @@
 |---|---|---|
 | Split right | `Cmd+D` | `prefix + \|` |
 | Split down | `Cmd+Shift+D` | `prefix + -` |
-| Navigate pane | `Cmd+Opt+Arrow` | `prefix + h/j/k/l` or `Alt+Arrow` |
+| Navigate pane (nvim-aware) | `Ctrl+h/j/k/l` | `Ctrl+h/j/k/l` |
+| Navigate pane (tmux-only) | `Cmd+Opt+Arrow` | `prefix + h/j/k/l` or `Alt+Arrow` |
 | Resize pane | `Cmd+Shift+Arrow` | `prefix + H/J/K/L` (repeatable) |
 | Zoom / unzoom pane | `Cmd+Shift+Z` | `prefix + z` |
 | Toggle pane sync | — | `prefix + S` |
