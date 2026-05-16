@@ -92,6 +92,26 @@ Grabs URLs, paths, hashes, and words from recent pane output and inserts the sel
 
 ---
 
+## Keybinding Reference (which-key)
+
+| Action | Key |
+|---|---|
+| Show navigable binding popup | `prefix + ?` |
+
+Press any listed key from the popup to execute it directly, or navigate with `j`/`k` / arrow keys.
+
+---
+
+## Command Notifications (tmux-notify)
+
+| Action | Key |
+|---|---|
+| Monitor current pane | `prefix + m` |
+
+Fires a macOS desktop notification when the monitored command completes. Useful for `cargo build`, `npm install`, long test runs.
+
+---
+
 ## TPM Plugin Management
 
 | Action | Key |

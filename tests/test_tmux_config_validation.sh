@@ -91,7 +91,8 @@ test_required_plugins_installed() {
     [[ -d "$HOME/.tmux/plugins/tmux-cpu" ]]             && \
     [[ -d "$HOME/.tmux/plugins/tmux-prefix-highlight" ]] && \
     [[ -d "$HOME/.tmux/plugins/tmux-thumbs" ]]          && \
-    [[ -d "$HOME/.tmux/plugins/tmux-open" ]]
+    [[ -d "$HOME/.tmux/plugins/tmux-open" ]]          && \
+    [[ -d "$HOME/.tmux/plugins/tmux-notify" ]]
 }
 
 test_prefix_key_configured() {
