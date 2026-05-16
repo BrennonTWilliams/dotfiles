@@ -71,6 +71,7 @@
 
 | Action | Key |
 |---|---|
+| Project sessionizer | `Cmd+Shift+T` or `prefix + T` |
 | fzf session switcher | `prefix + f` |
 | Floating scratch terminal | `prefix + g` |
 | Floating lazygit | `Cmd+G` or `prefix + G` |

@@ -159,6 +159,9 @@ keybind = super+g=text:\x01G
 # btop popup: sends C-a M to tmux (prefix + M fires the btop display-popup bind)
 keybind = super+m=text:\x01M
 
+# Sessionizer: sends C-a T to tmux (prefix + T fires the sessionizer popup)
+keybind = super+shift+t=text:\x01T
+
 # Clear scrollback: sends C-a C-l to tmux (prefix + C-l fires the clear-history bind)
 keybind = super+k=text:\x01\x0c
 

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Search paths (colon-separated). Override with SESSIONIZER_PATHS env var.
+search_dirs="${SESSIONIZER_PATHS:-$HOME/AIProjects}"
+
+# Collect immediate subdirectories of each search path
+candidates=""
+IFS=: read -ra dirs <<< "$search_dirs"
+for dir in "${dirs[@]}"; do
+    [[ -d "$dir" ]] || continue
+    while IFS= read -r d; do
+        candidates+="$d"$'\n'
+    done < <(find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+done
+
+if [[ -z "$candidates" ]]; then
+    tmux display-message "No projects found. Set SESSIONIZER_PATHS or create ~/Projects."
+    exit 0
+fi
+
+selected=$(printf "%s" "$candidates" | fzf --reverse --prompt="project> ")
+[[ -z "$selected" ]] && exit 0
+
+# Sanitize session name: basename, dots → underscores (tmux rejects dots)
+selected_name=$(basename "$selected" | tr . _)
+
+# Not-in-tmux fallback (script can also be called directly from the shell)
+if [[ -z "$TMUX" ]] && ! tmux info &>/dev/null 2>&1; then
+    tmux new-session -s "$selected_name" -c "$selected"
+    exit 0
+fi
+
+# Create session detached if it doesn't exist, then switch to it
+if ! tmux has-session -t="$selected_name" 2>/dev/null; then
+    tmux new-session -ds "$selected_name" -c "$selected"
+fi
+
+tmux switch-client -t "$selected_name"
