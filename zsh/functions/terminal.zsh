@@ -59,6 +59,7 @@ _tab_title_emit() {
     short="${parts[-2]}/${parts[-1]}"
   fi
   print -n "\e]2;${icon} ${short}\a"
+  [[ -n "$TMUX" ]] && tmux set-option -p @pane_icon "$icon" 2>/dev/null
 }
 
 # Called before a command runs — icon derives from the executable name.
