@@ -153,6 +153,9 @@ keybind = alt+right=text:\x1bf
 # Kill line (ctrl+u / readline backward-kill-line)
 keybind = super+backspace=text:\x15
 
+# Lazygit popup: sends C-a G to tmux (prefix + G fires the lazygit display-popup bind)
+keybind = super+g=text:\x01G
+
 # Clear scrollback: sends C-a C-l to tmux (prefix + C-l fires the clear-history bind)
 keybind = super+k=text:\x01\x0c
 
