@@ -46,6 +46,8 @@
 | Copy (stay in mode) | `Ctrl+Y` |
 | Exit copy mode | `q` or `Escape` |
 | Mouse drag | Copies to clipboard (stays in mode) |
+| Open URL/file under selection | `o` |
+| Open selection in `$EDITOR` | `Ctrl+O` |
 | Paste | `prefix + ]` |
 
 ---
