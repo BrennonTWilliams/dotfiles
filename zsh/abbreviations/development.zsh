@@ -27,6 +27,7 @@ abbr -S llss='ll-sprint show'
 abbr -S lla='ll-auto'
 abbr -S llao='ll-auto --only'
 abbr -S llp='ll-parallel'
+abbr -S glip='glow "$(ll-issues path )"'
 
 # CLI Tools
 abbr -S g='glow'
