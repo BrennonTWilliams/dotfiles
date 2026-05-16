@@ -72,6 +72,8 @@
 |---|---|
 | fzf session switcher | `prefix + f` |
 | Floating scratch terminal | `prefix + g` |
+| Floating lazygit | `Cmd+G` or `prefix + G` |
+| btop system monitor | `Cmd+M` or `prefix + M` |
 | Clear scrollback | `Cmd+K` or `prefix + Ctrl+L` |
 | Reload tmux config | `prefix + r` |
 | Reload Ghostty config | `Cmd+R` |
