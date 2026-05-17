@@ -49,6 +49,8 @@
 | Mouse drag | Copies to clipboard (stays in mode) |
 | Double-click word | Selects word + copies (enters copy mode if needed) |
 | Triple-click line | Selects line + copies (enters copy mode if needed) |
+| Copy from last prompt to bottom | `prefix + y` (requires shell integration) |
+| Copy entire scrollback | `prefix + Y` |
 | Open URL/file under selection | `o` |
 | Open selection in `$EDITOR` | `Ctrl+O` |
 | Paste | `prefix + ]` |
