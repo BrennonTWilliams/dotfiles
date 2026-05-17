@@ -1,12 +1,6 @@
 # Dotfiles
 
-> A production-ready, cross-platform dotfiles repository with modular installation, comprehensive health checks, and unified Gruvbox theming across macOS and Linux environments.
-
----
-
-## TL;DR
-
-**Get started in 60 seconds:**
+> A cross-platform terminal-first dotfiles repo: Ghostty + tmux on macOS, Foot + tmux on Linux, the same muscle memory on both. Modular installer, dry-run preview, conflict resolution, health checks, unified Gruvbox theming.
 
 ```bash
 git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
@@ -14,68 +8,58 @@ cd ~/.dotfiles
 ./install.sh --all
 ```
 
-**What you get:** Modern terminal (Ghostty/Foot), Starship prompt with Gruvbox theme, cross-platform shell utilities, comprehensive development environment, health monitoring, and modular configuration.
-
-**Platforms:** macOS (Apple Silicon & Intel), Linux (Ubuntu, Fedora, Arch) with automatic platform detection.
-
----
-
-## Screenshot
-
 ![Dotfiles Terminal Setup](terminal-screenshot.png)
-*Unified Gruvbox theme with Starship prompt across macOS (Ghostty) and Linux (Foot)*
+*Ghostty + Starship + tmux, Gruvbox throughout.*
 
 ---
 
-## Why This Dotfiles?
+## Why this repo
 
-| Feature | This Repo | Typical Dotfiles |
-|---------|-----------|------------------|
-| **Cross-Platform** | ✅ macOS + Linux with auto-detection | ❌ Usually single-platform |
-| **Installation** | Modular installer with rollback | ⚠️ Monolithic script |
-| **Conflict Resolution** | ✅ Interactive + auto-resolve modes | ❌ Overwrites blindly |
-| **Preview Mode** | ✅ Dry-run before installing | ❌ No preview capability |
-| **Health Checks** | Post-install validation system | ❌ No verification |
-| **Path Management** | Dynamic resolution (21 paths) | ❌ Hardcoded paths |
-| **Theme Consistency** | Unified Gruvbox everywhere | ⚠️ Inconsistent colors |
-| **Performance** | Optimized shell startup (<50ms) | ⚠️ Often >200ms |
-| **Documentation** | Comprehensive with examples | ⚠️ README only |
-| **Recovery** | Automatic backups + restore | ❌ Manual process |
-| **Updates** | Smart update scripts | ⚠️ Git pull only |
-| **Community** | Issue templates, PR templates, CoC | ❌ Minimal |
+|                          | This repo                                                | Typical dotfiles      |
+| ------------------------ | -------------------------------------------------------- | --------------------- |
+| **Cross-platform**       | macOS + Linux, auto-detected                             | Usually single-OS     |
+| **Installer**            | Modular, with `--preview` dry-run                        | Monolithic script     |
+| **Conflict handling**    | Interactive prompts or `--auto-resolve`                  | Overwrites blindly    |
+| **Post-install checks**  | `scripts/health-check.sh` validates everything           | None                  |
+| **Terminal UX**          | Ghostty + tmux with curated keybindings, plugins, theme  | Ad-hoc                |
+| **Recovery**             | Automatic timestamped backups with metadata              | Manual                |
 
 ---
 
-## Table of Contents
+## The Terminal Experience
 
-- [Quick Start](#quick-start)
-- [What's Inside](#whats-inside)
-- [Key Features](#key-features)
-- [Platform Support](#platform-support)
-- [Installation](#installation)
-- [First Steps After Install](#first-steps-after-install)
-- [Quick Reference](#quick-reference)
-- [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md)
-- [Machine-Specific Configuration](#machine-specific-configuration)
-- [Updating & Maintenance](#updating--maintenance)
-- [Troubleshooting](#troubleshooting)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+macOS Ghostty and Linux Foot both drive a tmux session prefixed with `Ctrl+A`. Every `Cmd+*` Ghostty shortcut sends the equivalent tmux key sequence — your muscle memory works identically on both platforms. The result is a discoverable, fast, plugin-augmented terminal that feels less like a shell and more like an editor.
+
+### Highlights
+
+| Capability                       | Trigger                          | What you get                                                          |
+| -------------------------------- | -------------------------------- | --------------------------------------------------------------------- |
+| Project sessionizer              | `Cmd+Shift+T` or `prefix + T`    | fzf-pick any project dir, attach to existing tmux session or spawn one |
+| Floating scratch terminal        | `prefix + g`                     | Throwaway shell overlay; doesn't disturb your layout                  |
+| Floating lazygit                 | `Cmd+G` or `prefix + G`          | Git UI as a popup over any window                                     |
+| Token / path picker (extrakto)   | `prefix + Tab`                   | fzf over visible pane text — grab URLs, paths, hashes, words          |
+| Command-finish notifications     | `prefix + m`                     | macOS desktop notification when the monitored command completes       |
+| Which-key popup                  | `prefix + ?`                     | Navigable list of every binding — discoverability built in            |
+| nvim-aware pane navigation       | `Ctrl+h/j/k/l`                   | Seamless splits between tmux panes and nvim windows                   |
+| Copy mode with system clipboard  | `prefix + [`, then `v` / `y`     | vi-style selection that lands in `pbcopy` / `wl-copy`                 |
+| fzf session switcher             | `prefix + f`                     | Fuzzy-jump between active tmux sessions                               |
+| btop system monitor              | `Cmd+M` or `prefix + M`          | Resource overlay without leaving your terminal                        |
+| Command palette                  | `Cmd+Shift+P`                    | Ghostty's full action search                                          |
+| Plugin management (TPM)          | `prefix + I` / `U` / `Alt+U`     | Install, update, prune tmux plugins in place                          |
+
+The Gruvbox theme runs the full stack — terminal, Starship prompt, tmux status bar, Neovim, git delta. `toggle-theme` flips everything light/dark in one shot, with auto-detection on macOS.
+
+→ **Full keybinding reference:** [docs/CHEATSHEET.md](docs/CHEATSHEET.md)
 
 ---
 
-## Quick Start
+## Installation
 
 ### Prerequisites
 
-**macOS:**
+**macOS** — install Homebrew, then add it to your PATH:
 ```bash
-# Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# IMPORTANT: Follow the post-install instructions to add Homebrew to your PATH
-# For Apple Silicon Macs:
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
@@ -85,518 +69,149 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 sudo apt update && sudo apt install -y git curl stow
 ```
 
-### Brand New Mac?
-
-If this is a fresh macOS installation, here's what you need to know:
-
-1. **System bash is 3.2** - Apple ships an old version due to licensing. The install scripts are compatible with bash 3.2, but running tests requires Homebrew bash (`brew install bash`).
-
-2. **Git identity setup** - The installer will prompt you for your name and email. This prevents commits with placeholder author info.
-
-3. **Xcode Command Line Tools** - If not already installed, you'll be prompted automatically when you first run `git`.
-
-### Installation
+### Install modes
 
 ```bash
-# 1. Clone the repository
-git clone git@github.com:BrennonTWilliams/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-
-# 2. Run the modular installer
-./install.sh --all
-
-# 3. Reload your shell
-exec zsh
+./install.sh                      # Interactive — pick components
+./install.sh --all                # Everything, non-interactive
+./install.sh --packages           # System packages only
+./install.sh --terminal           # Terminal + shell only
+./install.sh --dotfiles           # Symlinks only (packages assumed)
+./install.sh --check-deps         # Verify deps without installing
 ```
 
-**Installation options:**
-- `./install.sh` - Interactive installation (recommended for first-time)
-- `./install.sh --all` - Install everything automatically
-- `./install.sh --packages` - System packages only
-- `./install.sh --terminal` - Terminal and shell only
-- `./install.sh --dotfiles` - Dotfiles only (assumes packages installed)
-- `./install.sh --check-deps` - Check system dependencies without installing
-- `./install.sh --preview --all` - **Preview changes without installing** (dry-run mode)
+### Preview before installing
 
-**Preview mode** lets you see what would be installed before making changes:
 ```bash
-./install.sh --preview --all          # Preview complete installation
-./install.sh --preview --packages     # Preview package installations
-./install.sh --preview --dotfiles     # Preview symlink creation
-./install.sh --preview --all --verbose # Detailed preview output
+./install.sh --preview --all      # Show what would change
+./install.sh --preview --dotfiles # Preview symlink creation
 ```
 
-**Conflict resolution** handles existing dotfiles intelligently:
+### Conflict resolution
+
 ```bash
-./install.sh --dotfiles                          # Interactive prompts (default)
-./install.sh --dotfiles --auto-resolve=overwrite # Auto-backup and replace
+./install.sh --dotfiles                              # Prompt on conflict (default)
+./install.sh --dotfiles --auto-resolve=overwrite     # Backup + replace
 ./install.sh --dotfiles --auto-resolve=keep-existing # Keep your files
 ```
 
-See [Installation Guide](docs/GETTING_STARTED.md) for platform-specific detailed instructions.
+Detailed install walkthroughs: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) · [docs/INSTALLATION_OPTIONS.md](docs/INSTALLATION_OPTIONS.md)
 
 ---
 
-## What's Inside
-
-```
-dotfiles/
-├── zsh/              # Zsh configuration with cross-platform utilities
-│   ├── functions/    # Shell functions (mkcd, qfind, nvim-keys, etc.)
-│   ├── aliases/      # Traditional aliases (safety aliases, extras)
-│   └── abbreviations/# zsh-abbr abbreviations (optional, expands on space)
-├── starship/         # Starship prompt (3 display modes: compact, standard, verbose)
-├── tmux/             # Tmux with clipboard integration and theme
-├── nvim/             # Neovim configuration
-├── git/              # Git config with portable user settings
-├── ghostty/          # Ghostty terminal (macOS)
-├── foot/             # Foot terminal (Linux)
-├── sway/             # Sway window manager (Linux)
-├── scripts/          # Installation, setup, and maintenance scripts
-│   ├── lib/          # Shared utility functions
-│   ├── setup-packages.sh    # System package installation
-│   ├── setup-terminal.sh    # Terminal and shell setup
-│   └── health-check.sh      # Post-installation validation
-└── docs/             # Comprehensive documentation
-```
-
-**Managed with [GNU Stow](https://www.gnu.org/software/stow/)** - Creates symlinks from `~/.dotfiles/*` to `~/`
-
----
-
-## Key Features
-
-### 🎨 Unified Gruvbox Theme
-- Consistent colors across all tools (terminal, tmux, vim, editor)
-- Dark mode optimized with warm palette
-- Nerd Font icons throughout
-
-### 🔄 Cross-Platform Compatibility
-- **Dynamic path resolution** - No hardcoded paths
-- **Platform detection** - Automatic macOS/Linux adaptation
-- **Unified commands** - Same aliases work everywhere
-- **Portable configs** - Works on any machine
-
-### ⚡ Performance Optimized
-- **Shell startup** - <50ms with lazy loading
-- **Conda lazy-load** - Only initializes when used (saves 100-200ms)
-- **VSCode integration** - Cached for instant startup
-- **Path caching** - Eliminates redundant subprocess calls
-
-### 🛡️ Production Ready
-- **Dependency validation** - Pre-flight checks with auto-fix options
-- **Conflict resolution** - Interactive prompts or auto-resolve strategies
-- **Intelligent merging** - Automatically merge .gitconfig, .zshrc, etc.
-- **Health checks** - Automatic post-install validation
-- **Backup system** - Automatic backups with metadata
-- **Rollback support** - Safe to test and revert
-- **Error handling** - Clear messages and recovery steps
-
-### 🚀 Development Environment
-- Git configuration with portable user settings
-- VS Code integration with extension management
-- NPM global package configuration
-- Python/Conda environment support
-- Docker completions and aliases
-
-See [Features Guide](docs/FEATURES.md) for detailed feature descriptions.
-
----
-
-## Platform Support
-
-| Platform | Architecture | Terminal | Status |
-|----------|-------------|----------|--------|
-| macOS | Apple Silicon (M1/M2/M3/M4) | Ghostty | ✅ Fully Supported |
-| macOS | Intel x86_64 | Ghostty | ✅ Fully Supported |
-| Linux | x86_64 / ARM64 | Foot | ✅ Fully Supported |
-
-**Tested on:**
-- macOS Sequoia (15.x) - Apple Silicon
-- macOS Sonoma (14.x) - Intel
-- Ubuntu 22.04/24.04 LTS
-- Fedora 38+
-- Arch Linux
-
-**Automatic detection for:**
-- Package managers (Homebrew, apt, dnf, pacman)
-- Homebrew path (`/opt/homebrew` vs `/usr/local`)
-- Desktop environment (Sway, i3, X11, Wayland)
-- Clipboard utilities (pbcopy, wl-copy, xclip)
-
-See [Getting Started Guide](docs/GETTING_STARTED.md) for platform-specific setup instructions.
-
----
-
-## Installation
-
-### Option 1: Full Installation (Recommended)
+## First steps after install
 
 ```bash
-./install.sh --all
-```
+# 1. Reload your shell
+exec zsh
 
-Installs:
-1. System packages (Homebrew/apt packages)
-2. Terminal applications (Ghostty/Foot, Starship)
-3. Development tools (Git, tmux, neovim, fzf, ripgrep)
-4. Dotfiles (symlinks all configurations)
-5. Runs health checks
-
-### Option 2: Modular Installation
-
-**Packages only:**
-```bash
-./install.sh --packages
-```
-
-**Terminal setup only:**
-```bash
-./install.sh --terminal
-```
-
-**Dotfiles only** (assumes packages installed):
-```bash
-./install.sh --dotfiles
-```
-
-### Option 3: Interactive Installation
-
-```bash
-./install.sh
-```
-
-Prompts you to select which components to install.
-
-### What Gets Installed
-
-See [System Requirements](docs/SYSTEM_REQUIREMENTS.md) for detailed package lists and version requirements.
-
----
-
-## First Steps After Install
-
-### 1. Verify Git Identity
-
-The installer prompts for your Git identity during setup. To verify or change it:
-
-```bash
-# Check current identity
-git config --global user.name
-git config --global user.email
-
-# Update if needed
-git config --global user.name "Your Name"
+# 2. Set git identity
+git config --global user.name  "Your Name"
 git config --global user.email "your.email@example.com"
-```
 
-> **Note:** The template `.gitconfig` contains placeholder values. Your identity is set via
-> `git config --global` which takes precedence. Always verify before making commits.
-
-### 2. Set Up Machine-Specific Settings
-
-Create `~/.zshrc.local` for machine-specific shell configuration:
-
-```bash
-# Example: Custom paths
-export PATH="$HOME/my-tools/bin:$PATH"
-
-# Example: API keys
-export OPENAI_API_KEY="your-key-here"
-
-# Example: Custom aliases
-alias work='cd ~/Projects/work'
-```
-
-See [Machine-Specific Configuration](#machine-specific-configuration) for more options.
-
-### 3. Install Optional Tools
-
-**VS Code extensions:**
-```bash
-xargs -a vscode/extensions.txt code --install-extension
-```
-
-**NPM global packages:**
-```bash
-xargs -a npm/global-packages.txt npm install -g
-```
-
-### 4. Run Health Check
-
-```bash
+# 3. Validate the install
 ./scripts/health-check.sh
 ```
 
-Verifies all installations and reports any issues.
+The template `git/.gitconfig` ships with placeholder values; your real identity lives in `~/.gitconfig.local` (gitignored, machine-specific).
 
 ---
 
-## Quick Reference
+## Machine-specific overrides
 
-> **Terminal keybindings?** See the [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md) for the full reference — windows, panes, copy mode, scroll, sessions, and more.
+Every `*.local` file below is gitignored and sourced at the right point in the startup chain:
 
-### Starship Display Modes
-
-```bash
-starship-compact    # Minimal info (sc)
-starship-standard   # Balanced layout (ss)
-starship-verbose    # Full context (sv)
-starship-mode       # Show current mode (sm)
-```
-
-### Custom Logo (Opt-in)
-
-The logo display is **disabled by default**. To enable:
-
-```bash
-logo-toggle         # Enable/disable login logo animation
-logo-show           # Display logo manually
-```
-
-Logo automatically skips display in SSH sessions, tmux, and screen.
-See [brenentech/README.md](brenentech/README.md) for customization.
-
-### Development Environment
-
-```bash
-dev-setup           # Run development environment setup
-dev-install         # Update all development tools
-dev-minimal         # Minimal installation (core + shell + dev-tools)
-dev-status          # Show environment status
-```
-
-### Health & Maintenance
-
-```bash
-health-check        # Run comprehensive health check
-dotfiles-check      # Alias for health check
-system-status       # Display system information
-```
-
-### Uniclip (Clipboard Sync)
-
-```bash
-uniclip-install     # Install Uniclip service
-uniclip-start       # Start Uniclip service
-uniclip-stop        # Stop Uniclip service
-uniclip-status      # Show service status
-clipboard-sync      # Sync clipboard (one-time)
-```
-
-See [Usage Guide](docs/USAGE_GUIDE.md) for complete command reference.
+| File                  | Sourced from        | Use for                                              |
+| --------------------- | ------------------- | ---------------------------------------------------- |
+| `~/.zshrc.local`      | end of `.zshrc`     | Custom paths, aliases, API keys for CLI wrappers     |
+| `~/.zshenv.local`     | `.zshenv`           | Env vars (e.g. `DOTFILES_ABBR_MODE=alias`)           |
+| `~/.zprofile.local`   | `.zprofile`         | Login-shell-only setup                               |
+| `~/.gitconfig.local`  | `git/.gitconfig`    | `[user]` block, `[github]` user, work overrides     |
+| `~/.tmux.local`       | `.tmux.conf`        | Per-machine tmux tweaks (`set -g mouse on`, etc.)    |
 
 ---
 
-## Machine-Specific Configuration
+## What's inside
 
-Dotfiles supports machine-specific overrides without modifying tracked files:
+Each top-level directory is a GNU Stow package symlinked into `$HOME`:
 
-### Shell Configuration
+- **Shell** — `zsh/`, `bash/` with cross-platform utilities and optional zsh-abbr abbreviations
+- **Terminal** — `ghostty/` (macOS), `foot/` (Linux), `tmux/` with curated plugin set
+- **Editor** — `nvim/`, plus VS Code extension management
+- **Prompt & WM** — `starship/` (three display modes), `sway/` (Linux tiling WM)
+- **Dev tooling** — `git/` with delta, NPM globals, conda lazy-load
+- **Scripts** — `scripts/install.sh`, modular setup scripts, shared `scripts/lib/`
 
-**`~/.zshrc.local`** - Sourced at the end of `.zshrc`
-```bash
-# Custom paths
-export PATH="$HOME/bin:$PATH"
-
-# Custom aliases
-alias myproject='cd ~/Projects/myproject'
-
-# Override defaults
-export UNICLIP_SERVER="192.168.1.100:38687"
-
-# API keys for CLI wrappers (e.g. the mercury() function)
-export INCEPTION_API_KEY="sk_..."
-```
-
-**`~/.zshenv.local`** - Sourced from `.zshenv`
-```bash
-# Use traditional aliases instead of zsh-abbr (abbr is the default)
-export DOTFILES_ABBR_MODE="alias"
-```
-
-**`~/.zprofile.local`** - Sourced from `.zprofile`
-
-### Git Configuration
-
-**`~/.gitconfig.local`** - Automatically included from `git/.gitconfig`
-```ini
-[user]
-    name = Your Name
-    email = your.email@example.com
-
-[github]
-    user = yourusername
-```
-
-### Tmux Configuration
-
-**`~/.tmux.local`** - Sourced from `.tmux.conf`
-```tmux
-# Machine-specific tmux settings
-set -g mouse on
-```
-
-All `*.local` files are gitignored and never tracked.
+Full symlink map: [docs/SYMLINK_REFERENCE.md](docs/SYMLINK_REFERENCE.md)
 
 ---
 
-## Updating & Maintenance
-
-### Update Dotfiles
+## Updating
 
 ```bash
 cd ~/.dotfiles
 git pull
-stow --restow */  # Re-apply symlinks
-./scripts/health-check.sh  # Verify
+stow --restow */
+./scripts/health-check.sh
 ```
 
-### Update System Packages
+See [docs/MAINTENANCE_GUIDE.md](docs/MAINTENANCE_GUIDE.md) for upgrade workflows and [docs/BACKUP_RECOVERY.md](docs/BACKUP_RECOVERY.md) for restore procedures.
 
-**macOS:**
-```bash
-brew update && brew upgrade
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt update && sudo apt upgrade
-```
-
-### Backup Before Major Changes
-
-```bash
-# Automatic backup during installation
-./install.sh  # Creates ~/.dotfiles_backup_YYYYMMDD_HHMMSS
-
-# Manual backup
-cp -r ~/.dotfiles ~/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)
-```
-
-See [Backup & Recovery Guide](docs/BACKUP_RECOVERY.md) for restore procedures.
-
----
-
-## Troubleshooting
-
-### Installation Issues
-
-**Stow conflicts:**
-```bash
-# Remove conflicting files first
-rm ~/.zshrc  # or mv ~/.zshrc ~/.zshrc.backup
-cd ~/.dotfiles
-stow zsh
-```
-
-**Permission errors:**
-```bash
-# Ensure correct ownership
-sudo chown -R $USER:$USER ~/.dotfiles
-```
-
-### Shell Issues
-
-**Command not found:**
-```bash
-# Reload shell configuration
-exec zsh
-# or
-source ~/.zshrc
-```
-
-**Slow startup:**
-```bash
-# Profile shell startup
-zsh -xv 2>&1 | ts -i '%.s' | tee /tmp/zsh-startup.log
-```
-
-### Path Resolution Issues
-
-```bash
-# Test path resolution
-source ~/.zsh_cross_platform
-resolve_platform_path dotfiles
-```
-
-For more issues, see [Troubleshooting Guide](TROUBLESHOOTING.md).
+Hit a snag? [TROUBLESHOOTING.md](TROUBLESHOOTING.md) covers common install, stow, and shell issues.
 
 ---
 
 ## Documentation
 
-### Core Documentation
-- [Getting Started Guide](docs/GETTING_STARTED.md) - Platform-specific setup instructions
-- [Features Guide](docs/FEATURES.md) - Detailed feature descriptions and usage
-- [Usage Guide](docs/USAGE_GUIDE.md) - Complete command and alias reference
-- [System Requirements](docs/SYSTEM_REQUIREMENTS.md) - Version requirements and package lists
+### Setup & install
+- [Getting Started](docs/GETTING_STARTED.md) — platform-specific walkthrough
+- [Installation Options](docs/INSTALLATION_OPTIONS.md) — every flag, every mode
+- [System Requirements](docs/SYSTEM_REQUIREMENTS.md) — versions and packages
+- [macOS Setup](docs/MACOS_SETUP.md) · [System Setup](docs/SYSTEM_SETUP.md)
 
-### Configuration Guides
-- [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md) - Keybinding reference for windows, panes, copy mode, and more
-- [Starship Configuration](docs/STARSHIP_CONFIGURATION.md) - Prompt customization and modes
-- [Cross-Platform Utilities](docs/CROSS_PLATFORM_UTILITIES.md) - Path resolution and platform detection
-- [Health Check System](docs/HEALTH_CHECK_SYSTEM.md) - Post-installation validation
+### Daily use
+- [Ghostty + tmux Cheatsheet](docs/CHEATSHEET.md) — full keybinding reference
+- [Usage Guide](docs/USAGE_GUIDE.md) — Starship, theming, abbreviations, uniclip, daily workflow
+- [Features](docs/FEATURES.md) — theme, performance, dev environment details
+- [Starship Configuration](docs/STARSHIP_CONFIGURATION.md) — prompt modes and customization
 
-### Maintenance & Development
-- [Backup & Recovery](docs/BACKUP_RECOVERY.md) - Backup procedures and restore steps
-- [Troubleshooting Guide](TROUBLESHOOTING.md) - Common issues and solutions
-- [Contributing Guidelines](CONTRIBUTING.md) - Development setup and contribution process
-- [Changelog](CHANGELOG.md) - Version history and migration guides
+### Platform & cross-platform
+- [Cross-Platform Utilities](docs/CROSS_PLATFORM_UTILITIES.md) — path resolution, detection
+- [Platform Comparison](docs/PLATFORM_COMPARISON.md) · [Package Management](docs/PACKAGE_MANAGEMENT.md)
+- [Symlink Reference](docs/SYMLINK_REFERENCE.md)
 
-### Additional Resources
-- [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
-- [Security Policy](SECURITY.md) - Vulnerability reporting
-- [License](LICENSE.md) - MIT License
-- [Third-Party Licenses](docs/THIRD-PARTY-LICENSES.md) - Dependency attributions
+### Ghostty deep-dives
+- [Ghostty Finder Integration](docs/GHOSTTY_FINDER_INTEGRATION.md)
+- [Ghostty Troubleshooting](docs/GHOSTTY_TROUBLESHOOTING.md)
+- [Ghostty Statusline](docs/ghostty-statusline.md)
+- [WezTerm → Ghostty Migration](docs/WEZTERM_TO_GHOSTTY_MIGRATION.md)
+
+### Maintenance
+- [Maintenance Guide](docs/MAINTENANCE_GUIDE.md) · [Backup & Recovery](docs/BACKUP_RECOVERY.md)
+- [Health Check System](docs/HEALTH_CHECK_SYSTEM.md) · [Troubleshooting](TROUBLESHOOTING.md)
+
+### Development
+- [Testing](docs/TESTING.md) · [Shellcheck](docs/SHELLCHECK.md) · [Style Guide](docs/STYLE-GUIDE.md)
+- [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+
+### Legal
+- [License (MIT)](LICENSE.md) · [Third-Party Licenses](docs/THIRD-PARTY-LICENSES.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md) · [Security Policy](SECURITY.md)
 
 ---
 
 ## Contributing
 
-We welcome contributions! Please see:
-
-- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute
-- [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
-- [Issue Templates](.github/ISSUE_TEMPLATE/) - Report bugs or request features
-- [Pull Request Template](.github/pull_request_template.md) - Submit changes
-
-### Quick Contribution
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`./scripts/health-check.sh`)
-5. Commit (`git commit -m 'Add amazing feature'`)
-6. Push to branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+Contributions welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md), fork, branch, run `./scripts/health-check.sh` and `tests/run_all_tests.sh`, open a PR. Issue and PR templates live in [.github/](.github/).
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE.md](LICENSE.md) for details.
-
-### Third-Party Software
-
-This repository includes configurations for many open-source tools. See [THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md) for complete attribution and license information.
+MIT — see [LICENSE.md](LICENSE.md). Third-party tools and their licenses: [docs/THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md).
 
 ---
 
 ## Acknowledgments
 
-- **[Gruvbox](https://github.com/morhetz/gruvbox)** - Beautiful retro groove color scheme
-- **[Starship](https://starship.rs/)** - The minimal, blazing-fast, and infinitely customizable prompt
-- **[GNU Stow](https://www.gnu.org/software/stow/)** - Symlink farm manager
-- **[Ghostty](https://mitchellh.com/ghostty)** - Fast, native, GPU-accelerated terminal (macOS)
-- **[Foot](https://codeberg.org/dnkl/foot)** - Fast, lightweight Wayland terminal emulator (Linux)
-
----
-
-<p align="center">
-  <sub>Built with ❤️ for developers who care about their environment</sub>
-</p>
-
-<p align="center">
-  <sub>⭐ Star this repo if you find it useful!</sub>
-</p>
+[Gruvbox](https://github.com/morhetz/gruvbox) · [Starship](https://starship.rs/) · [GNU Stow](https://www.gnu.org/software/stow/) · [Ghostty](https://mitchellh.com/ghostty) · [Foot](https://codeberg.org/dnkl/foot) · [tmux](https://github.com/tmux/tmux) · the maintainers of every plugin in `tmux/.tmux.conf`.

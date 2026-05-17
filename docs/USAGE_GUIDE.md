@@ -933,29 +933,83 @@ git pull
 
 ## Quick Reference
 
-### Common Commands
+### Starship display modes
+
+```bash
+starship-compact    # Minimal info (alias: sc)
+starship-standard   # Balanced layout (alias: ss)
+starship-verbose    # Full context (alias: sv)
+starship-mode       # Show current mode (alias: sm)
+```
+
+See [Starship Configuration](STARSHIP_CONFIGURATION.md) for full customization.
+
+### Custom logo (opt-in)
+
+The login-logo animation is disabled by default and automatically skips SSH, tmux, and screen sessions.
+
+```bash
+logo-toggle         # Enable / disable login logo animation
+logo-show           # Display logo manually
+```
+
+See [brenentech/README.md](../brenentech/README.md) for customization.
+
+### Development environment
+
+```bash
+dev-setup           # Run development environment setup
+dev-install         # Update all development tools
+dev-minimal         # Minimal install (core + shell + dev-tools)
+dev-status          # Show environment status
+```
+
+### Health & system
+
+```bash
+health-check        # Comprehensive health check
+dotfiles-check      # Alias for health check
+system-status       # Show system information
+./scripts/health-check.sh   # Same check, from repo root
+```
+
+See [Health Check System](HEALTH_CHECK_SYSTEM.md).
+
+### Uniclip clipboard sync
+
+```bash
+uniclip-install     # Install Uniclip service
+uniclip-start       # Start the service
+uniclip-stop        # Stop the service
+uniclip-status      # Service status
+clipboard-sync      # One-shot clipboard sync
+```
+
+Full Linux setup: [Linux Uniclip Service](#linux-uniclip-service) above.
+
+### Repo lifecycle
 
 ```bash
 # Install on new machine
 ./install.sh
 
 # Update from GitHub
-cd ~/.dotfiles && git pull
+cd ~/.dotfiles && git pull && stow --restow */
 
 # Save changes
 cd ~/.dotfiles && git add -A && git commit -m "message" && git push
 
-# Reinstall package
+# Reinstall a package
 cd ~/.dotfiles && stow -R zsh
 
-# Remove package
+# Remove a package
 cd ~/.dotfiles && stow -D zsh
 
 # View what's installed
 cd ~/.dotfiles && stow -L
 ```
 
-### File Locations
+### File locations
 
 - Main repo: `~/.dotfiles/`
 - Backups: `~/.dotfiles_backup_YYYYMMDD_HHMMSS/`
