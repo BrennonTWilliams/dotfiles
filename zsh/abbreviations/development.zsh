@@ -36,3 +36,4 @@ abbr -S npmr='npm run dev'
 
 # Terminal repair
 abbr -S kkp='printf "\x1b[<u"'
+abbr -S recent='ll-issues list --status done --sort completed --desc --limit 5'
