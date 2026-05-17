@@ -36,7 +36,7 @@
 
 ## Copy Mode (vi-style)
 
-> `copy-on-select = false` — mouse selection alone does not copy; use `y` or `Enter`.
+> `copy-on-select = false` — keyboard selection alone does not copy; use `y` or `Enter`. Mouse drag and double/triple-click do copy directly.
 
 | Action | Key |
 |---|---|
@@ -47,6 +47,8 @@
 | Copy (stay in mode) | `Ctrl+Y` |
 | Exit copy mode | `q` or `Escape` |
 | Mouse drag | Copies to clipboard (stays in mode) |
+| Double-click word | Selects word + copies (enters copy mode if needed) |
+| Triple-click line | Selects line + copies (enters copy mode if needed) |
 | Open URL/file under selection | `o` |
 | Open selection in `$EDITOR` | `Ctrl+O` |
 | Paste | `prefix + ]` |
