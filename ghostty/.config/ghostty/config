@@ -39,6 +39,34 @@ font-size = 16
 font-family-bold = IosevkaTerm Nerd Font
 font-family-italic = IosevkaTerm Nerd Font
 
+# Glyph-only fallback: forces Nerd Font PUA codepoints to render from a
+# single-cell-width font so they survive tmux's wcwidth() pass. Without this,
+# IosevkaTerm Nerd Font's wide-metric symbols render blank inside tmux because
+# the cell width tmux reserves doesn't match the glyph and Ghostty falls back
+# to a macOS system font that has no PUA coverage.
+font-family = Symbols Nerd Font Mono
+
+# Pin every standard Nerd Font codepoint block to the symbols font so Ghostty
+# never picks a different fallback for these ranges. Block list mirrors the
+# Nerd Fonts v3.x cheat sheet.
+font-codepoint-map = U+E000-U+E00A=Symbols Nerd Font Mono
+font-codepoint-map = U+E0A0-U+E0A2=Symbols Nerd Font Mono
+font-codepoint-map = U+E0A3=Symbols Nerd Font Mono
+font-codepoint-map = U+E0B0-U+E0B3=Symbols Nerd Font Mono
+font-codepoint-map = U+E0B4-U+E0C8=Symbols Nerd Font Mono
+font-codepoint-map = U+E0CA=Symbols Nerd Font Mono
+font-codepoint-map = U+E0CC-U+E0D7=Symbols Nerd Font Mono
+font-codepoint-map = U+E200-U+E2A9=Symbols Nerd Font Mono
+font-codepoint-map = U+E300-U+E3E3=Symbols Nerd Font Mono
+font-codepoint-map = U+E5FA-U+E6B7=Symbols Nerd Font Mono
+font-codepoint-map = U+E700-U+E8EF=Symbols Nerd Font Mono
+font-codepoint-map = U+EA60-U+EC1E=Symbols Nerd Font Mono
+font-codepoint-map = U+ED00-U+EFCE=Symbols Nerd Font Mono
+font-codepoint-map = U+F000-U+F2FF=Symbols Nerd Font Mono
+font-codepoint-map = U+F300-U+F381=Symbols Nerd Font Mono
+font-codepoint-map = U+F400-U+F533=Symbols Nerd Font Mono
+font-codepoint-map = U+F0001-U+F1AF0=Symbols Nerd Font Mono
+
 # ============================================
 # macOS-Specific Settings
 # ============================================

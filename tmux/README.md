@@ -79,7 +79,7 @@ The prefix key is changed from `C-b` to `C-a` for easier access.
 The status bar displays:
 
 - **Left**: Session name, hostname
-- **Right**: CPU usage, time, and date
+- **Right**: CPU and RAM usage (Nerd Font glyphs), time, and date
 
 ### Gruvbox Theme Colors
 
