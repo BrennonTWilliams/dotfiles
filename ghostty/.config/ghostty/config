@@ -90,9 +90,6 @@ window-height = 40
 # Config reload
 keybind = super+r=reload_config
 
-# Shift+Enter sends LF (distinguishes shift+enter from plain enter in some apps)
-keybind = shift+enter=text:\n
-
 # Window / tab management
 # Native Ghostty tabs and splits are replaced by tmux windows/panes — all shortcuts send tmux key sequences.
 # prefix = ctrl+a (\x01); Ghostty window close (cmd+shift+w) is the only native action kept.
