@@ -11,10 +11,12 @@
 | Action | Ghostty | tmux |
 |---|---|---|
 | New window | `Cmd+T` | `prefix + c` |
-| Close window | `Cmd+W` | `prefix + x` |
+| Kill pane | `Cmd+W` | `prefix + x` |
+| Kill window | — | `prefix + &` |
 | Next window | `Ctrl+Tab` / `Cmd+Shift+]` | `prefix + n` |
 | Previous window | `Ctrl+Shift+Tab` / `Cmd+Shift+[` | `prefix + p` |
 | Jump to window 1–9 | `Cmd+1–9` | `prefix + 1–9` |
+| Rename window | — | `prefix + ,` |
 | Swap window left | — | `prefix + <` (repeatable) |
 | Swap window right | — | `prefix + >` (repeatable) |
 
@@ -27,9 +29,12 @@
 | Split right | `Cmd+D` | `prefix + \|` |
 | Split down | `Cmd+Shift+D` | `prefix + -` |
 | Navigate pane (nvim-aware) | `Ctrl+h/j/k/l` | `Ctrl+h/j/k/l` |
+| Navigate to last pane | — | `prefix + C-\` |
 | Navigate pane (tmux-only) | `Cmd+Opt+Arrow` | `prefix + h/j/k/l` or `Alt+Arrow` |
 | Resize pane | `Cmd+Shift+Arrow` | `prefix + H/J/K/L` (repeatable) |
 | Zoom / unzoom pane | `Cmd+Shift+Z` | `prefix + z` |
+| Swap pane up / down | — | `prefix + {` / `prefix + }` |
+| Cycle layout | — | `prefix + Space` |
 | Toggle pane sync | — | `prefix + S` |
 
 ---
@@ -77,10 +82,13 @@
 |---|---|
 | Project sessionizer | `Cmd+Shift+T` or `prefix + T` |
 | fzf session switcher | `prefix + f` |
+| Rename session | `prefix + $` |
+| Detach session | `prefix + d` |
 | Floating scratch terminal | `prefix + g` |
 | Floating lazygit | `Cmd+G` or `prefix + G` |
 | btop system monitor | `Cmd+M` or `prefix + M` |
 | Clear scrollback | `Cmd+K` or `prefix + Ctrl+L` |
+| Send prefix to nested session | `prefix + C-a` |
 | Reload tmux config | `prefix + r` |
 | Reload Ghostty config | `Cmd+R` |
 | Rename tab (`tab-title <name>`) | `Cmd+Shift+R` then type name |
@@ -117,6 +125,29 @@ Press any listed key from the popup to execute it directly, or navigate with `j`
 | Monitor current pane | `prefix + m` |
 
 Fires a macOS desktop notification when the monitored command completes. Useful for `cargo build`, `npm install`, long test runs.
+
+---
+
+## Session Persistence (tmux-resurrect / tmux-continuum)
+
+| Action | Key |
+|---|---|
+| Save session | `prefix + Ctrl+S` |
+| Restore session | `prefix + Ctrl+R` |
+
+Sessions are also auto-saved every 5 minutes via tmux-continuum and restored on tmux server start.
+
+---
+
+## Hint Picker (tmux-thumbs)
+
+| Action | Key |
+|---|---|
+| Pick visible hint (URL, path, hash) | `prefix + Space` |
+
+Highlights short hints over all visible text; press the hint's letter to yank it to clipboard.
+
+> Note: `prefix + Space` also cycles pane layouts (tmux built-in). tmux-thumbs wins because TPM loads after manual bindings.
 
 ---
 
