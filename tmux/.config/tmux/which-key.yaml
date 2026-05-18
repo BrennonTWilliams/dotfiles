@@ -100,6 +100,12 @@ items:
   - name: "copy mode"
     key: "["
     type: key
+  - name: "scroll up"
+    key: "U"
+    command: "copy-mode \\; send-keys -X scroll-up"
+  - name: "scroll down"
+    key: "D"
+    command: "if-shell -F '#{pane_in_mode}' 'send-keys -X scroll-down'"
   - name: "paste buffer"
     key: "]"
     type: key

@@ -160,9 +160,12 @@ keybind = super+shift+right=text:\x01L
 keybind = super+left=text:\x1bOH
 keybind = super+right=text:\x1bOF
 
-# Scroll
-keybind = super+up=scroll_page_up
-keybind = super+down=scroll_page_down
+# Scroll: routes to tmux copy-mode (tmux owns the 50k-line ring buffer;
+# Ghostty's buffer is capped at 1000 lines and is nearly empty inside a tmux
+# session). Sends prefix+U/D, which tmux maps to copy-mode scroll (see .tmux.conf).
+# In a non-tmux shell these send ^A then U/D — a minor annoyance in an edge case.
+keybind = super+up=text:\x01U
+keybind = super+down=text:\x01D
 
 # Prompt navigation (requires shell-integration; walks OSC prompt marks)
 keybind = ctrl+shift+up=jump_to_prompt:-1
@@ -267,7 +270,9 @@ quick-terminal-animation-duration = 0.1
 # Defaults to $HOME if not specified
 # working-directory = ~
 
-# Ghostty scrollback kept minimal; tmux owns scrollback (history-limit 50000)
+# Ghostty scrollback kept minimal; tmux owns scrollback (history-limit 50000).
+# super+up/down is routed to tmux copy-mode (prefix+U/D) rather than scrolling
+# this shallow buffer directly.
 scrollback-limit = 1000
 
 # TERM is intentionally unset — Ghostty advertises xterm-ghostty natively,
