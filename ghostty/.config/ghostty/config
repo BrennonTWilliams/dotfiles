@@ -167,6 +167,10 @@ keybind = super+right=text:\x1bOF
 keybind = super+up=text:\x01U
 keybind = super+down=text:\x01D
 
+# Enter tmux copy-mode (mirrors cmux's ⌘⇧M toggle). Sends prefix+[ which is the
+# standard tmux copy-mode entry. Press q, Escape, or click to exit copy-mode.
+keybind = super+shift+m=text:\x01[
+
 # Prompt navigation (requires shell-integration; walks OSC prompt marks)
 keybind = ctrl+shift+up=jump_to_prompt:-1
 keybind = ctrl+shift+down=jump_to_prompt:1
