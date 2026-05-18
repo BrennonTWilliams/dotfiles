@@ -52,8 +52,9 @@
 | Copy (stay in mode) | `Ctrl+Y` |
 | Exit copy mode | `q` or `Escape` |
 | Mouse drag | Copies to clipboard (stays in mode) |
-| Double-click word | Selects word + copies (enters copy mode if needed) |
-| Triple-click line | Selects line + copies (enters copy mode if needed) |
+| Single-click token | Selects word at click (identifiers, hyphenated-names, path segments); always enters copy mode |
+| Double-click grouping | Selects full space-delimited token (whole URL, path, flag) + copies |
+| Triple-click line | Selects line + copies; prompt prefix (`$ `, `❯ `, etc.) stripped from clipboard |
 | Copy from last prompt to bottom | `prefix + y` (requires shell integration) |
 | Copy entire scrollback | `prefix + Y` |
 | Open URL/file under selection | `o` |
