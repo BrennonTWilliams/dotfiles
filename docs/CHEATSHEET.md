@@ -54,7 +54,7 @@
 | Mouse drag | Copies to clipboard (stays in mode) |
 | Single-click token | Passes click through to interactive TUIs (Claude Code, vim, fzf, etc.); enters copy mode and selects word in plain shell panes |
 | Double-click grouping | Passes through to interactive TUIs; selects full space-delimited token (whole URL, path, flag) + copies in shell panes |
-| Triple-click line | Passes through to interactive TUIs; selects line + copies in shell panes; prompt prefix (`$ `, `❯ `, etc.) stripped from clipboard |
+| Triple-click line (BOL to EOL) | Passes through to interactive TUIs; selects from beginning of line to end of line (no trailing newline) + copies in shell panes; prompt prefix (`$ `, `❯ `, etc.) stripped from clipboard |
 | Copy from last prompt to bottom | `prefix + y` (requires shell integration) |
 | Copy entire scrollback | `prefix + Y` |
 | Open URL/file under selection | `o` |
