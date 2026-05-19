@@ -258,6 +258,10 @@ cursor-style-blink = false
 # Auto-copy selection to clipboard
 copy-on-select = false
 
+# Word boundary characters for double-click selection (mirrors tmux word-separators).
+# Dash is intentionally absent so "some-component" is selected as a unit.
+selection-word-chars = / \t.?=&@#~+%:;,!()[]{}<>"'
+
 # ============================================
 # Advanced Configuration
 # ============================================
