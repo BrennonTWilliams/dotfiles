@@ -137,7 +137,7 @@ Each top-level directory is a GNU Stow package symlinked into `$HOME`:
 
 - **Shell** — `zsh/`, `bash/` with cross-platform utilities and optional zsh-abbr abbreviations
 - **Terminal** — `ghostty/` (macOS), `foot/` (Linux), `tmux/` with curated plugin set
-- **Editor** — `nvim/`, plus VS Code extension management
+- **Editor** — `neovim/`, plus VS Code extension management
 - **Prompt & WM** — `starship/` (three display modes), `sway/` (Linux tiling WM)
 - **Dev tooling** — `git/` with delta, NPM globals, conda lazy-load
 - **Scripts** — `scripts/install.sh`, modular setup scripts, shared `scripts/lib/`
@@ -151,7 +151,7 @@ Full symlink map: [docs/SYMLINK_REFERENCE.md](docs/SYMLINK_REFERENCE.md)
 ```bash
 cd ~/.dotfiles
 git pull
-stow --restow */
+stow --restow bash foot ghostty git neovim npm starship sway tmux vscode zsh
 ./scripts/health-check.sh
 ```
 
