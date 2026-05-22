@@ -112,6 +112,9 @@ node_modules/
 *.woff
 *.woff2
 
+# Terminal recordings
+*.Cast
+
 # Browser data
 .mozilla/
 .config/google-chrome/
@@ -155,6 +158,9 @@ node_modules/
 
 # Claude documentation artifacts (development only)
 claudedocs/
+
+# Auto-generated design tokens
+docs/design-tokens.json
 
 # ==============================================================================
 # LOGS & DEBUG FILES
