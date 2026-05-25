@@ -7,6 +7,7 @@ abbr -S ports='netstat -tulanp'
 
 # Debug output - redirect stderr and stdout to file while displaying
 abbr -gS '2>'='2>&1 | tee debug.log'
+abbr -S cpb='cat  | pbcopy'
 
 # AI Tools (--force needed to override /usr/bin/cc)
 abbr -S --force --quiet cc='claude --dangerously-skip-permissions'
