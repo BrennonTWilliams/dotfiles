@@ -286,3 +286,4 @@ starship/backups/
 .ll/ll-context-state.json
 .ll/ll-sync-state.json
 .ll/ll-continue-prompt.md
+.ll/history.db
