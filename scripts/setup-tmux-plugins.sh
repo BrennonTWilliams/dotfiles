@@ -18,17 +18,15 @@ TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
     info "Installing Tmux Plugin Manager (TPM)..."
     git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-    info "TPM installed successfully"
-else
-    info "TPM already installed"
 fi
+
+info "Installing tmux plugins via TPM..."
+"$TPM_DIR/bin/install_plugins"
 
 info ""
 info "Tmux Plugin Manager setup complete!"
 info ""
-info "To install tmux plugins:"
-info "  1. Start tmux: tmux"
-info "  2. Press: Prefix + I (Ctrl-a + Shift-i)"
+info "NOTE: To update plugins later, press Prefix + U inside tmux."
 info ""
 info "Configured plugins:"
 info "  - tmux-sensible          (Sensible defaults)"
@@ -41,5 +39,5 @@ info "  - tmux-plugins/tmux-open (Copy-mode o opens URLs/files; Ctrl-o opens in 
 info "  - rickstaa/tmux-notify   (Desktop notification on command finish; prefix+m)"
 info ""
 info "NOTE: tmux-thumbs has no pre-built ARM64 binary."
-info "After 'Prefix + I', build it manually:"
+info "Build it manually after this script completes:"
 info "  cd ~/.tmux/plugins/tmux-thumbs && cargo build --release"
