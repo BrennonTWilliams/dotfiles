@@ -7,6 +7,7 @@ abbr -S ports='netstat -tulanp'
 
 # Debug output - redirect stderr and stdout to file while displaying
 abbr -gS '2>'='2>&1 | tee debug.log'
+abbr -S cpb='cat  | pbcopy'
 
 # AI Tools (--force needed to override /usr/bin/cc)
 abbr -S --force --quiet cc='claude --dangerously-skip-permissions'
@@ -19,6 +20,7 @@ abbr -S llis='ll-issues show'
 abbr -S lll='ll-loop'
 abbr -S llll='ll-loop list'
 abbr -S lllr='ll-loop run'
+abbr -S lllra='ll-loop run autodev'
 abbr -S llls='ll-loop show'
 abbr -S lls='ll-sprint'
 abbr -S llsl='ll-sprint list'
@@ -26,6 +28,7 @@ abbr -S llss='ll-sprint show'
 abbr -S lla='ll-auto'
 abbr -S llao='ll-auto --only'
 abbr -S llp='ll-parallel'
+abbr -S glip='glow "$(ll-issues path )"'
 
 # CLI Tools
 abbr -S g='glow'
@@ -34,3 +37,4 @@ abbr -S npmr='npm run dev'
 
 # Terminal repair
 abbr -S kkp='printf "\x1b[<u"'
+abbr -S recent='ll-issues list --status done --sort completed --desc --limit 5'

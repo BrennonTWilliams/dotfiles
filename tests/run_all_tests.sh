@@ -30,6 +30,8 @@ readonly TEST_MODULES=(
     "test_user_workflows.sh:User Workflow Testing"
     "test_macos_integration.sh:macOS-Specific Integration Testing"
     "test_package_validation.sh:Package Validation Testing"
+    "test_ghostty_config_validation.sh:Ghostty Configuration Validation"
+    "test_tmux_config_validation.sh:Tmux Configuration Validation"
 )
 
 # Global counters

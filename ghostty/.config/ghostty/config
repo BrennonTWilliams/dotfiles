@@ -16,11 +16,10 @@ shell-integration = zsh
 # Theme Configuration
 # ============================================
 
-# Dark theme: Gruvbox (amber/green palette, consistent across light/dark mode)
-theme = gruvbox-dark-custom
+# Auto dark/light: follows macOS appearance
+theme = light:gruvbox-light-custom,dark:gruvbox-dark-custom
 
-# Load optional local config for runtime theme switching (toggle-theme)
-# IMPORTANT: Must come AFTER 'theme =' so local overrides take effect
+# Optional local overrides (machine-specific settings)
 config-file = ?config.local
 
 # ============================================
@@ -39,6 +38,34 @@ font-size = 16
 # Bold and italic font variants
 font-family-bold = IosevkaTerm Nerd Font
 font-family-italic = IosevkaTerm Nerd Font
+
+# Glyph-only fallback: forces Nerd Font PUA codepoints to render from a
+# single-cell-width font so they survive tmux's wcwidth() pass. Without this,
+# IosevkaTerm Nerd Font's wide-metric symbols render blank inside tmux because
+# the cell width tmux reserves doesn't match the glyph and Ghostty falls back
+# to a macOS system font that has no PUA coverage.
+font-family = Symbols Nerd Font Mono
+
+# Pin every standard Nerd Font codepoint block to the symbols font so Ghostty
+# never picks a different fallback for these ranges. Block list mirrors the
+# Nerd Fonts v3.x cheat sheet.
+font-codepoint-map = U+E000-U+E00A=Symbols Nerd Font Mono
+font-codepoint-map = U+E0A0-U+E0A2=Symbols Nerd Font Mono
+font-codepoint-map = U+E0A3=Symbols Nerd Font Mono
+font-codepoint-map = U+E0B0-U+E0B3=Symbols Nerd Font Mono
+font-codepoint-map = U+E0B4-U+E0C8=Symbols Nerd Font Mono
+font-codepoint-map = U+E0CA=Symbols Nerd Font Mono
+font-codepoint-map = U+E0CC-U+E0D7=Symbols Nerd Font Mono
+font-codepoint-map = U+E200-U+E2A9=Symbols Nerd Font Mono
+font-codepoint-map = U+E300-U+E3E3=Symbols Nerd Font Mono
+font-codepoint-map = U+E5FA-U+E6B7=Symbols Nerd Font Mono
+font-codepoint-map = U+E700-U+E8EF=Symbols Nerd Font Mono
+font-codepoint-map = U+EA60-U+EC1E=Symbols Nerd Font Mono
+font-codepoint-map = U+ED00-U+EFCE=Symbols Nerd Font Mono
+font-codepoint-map = U+F000-U+F2FF=Symbols Nerd Font Mono
+font-codepoint-map = U+F300-U+F381=Symbols Nerd Font Mono
+font-codepoint-map = U+F400-U+F533=Symbols Nerd Font Mono
+font-codepoint-map = U+F0001-U+F1AF0=Symbols Nerd Font Mono
 
 # ============================================
 # macOS-Specific Settings
@@ -65,6 +92,7 @@ macos-option-as-alt = true
 # Window padding for better readability
 window-padding-x = 8
 window-padding-y = 8
+window-padding-color = extend
 
 # Tab bar configuration for status-like functionality
 window-show-tab-bar = auto
@@ -81,20 +109,105 @@ resize-overlay-position = center
 window-width = 120
 window-height = 40
 
-# ============================================
+#============================================
 # Keybinding Configuration
 # ============================================
+# Phase 2 port from WezTerm. Items marked (default) are Ghostty defaults
+# and are omitted here (cmd+enter=fullscreen, ctrl+tab=next_tab, font size).
 
-# NOTE: Removed conflicting keybindings that interfere with macOS system hotkeys
-# The following keybindings were commented out to restore system hotkey functionality:
-# - super+w, super+shift+w, super+alt+w (window operations)
-# - super+c, super+v (clipboard operations)
-# - super+n, super+t (window/tab creation)
-# - super+alt+arrow_* (split navigation)
-# - super+up, super+down (scroll navigation)
-#
-# This allows macOS system hotkeys like Command+Q to work properly
-# while maintaining Ghostty's default terminal behavior
+# Config reload
+keybind = super+r=reload_config
+
+# Window / tab management
+# Native Ghostty tabs and splits are replaced by tmux windows/panes — all shortcuts send tmux key sequences.
+# prefix = ctrl+a (\x01); Ghostty window close (cmd+shift+w) is the only native action kept.
+keybind = super+t=text:\x01c
+keybind = super+w=text:\x01x
+keybind = super+shift+w=close_window
+keybind = ctrl+tab=text:\x01n
+keybind = ctrl+shift+tab=text:\x01p
+# macOS intercepts these; setup-terminal.sh remaps the Window menu items
+# to free these combos — restart Ghostty after running that script.
+# NOTE: Ghostty's `text:` value runs to end-of-line; never put trailing `#` comments on these.
+keybind = super+shift+]=text:\x01n
+keybind = super+shift+[=text:\x01p
+keybind = super+one=text:\x011
+keybind = super+two=text:\x012
+keybind = super+three=text:\x013
+keybind = super+four=text:\x014
+keybind = super+five=text:\x015
+keybind = super+six=text:\x016
+keybind = super+seven=text:\x017
+keybind = super+eight=text:\x018
+keybind = super+nine=text:\x019
+
+# Splits → tmux pane splits (consistent with tab philosophy above)
+keybind = super+d=text:\x01|
+keybind = super+shift+d=text:\x01-
+keybind = super+shift+z=text:\x01z
+keybind = super+alt+left=text:\x01h
+keybind = super+alt+right=text:\x01l
+keybind = super+alt+up=text:\x01k
+keybind = super+alt+down=text:\x01j
+
+# Pane resize → tmux (capital H/J/K/L after prefix; -r-repeatable in tmux)
+keybind = super+shift+left=text:\x01H
+keybind = super+shift+down=text:\x01J
+keybind = super+shift+up=text:\x01K
+keybind = super+shift+right=text:\x01L
+
+# Line navigation (Home/End escape sequences for readline / shell editors)
+keybind = super+left=text:\x1bOH
+keybind = super+right=text:\x1bOF
+
+# Scroll: routes to tmux copy-mode (tmux owns the 50k-line ring buffer;
+# Ghostty's buffer is capped at 1000 lines and is nearly empty inside a tmux
+# session). Sends prefix+U/D, which tmux maps to copy-mode scroll (see .tmux.conf).
+# In a non-tmux shell these send ^A then U/D — a minor annoyance in an edge case.
+keybind = super+up=text:\x01U
+keybind = super+down=text:\x01D
+
+# Enter tmux copy-mode (mirrors cmux's ⌘⇧M toggle). Sends prefix+[ which is the
+# standard tmux copy-mode entry. Press q or Escape to exit; click repositions cursor.
+keybind = super+shift+m=text:\x01[
+
+# Prompt navigation (requires shell-integration; walks OSC prompt marks)
+keybind = ctrl+shift+up=jump_to_prompt:-1
+keybind = ctrl+shift+down=jump_to_prompt:1
+
+# Dump Ghostty scrollback to a temp file and open it (editor-grade selection)
+keybind = super+shift+o=write_scrollback_file:open
+
+# Readline word navigation (option as alt is set globally; these ensure \x1bb/\x1bf)
+keybind = alt+left=text:\x1bb
+keybind = alt+right=text:\x1bf
+
+# Kill line (ctrl+u / readline backward-kill-line)
+keybind = super+backspace=text:\x15
+
+# Lazygit popup: sends C-a G to tmux (prefix + G fires the lazygit display-popup bind)
+keybind = super+g=text:\x01G
+
+# btop popup: sends C-a M to tmux (prefix + M fires the btop display-popup bind)
+keybind = super+m=text:\x01M
+
+# Sessionizer: sends C-a T to tmux (prefix + T fires the sessionizer popup)
+keybind = super+shift+t=text:\x01T
+
+# Clear scrollback: sends C-a C-l to tmux (prefix + C-l fires the clear-history bind)
+keybind = super+k=text:\x01\x0c
+
+# Command palette
+keybind = super+shift+p=toggle_command_palette
+
+# Tab rename workaround (Phase 3): Ghostty has no built-in rename prompt.
+# Use the shell function instead: tab-title my-task
+# Bind cmd+shift+r to type the function name as a convenience starter.
+keybind = super+shift+r=text:tab-title
+
+# System-wide quick terminal (works from any macOS app; Cmd+backtick)
+# Note: if it doesn't fire, check System Settings > Keyboard Shortcuts for conflicts
+keybind = global:super+backquote=toggle_quick_terminal
 
 # ============================================
 # Clipboard Integration
@@ -117,13 +230,14 @@ clipboard-write = allow
 # Mouse Configuration
 # ============================================
 
-# Mouse settings are handled automatically by Ghostty
+# Hide mouse cursor while typing
+mouse-hide-while-typing = true
 
 # ============================================
 # Bell and Notifications
 # ============================================
 
-# Bell settings are handled automatically by Ghostty
+bell-features = no-system
 
 # ============================================
 # Cursor Configuration
@@ -142,21 +256,36 @@ cursor-style-blink = false
 # ============================================
 
 # Auto-copy selection to clipboard
-copy-on-select = true
+copy-on-select = false
+
+# Word boundary characters for double-click selection (mirrors tmux word-separators).
+# Dash is intentionally absent so "some-component" is selected as a unit.
+selection-word-chars = / \t.?=&@#~+%:;,!()[]{}<>"'
 
 # ============================================
 # Advanced Configuration
 # ============================================
 
 # Shell command for new terminals
-command = /bin/zsh
+command = /bin/zsh -l -c "exec tmux new-session -A -s main"
+
+# Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
+quick-terminal-position = bottom
+quick-terminal-size = 60%
+quick-terminal-animation-duration = 0.1
 
 # Working directory - start in home directory
 # Defaults to $HOME if not specified
 # working-directory = ~
 
-# Terminal type
-term = xterm-256color
+# Ghostty scrollback kept minimal; tmux owns scrollback (history-limit 50000).
+# super+up/down is routed to tmux copy-mode (prefix+U/D) rather than scrolling
+# this shallow buffer directly.
+scrollback-limit = 1000
+
+# TERM is intentionally unset — Ghostty advertises xterm-ghostty natively,
+# which carries undercurl, kitty-graphics, and modern OSC support. Tmux
+# overrides $TERM to tmux-256color inside sessions regardless.
 
 # Confirm exit on active processes
 confirm-close-surface = true
@@ -169,7 +298,6 @@ focus-follows-mouse = false
 # ============================================
 
 # Environment variables for Ghostty sessions
-env = TERM=xterm-256color
 env = COLORTERM=truecolor
 
 # ============================================

@@ -79,7 +79,7 @@ The prefix key is changed from `C-b` to `C-a` for easier access.
 The status bar displays:
 
 - **Left**: Session name, hostname
-- **Right**: CPU usage, time, and date
+- **Right**: CPU and RAM usage (Nerd Font glyphs), time, and date
 
 ### Gruvbox Theme Colors
 
@@ -98,11 +98,12 @@ This configuration uses TPM (Tmux Plugin Manager) with the following plugins:
 |--------|---------|
 | `tmux-plugins/tpm` | Plugin manager |
 | `tmux-plugins/tmux-sensible` | Sensible defaults |
-| `tmux-plugins/tmux-yank` | Enhanced clipboard integration |
 | `tmux-plugins/tmux-resurrect` | Session persistence |
-| `tmux-plugins/tmux-continuum` | Automatic session saving |
-| `tmux-plugins/tmux-cpu` | CPU monitoring |
-| `tmux-plugins/tmux-battery` | Battery status |
+| `tmux-plugins/tmux-continuum` | Automatic session saving and restore |
+| `tmux-plugins/tmux-cpu` | CPU and RAM monitoring in status bar |
+| `tmux-plugins/tmux-prefix-highlight` | Highlights prefix and copy-mode in status bar |
+| `fcsonline/tmux-thumbs` | Hint-style picker for on-screen text |
+| `laktak/extrakto` | fzf-based token extraction from visible content |
 
 ### Installing Plugins
 
@@ -115,9 +116,8 @@ This configuration uses TPM (Tmux Plugin Manager) with the following plugins:
 
 ### Plugin Settings
 
-- **Resurrect**: Saves nvim sessions
-- **Continuum**: Automatic restore is disabled by default
-- **Yank**: Configured for system clipboard integration
+- **Resurrect**: Saves nvim sessions and pane contents
+- **Continuum**: Automatic restore is enabled; saves every 5 minutes
 
 ## Dependencies
 

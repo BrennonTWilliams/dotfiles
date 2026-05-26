@@ -256,6 +256,21 @@ setup_ghostty() {
         else
             warn "Ghostty configuration not found in dotfiles"
         fi
+
+        # macOS intercepts Cmd+Shift+[ and Cmd+Shift+] at the system level for
+        # "Show Previous/Next Tab" Window menu items before Ghostty sees them.
+        # Remap those menu items to an unused combo (Ctrl+Opt+Shift+[/]) so
+        # Ghostty's own keybinds (super+shift+[/]=text:\x01p/n) can fire.
+        # Note: `defaults write` rejects $[ in values; PlistBuddy handles it.
+        info "Remapping Ghostty macOS tab shortcuts to free Cmd+Shift+[/]..."
+        local plist="$HOME/Library/Preferences/com.mitchellh.ghostty.plist"
+        /usr/libexec/PlistBuddy -c "Add :NSUserKeyEquivalents dict" "$plist" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add :NSUserKeyEquivalents:'Show Previous Tab' string" "$plist" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Set :NSUserKeyEquivalents:'Show Previous Tab' '^~\$['" "$plist"
+        /usr/libexec/PlistBuddy -c "Add :NSUserKeyEquivalents:'Show Next Tab' string" "$plist" 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Set :NSUserKeyEquivalents:'Show Next Tab' '^~\$]'" "$plist"
+        killall cfprefsd 2>/dev/null || true
+        success "Ghostty macOS tab shortcuts remapped (restart Ghostty to apply)"
     else
         info "Ghostty setup only applicable to macOS"
     fi
