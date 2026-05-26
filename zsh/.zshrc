@@ -315,7 +315,7 @@ fi
 # ==============================================================================
 
 # Cache starship paths once (using symlink resolution for accuracy)
-typeset -g _STARSHIP_CONFIG_DIR="$HOME/.config/starship"
+typeset -g _STARSHIP_ACTIVE_LINK="$HOME/.config/starship.toml"
 if [[ -L ~/.zshrc ]]; then
     # Resolve from symlink - go up from zsh/ to dotfiles root, then to starship/
     typeset -g _DOTFILES_STARSHIP_DIR="$HOME/$(dirname "$(dirname "$(readlink ~/.zshrc)")")/starship"
@@ -326,7 +326,7 @@ fi
 # Helper to switch starship mode
 _starship_set_mode() {
     local mode="$1" label="$2" symbol="$3"
-    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/${mode}.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/${mode}.toml" "$_STARSHIP_ACTIVE_LINK"
     echo "[$symbol] Starship mode: $label"
     echo "Configuration: $_DOTFILES_STARSHIP_DIR/.config/starship/${mode}.toml"
     exec zsh
@@ -340,7 +340,7 @@ starship-gruvbox-rainbow()      { _starship_set_mode "gruvbox-rainbow"       "GR
 
 # Show current Starship display mode
 starship-mode() {
-    local config_file="$_STARSHIP_CONFIG_DIR/starship.toml"
+    local config_file="$_STARSHIP_ACTIVE_LINK"
 
     if [[ -L "$config_file" ]]; then
         local target=$(readlink "$config_file")
@@ -360,9 +360,8 @@ starship-mode() {
 }
 
 # Initialize Starship in standard mode if not already configured
-[[ ! -d "$_STARSHIP_CONFIG_DIR" ]] && mkdir -p "$_STARSHIP_CONFIG_DIR"
-[[ ! -L "$_STARSHIP_CONFIG_DIR/starship.toml" ]] && \
-    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+[[ ! -L "$_STARSHIP_ACTIVE_LINK" ]] && \
+    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_ACTIVE_LINK"
 
 # ==============================================================================
 # Theme Mode (dark/light toggle)
@@ -416,9 +415,9 @@ toggle-theme() {
 
     # Switch Starship config
     if [[ "$new_mode" == "light" ]]; then
-        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow-light.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow-light.toml" "$_STARSHIP_ACTIVE_LINK"
     else
-        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow.toml" "$_STARSHIP_CONFIG_DIR/starship.toml"
+        ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow.toml" "$_STARSHIP_ACTIVE_LINK"
     fi
 
     # Reload tmux if running inside a tmux session
