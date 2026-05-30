@@ -30,6 +30,8 @@ abbr -S lla='ll-auto'
 abbr -S llao='ll-auto --only'
 abbr -S llp='ll-parallel'
 abbr -S glip='glow "$(ll-issues path )"'
+abbr -S zlip='zed "$(ll-issues path )"'
+abbr -S zclsj='zed .claude/settings.local.json'
 
 # CLI Tools
 abbr -S g='glow'
@@ -38,4 +40,4 @@ abbr -S npmr='npm run dev'
 
 # Terminal repair
 abbr -S kkp='printf "\x1b[<u"'
-abbr -S recent='ll-issues list --status done --sort completed --desc --limit 5'
+abbr -S recent='ll-issues list --status done --sort completed --desc --limit 10'
