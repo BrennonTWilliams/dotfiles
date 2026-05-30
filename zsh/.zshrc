@@ -162,6 +162,9 @@ conda() {
     fi
     [[ -d "$conda_bin" ]] && export PATH="$conda_bin:$PATH"
 }
+
+# Ensure npm global bin takes precedence over conda-installed equivalents (e.g. playwright)
+[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
 # <<< conda initialize (lazy-loaded) <<<
 
 # ==============================================================================
