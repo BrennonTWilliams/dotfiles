@@ -1,4 +1,5 @@
 ---
+created: 2025-12-04
 date: 2025-12-05T02:12:06Z
 researcher: Claude
 git_commit: 460ea8a
