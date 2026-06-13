@@ -18,7 +18,7 @@ source "$SCRIPT_DIR/../scripts/lib/utils.sh"
 OUTPUT_DIR="$SCRIPT_DIR/.config/starship"
 
 # Modes to build
-MODES=("compact" "standard" "verbose" "gruvbox-rainbow" "gruvbox-rainbow-light")
+MODES=("compact" "standard" "verbose" "gruvbox-rainbow" "gruvbox-rainbow-light" "terminal")
 
 # Create aliases for logging functions to match this script's naming convention
 log_info() {
@@ -294,12 +294,14 @@ build_all() {
     echo "  starship-compact   # Switch to compact mode"
     echo "  starship-standard  # Switch to standard mode"
     echo "  starship-verbose   # Switch to verbose mode"
+    echo "  starship-terminal  # Switch to terminal mode (ASCII-safe)"
     echo "  starship-gruvbox-rainbow # Switch to gruvbox-rainbow mode"
     echo ""
     log_info "Or manually update the symlink:"
     echo "  ln -sf \$(pwd)/.config/starship/compact.toml   ~/.config/starship.toml"
     echo "  ln -sf \$(pwd)/.config/starship/standard.toml  ~/.config/starship.toml"
     echo "  ln -sf \$(pwd)/.config/starship/verbose.toml   ~/.config/starship.toml"
+    echo "  ln -sf \$(pwd)/.config/starship/terminal.toml  ~/.config/starship.toml"
     echo "  ln -sf \$(pwd)/.config/starship/gruvbox-rainbow.toml ~/.config/starship.toml"
 }
 

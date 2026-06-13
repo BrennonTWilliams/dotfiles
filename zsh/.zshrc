@@ -338,6 +338,7 @@ _starship_set_mode() {
 starship-compact()              { _starship_set_mode "compact"              "COMPACT (minimal information)" ">"; }
 starship-standard()             { _starship_set_mode "standard"             "STANDARD (current multi-line layout)" "="; }
 starship-verbose()              { _starship_set_mode "verbose"              "VERBOSE (full context with all details)" "+"; }
+starship-terminal()             { _starship_set_mode "terminal"             "TERMINAL (ASCII-safe, no Nerd Fonts required)" "T"; }
 starship-gruvbox-light()        { _starship_set_mode "gruvbox-rainbow-light" "GRUVBOX RAINBOW LIGHT" "*"; }
 starship-gruvbox-rainbow()      { _starship_set_mode "gruvbox-rainbow"       "GRUVBOX RAINBOW (dark)" "#"; }
 
@@ -351,6 +352,7 @@ starship-mode() {
             *compact.toml)              echo "[>] Current mode: COMPACT (minimal information)" ;;
             *standard.toml)             echo "[=] Current mode: STANDARD (current multi-line layout)" ;;
             *verbose.toml)              echo "[+] Current mode: VERBOSE (full context with all details)" ;;
+            *terminal.toml)             echo "[T] Current mode: TERMINAL (ASCII-safe, no Nerd Fonts required)" ;;
             *gruvbox-rainbow-light.toml) echo "[*] Current mode: GRUVBOX RAINBOW LIGHT" ;;
             *gruvbox-rainbow.toml)      echo "[#] Current mode: GRUVBOX RAINBOW (dark)" ;;
             *)                          echo "[?] Unknown mode - custom configuration" ;;
@@ -362,7 +364,7 @@ starship-mode() {
     fi
 }
 
-# Initialize Starship in standard mode if not already configured
+# Initialize Starship symlink in standard mode on first setup
 [[ ! -L "$_STARSHIP_ACTIVE_LINK" ]] && \
     ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_ACTIVE_LINK"
 
@@ -457,6 +459,14 @@ unset PROMPT_COMMAND
 # Ensure STARSHIP_CONFIG is not set to empty string (breaks config discovery)
 # If you want a custom config path, set it explicitly in .zshrc.local
 unset STARSHIP_CONFIG 2>/dev/null
+
+# Force terminal-safe config in Apple Terminal.app (no Nerd Font support).
+# Uses env var rather than symlink so Ghostty/Tmux sessions are unaffected.
+# Terminal.app sets TERM_PROGRAM=Apple_Terminal outside of tmux.
+# For tmux-inside-Terminal.app, run 'starship-terminal' manually.
+if [[ "$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+    export STARSHIP_CONFIG="$_DOTFILES_STARSHIP_DIR/.config/starship/terminal.toml"
+fi
 
 # Initialize Starship
 eval "$(starship init zsh)"

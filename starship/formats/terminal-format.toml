@@ -1,0 +1,15 @@
+# ===================================
+# Terminal Format Configuration
+# ===================================
+# ASCII-safe single-line layout for terminal emulators without Nerd Fonts
+# (e.g., Apple Terminal.app, Linux console, basic xterm)
+
+# Terminal format string - single line with essential info only
+# Uses only standard Unicode/ASCII characters safe for all terminal emulators
+format = """[$path]($style)[$read_only]($read_only_style)[$git_branch]($style)[$git_status]($style)$character"""
+
+# Blank line between prompts
+add_newline = false
+
+# Command timeout
+command_timeout = 1000

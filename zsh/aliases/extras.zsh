@@ -33,6 +33,7 @@ alias tk='tmux kill-session -t'
 alias sc='starship-compact'
 alias ss='starship-standard'
 alias sv='starship-verbose'
+alias st='starship-terminal'
 alias sm='starship-mode'
 
 # Development

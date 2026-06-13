@@ -1,0 +1,87 @@
+# ===================================
+# Terminal Mode Overrides
+# ===================================
+# Overrides for terminal-safe mode - no Nerd Font symbols, ASCII/Unicode only
+# Designed for terminal emulators without Nerd Fonts (Terminal.app, xterm, etc.)
+
+# Directory configuration with ASCII-safe symbols
+[directory]
+home_symbol = "~ "
+read_only = " [ro]"
+
+# Git branch with text label instead of Nerd Font icon
+[git_branch]
+symbol = ""
+
+# Git status symbols are all standard Unicode, so we keep them as-is
+# ↑ ↓ ⚡ ✓ ? ⚑ • → × ! — all render fine in Terminal.app
+
+# Character module: ➜ and ❮ are standard Unicode (U+279C, U+276E)
+# No changes needed here
+
+# Disable modules that use Nerd Font symbols or add unnecessary noise
+[shlvl]
+disabled = true
+
+[hostname]
+disabled = true
+
+# Disable all heavy modules (same as compact mode)
+[package]
+disabled = true
+
+[golang]
+disabled = true
+
+[python]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[rust]
+disabled = true
+
+[java]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[cmake]
+disabled = true
+
+[container]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[terraform]
+disabled = true
+
+[nix_shell]
+disabled = true
+
+[battery]
+disabled = true
+
+[time]
+disabled = true
+
+[localip]
+disabled = true
+
+# Custom modules - disable all for terminal mode
+# Using dotted key syntax to avoid duplicate table declarations
+custom.terminal.disabled = true
+custom.macos.disabled = true
+custom.linux.disabled = true
+custom.sway.disabled = true
+custom.tmux.disabled = true
+custom.ghostty.disabled = true
+custom.foot.disabled = true
+custom.git_commit.disabled = true
+custom.aws_profile.disabled = true
+custom.memory.disabled = true
+custom.github_status.disabled = true
