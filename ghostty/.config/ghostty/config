@@ -267,7 +267,7 @@ selection-word-chars = / \t.?=&@#~+%:;,!()[]{}<>"'
 # ============================================
 
 # Shell command for new terminals
-command = /bin/zsh -l -c "exec tmux new-session"
+command = /bin/zsh -l -c "exec tmux new-session -A -s main"
 
 # Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
 quick-terminal-position = bottom
