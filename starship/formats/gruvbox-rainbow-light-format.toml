@@ -43,7 +43,7 @@ palette = 'gruvbox_rainbow'
 
 # Gruvbox Light color palette
 [palettes.gruvbox_rainbow]
-color_fg0 = '#3c3836'   # dark1 (text on colored bg)
+color_fg0 = '#fbf1c7'   # Gruvbox hard light0 — cream text on every dark tile (high contrast across warm + cool palette)
 color_bg1 = '#a89984'   # gray — visible separator from cream bg for trailing tile + $status bg
 color_bg3 = '#7c6f64'   # dark gray — right-prompt $time (fg-only on cream)
 color_red = '#9d0006'
