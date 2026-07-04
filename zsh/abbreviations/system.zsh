@@ -31,3 +31,6 @@ abbr -S ss='starship-standard'
 abbr -S sv='starship-verbose'
 abbr -S st='starship-terminal'
 abbr -S sm='starship-mode'
+
+# Theme mode toggle (light/dark — Ghostty, tmux, Starship)
+abbr -S tt='toggle-theme'

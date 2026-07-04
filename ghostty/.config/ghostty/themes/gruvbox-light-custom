@@ -21,9 +21,11 @@ selection-background = #d5c4a1
 # dark1
 selection-foreground = #3c3836
 
-# Cursor colors - orange accent for Gruvbox continuity
-# neutral orange - visibly orange on light background
-cursor-color = #d65d0e
+# Cursor colors - shared light-orange accent for cross-tool consistency
+# Matches tmux @prefix_highlight_bg, window-status-current fg, and
+# Starship color_orange so the "orange = accent" semantic reads the same
+# across Ghostty cursor, tmux window highlight, and Starship directory segment
+cursor-color = #af3a03
 # light0-hard
 cursor-text = #f9f5d7
 
