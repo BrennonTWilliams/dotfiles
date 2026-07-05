@@ -205,7 +205,7 @@ validate_platform_appropriateness() {
 
         if [[ "$platform" == "macos" ]]; then
             # Check for Linux-specific packages that shouldn't be on macOS
-            if [[ " $LINUX_PACKAGES " =~ [[:space:]]$package_name[[:space:]] ]]; then
+            if [[ " $LINUX_PACKAGES " =~ [[:space:]]${package_name}[[:space:]] ]]; then
                 log_error "Line $line_number: Linux-specific package found in macOS file: '$package_name'"
                 platform_issues=$((platform_issues + 1))
             fi
@@ -331,7 +331,7 @@ validate_no_duplicates() {
         total_packages=$((total_packages + 1))
 
         # Check if package already seen
-        if [[ " $all_packages " =~ [[:space:]]$package_name[[:space:]] ]]; then
+        if [[ " $all_packages " =~ [[:space:]]${package_name}[[:space:]] ]]; then
             log_error "Duplicate package found: '$package_name'"
             duplicates=$((duplicates + 1))
         else

@@ -158,14 +158,14 @@ fi
 # Test 8: Package detection functions
 echo "Testing package detection..."
 if dotfiles_packages=$(get_available_packages 2>/dev/null); then
-    local count=$(echo "$dotfiles_packages" | wc -w)
+    count=$(echo "$dotfiles_packages" | wc -w)
     log_test "Dotfiles package detection" "PASS" "Found $count dotfiles packages"
 else
     log_test "Dotfiles package detection" "FAIL" "Failed to detect dotfiles packages"
 fi
 
 if platform_packages=$(get_platform_packages 2>/dev/null); then
-    local count=$(echo "$platform_packages" | wc -l)
+    count=$(echo "$platform_packages" | wc -l)
     log_test "Platform package detection" "PASS" "Found $count platform packages"
 else
     log_test "Platform package detection" "FAIL" "Failed to detect platform packages"
@@ -173,10 +173,10 @@ fi
 
 # Test 9: Package validation with different package managers
 echo "Testing package validation..."
-local test_packages=("git" "vim" "tmux")
+test_packages=("git" "vim" "tmux")
 
 if filtered_output=$(pre_validate_packages "${test_packages[@]}" 2>/dev/null); then
-    local count=$(echo "$filtered_output" | wc -l)
+    count=$(echo "$filtered_output" | wc -l)
     log_test "Package validation filtering" "PASS" "Filtered to $count valid packages"
 else
     log_test "Package validation filtering" "WARN" "Package validation had issues"
@@ -186,8 +186,7 @@ fi
 echo "Testing platform-specific filtering..."
 if [[ "$OS" == "macos" ]]; then
     # Test Linux package filtering on macOS
-    local mixed_packages=("git" "vim" "sway" "swaybg" "tmux")
-    local filtered
+    mixed_packages=("git" "vim" "sway" "swaybg" "tmux")
     filtered=$(pre_validate_packages "${mixed_packages[@]}" 2>/dev/null || echo "")
 
     if [[ "$filtered" != *"sway"* ]] && [[ "$filtered" != *"swaybg"* ]]; then
@@ -197,8 +196,7 @@ if [[ "$OS" == "macos" ]]; then
     fi
 
     # Test sketchybar handling on macOS
-    local macos_packages=("git" "sketchybar")
-    local filtered
+    macos_packages=("git" "sketchybar")
     filtered=$(pre_validate_packages "${macos_packages[@]}" 2>/dev/null || echo "")
 
     if [[ "$filtered" == *"sketchybar"* ]] || [[ -z "$filtered" ]]; then
@@ -275,7 +273,7 @@ echo -e "${GREEN}${BOLD}Passed:${NC} $TESTS_PASSED"
 echo -e "${YELLOW}${BOLD}Warnings:${NC} $TESTS_WARNINGS"
 echo -e "${RED}${BOLD}Failed:${NC} $TESTS_FAILED"
 
-local success_rate=0
+success_rate=0
 if [ $TESTS_TOTAL -gt 0 ]; then
     success_rate=$((TESTS_PASSED * 100 / TESTS_TOTAL))
 fi

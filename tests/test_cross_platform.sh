@@ -95,7 +95,7 @@ test_cross_platform_utilities() {
         local missing_functions=0
 
         for func in "${functions[@]}"; do
-            if grep -q "^[[:space:]]*$func[[:space:]]*(" "$utilities_file"; then
+            if grep -q "^[[:space:]]*${func}[[:space:]]*(" "$utilities_file"; then
                 log "    ✓ Found function: $func"
             else
                 log "    ✗ Missing function: $func"
@@ -254,7 +254,7 @@ test_starship_cross_platform() {
     if [[ -f "$zshrc_file" ]]; then
         local starship_functions=("starship-compact" "starship-standard" "starship-verbose" "starship-mode")
         for func in "${starship_functions[@]}"; do
-            if grep -q "^[[:space:]]*$func[[:space:]]*(" "$zshrc_file"; then
+            if grep -q "^[[:space:]]*${func}[[:space:]]*(" "$zshrc_file"; then
                 if grep -A 5 "$func" "$zshrc_file" | grep -q "resolve_platform_path"; then
                     log "    ✓ $func uses cross-platform path resolution"
                 else

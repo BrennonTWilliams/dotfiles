@@ -111,14 +111,14 @@ fi
 # Test 7: Package detection
 echo "Testing package detection..."
 if get_available_packages >/dev/null 2>&1; then
-    local count=$(get_available_packages | wc -w)
+    count=$(get_available_packages | wc -w)
     log_test "Dotfiles package detection" "PASS" "Found $count packages"
 else
     log_test "Dotfiles package detection" "FAIL"
 fi
 
 if get_platform_packages >/dev/null 2>&1; then
-    local count=$(get_platform_packages | wc -l)
+    count=$(get_platform_packages | wc -l)
     log_test "Platform package detection" "PASS" "Found $count packages"
 else
     log_test "Platform package detection" "FAIL"
@@ -134,12 +134,11 @@ fi
 
 # Test 9: Package validation
 echo "Testing package validation..."
-local test_packages=("git" "vim" "tmux")
-local filtered_output
+test_packages=("git" "vim" "tmux")
 filtered_output=$(pre_validate_packages "${test_packages[@]}" 2>/dev/null || echo "")
 
 if [ -n "$filtered_output" ]; then
-    local count=$(echo "$filtered_output" | wc -l)
+    count=$(echo "$filtered_output" | wc -l)
     log_test "Package validation" "PASS" "Validated $count packages"
 else
     log_test "Package validation" "WARN" "No packages validated"
