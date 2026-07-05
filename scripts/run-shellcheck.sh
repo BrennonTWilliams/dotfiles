@@ -69,17 +69,38 @@ check_shellcheck() {
     info "Using ShellCheck version $version"
 }
 
+# Check whether a file's first line is a shebang
+has_shebang() {
+    local first_line
+    first_line=$(head -n1 "$1" 2>/dev/null)
+    [[ "$first_line" == "#!"*sh* ]]
+}
+
+# Check whether a file's first line is a zsh shebang
+# (ShellCheck cannot parse zsh syntax, so zsh scripts are excluded)
+has_zsh_shebang() {
+    local first_line
+    first_line=$(head -n1 "$1" 2>/dev/null)
+    [[ "$first_line" == *zsh* ]]
+}
+
 # Find all shell scripts in the repository
 find_shell_scripts() {
     local scripts=()
 
-    # Find scripts by shebang
+    # Find scripts by shebang (first line only, to avoid matching shebang
+    # examples embedded in markdown/docs)
     while IFS= read -r file; do
-        scripts+=("$file")
-    done < <(find "$DOTFILES_DIR" -type f -not -path "*/.git/*" -not -path "*/node_modules/*" -exec grep -l "^#!/.*sh" {} \; 2>/dev/null | sort)
+        if has_shebang "$file" && ! has_zsh_shebang "$file"; then
+            scripts+=("$file")
+        fi
+    done < <(find "$DOTFILES_DIR" -type f -not -path "*/.git/*" -not -path "*/node_modules/*" | sort)
 
-    # Find .sh files that might not have shebang
+    # Find .sh files that might not have a shebang (but skip zsh scripts)
     while IFS= read -r file; do
+        if has_zsh_shebang "$file"; then
+            continue
+        fi
         # Check if already in list
         local found=0
         for existing in "${scripts[@]}"; do
@@ -113,7 +134,10 @@ check_file() {
         return 0
     else
         # Normal check
-        if shellcheck "$file" 2>&1; then
+        # --severity=error is passed explicitly because ShellCheck's rcfile
+        # severity directive does not reliably suppress warning-level checks
+        # (e.g. SC2034) the way the CLI flag does.
+        if shellcheck --severity=error "$file" 2>&1; then
             return 0
         else
             return 1

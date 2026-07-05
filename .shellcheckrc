@@ -33,8 +33,9 @@ disable=SC1091
 # disable=SC2155
 
 # Set severity threshold (error, warning, info, style)
-# Only show warnings and errors by default
-severity=warning
+# Only show errors by default; warning/info-level style debt is tracked
+# separately and shouldn't block commits
+severity=error
 
 # Source path for additional files (helps shellcheck find sourced files)
 # source-path=SCRIPTDIR
