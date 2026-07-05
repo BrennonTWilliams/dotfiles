@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
 # ==============================================================================
-# Pre-commit Hook for ShellCheck
+# Pre-commit Hook for ShellCheck and Gitleaks
 # ==============================================================================
-# This hook runs ShellCheck on all shell scripts before allowing a commit.
+# This hook runs ShellCheck on all shell scripts and Gitleaks on staged
+# changes before allowing a commit.
 #
 # Installation:
 #   1. Make this file executable: chmod +x .githooks/pre-commit
@@ -25,7 +26,14 @@ NC='\033[0m' # No Color
 echo -e "${YELLOW}Running pre-commit checks...${NC}"
 echo
 
-# Check if shellcheck is installed
+# Get the root directory of the repository
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+failed=0
+
+# ------------------------------------------------------------------------------
+# ShellCheck
+# ------------------------------------------------------------------------------
 if ! command -v shellcheck &> /dev/null; then
     echo -e "${RED}[ERROR]${NC} ShellCheck is not installed!"
     echo
@@ -36,30 +44,55 @@ if ! command -v shellcheck &> /dev/null; then
     echo "  Arch:    sudo pacman -S shellcheck"
     echo
     echo -e "${YELLOW}Skipping ShellCheck for now...${NC}"
-    exit 0
-fi
-
-# Get the root directory of the repository
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-
-# Run shellcheck script if it exists
-if [ -f "$REPO_ROOT/scripts/run-shellcheck.sh" ]; then
+elif [ -f "$REPO_ROOT/scripts/run-shellcheck.sh" ]; then
     echo -e "${YELLOW}Running ShellCheck on all shell scripts...${NC}"
     echo
 
     if "$REPO_ROOT/scripts/run-shellcheck.sh" --summary; then
-        echo
         echo -e "${GREEN}✓ ShellCheck passed!${NC}"
-        exit 0
     else
-        echo
         echo -e "${RED}✗ ShellCheck failed!${NC}"
-        echo
-        echo "Please fix the issues above before committing."
-        echo "To skip this check, use: git commit --no-verify"
-        exit 1
+        failed=1
     fi
 else
     echo -e "${YELLOW}ShellCheck runner script not found, skipping...${NC}"
-    exit 0
 fi
+
+echo
+
+# ------------------------------------------------------------------------------
+# Gitleaks
+# ------------------------------------------------------------------------------
+if ! command -v gitleaks &> /dev/null; then
+    echo -e "${RED}[ERROR]${NC} gitleaks is not installed!"
+    echo
+    echo "Install gitleaks:"
+    echo "  macOS:   brew install gitleaks"
+    echo "  Linux:   see https://github.com/gitleaks/gitleaks#installing"
+    echo
+    echo -e "${YELLOW}Skipping gitleaks for now...${NC}"
+elif [ -f "$REPO_ROOT/scripts/run-gitleaks.sh" ]; then
+    echo -e "${YELLOW}Running gitleaks on staged changes...${NC}"
+    echo
+
+    if "$REPO_ROOT/scripts/run-gitleaks.sh" --staged; then
+        : # already printed success
+    else
+        failed=1
+    fi
+else
+    echo -e "${YELLOW}gitleaks runner script not found, skipping...${NC}"
+fi
+
+echo
+
+if [ "$failed" -ne 0 ]; then
+    echo -e "${RED}✗ Pre-commit checks failed!${NC}"
+    echo
+    echo "Please fix the issues above before committing."
+    echo "To skip this check, use: git commit --no-verify"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ All pre-commit checks passed!${NC}"
+exit 0
