@@ -72,7 +72,7 @@ font-codepoint-map = U+F0001-U+F1AF0=Symbols Nerd Font Mono
 # ============================================
 
 # Native macOS window controls with top bar information
-macos-titlebar-style = native
+macos-titlebar-style = hidden
 macos-titlebar-proxy-icon = visible
 macos-window-buttons = visible
 
