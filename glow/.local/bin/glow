@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# glow wrapper - selects gruvbox style based on THEME_MODE / macOS appearance
+# ==============================================================================
+# Mirrors the theme detection in tmux/.tmux.conf:288-289 so glow's colors
+# track the same dark/light state as Ghostty and tmux. When THEME_MODE is
+# unset, falls back to macOS AppleInterfaceStyle (light on macOS, dark on
+# Linux). Explicit THEME_MODE=light/dark always wins.
+#
+# Usage: glow [args...]
+#   All arguments are forwarded to the real glow binary.
+
+set -euo pipefail
+
+# Resolve the real glow binary first so we fail fast with the usual error
+# if glow is not installed. `command -v` respects $PATH.
+if ! command -v glow >/dev/null 2>&1; then
+    echo "glow: command not found (install via brew: brew install glow)" >&2
+    exit 127
+fi
+
+# Determine theme mode using the same precedence as tmux/.tmux.conf:
+#   1. Explicit THEME_MODE env var
+#   2. macOS AppleInterfaceStyle (light if absent/different)
+#   3. Linux defaults to dark
+_glow_theme_mode() {
+    local _m="${THEME_MODE:-}"
+    if [ -n "$_m" ]; then
+        printf '%s\n' "$_m"
+        return
+    fi
+    if uname | grep -q Darwin; then
+        if defaults read -g AppleInterfaceStyle 2>/dev/null | grep -qi dark; then
+            printf 'dark\n'
+        else
+            printf 'light\n'
+        fi
+    else
+        printf 'dark\n'
+    fi
+}
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Stow places this script under .local/bin/glow with gruvbox styles at
+# ../../.config/glow/gruvbox-<mode>.json relative to the script. That keeps
+# the wrapper portable when stowed into $HOME.
+STYLE_DIR="$(cd "$SCRIPT_DIR/../../.config/glow" 2>/dev/null && pwd || true)"
+
+MODE="$(_glow_theme_mode)"
+
+if [ -n "$STYLE_DIR" ] && [ -f "$STYLE_DIR/gruvbox-${MODE}.json" ]; then
+    exec glow -s "$STYLE_DIR/gruvbox-${MODE}.json" "$@"
+fi
+
+# Style file missing -- fall back to glow's built-in auto-detection rather
+# than failing the user's command. The warning is intentionally noisy so
+# the dotfiles symlink state is surfaced.
+if [ -z "$STYLE_DIR" ] || [ ! -d "$STYLE_DIR" ]; then
+    echo "glow-wrapper: style directory not found (expected ../../.config/glow relative to ${BASH_SOURCE[0]}); using glow default style" >&2
+fi
+
+exec glow "$@"
