@@ -435,12 +435,31 @@ toggle-theme() {
         wezterm cli reload-config 2>/dev/null || killall -USR1 wezterm 2>/dev/null || true
     fi
 
+    # Switch Claude Code's theme to the ANSI variant so it inherits our
+    # Ghostty gruvbox palette instead of Claude Code's own fixed hex colors
+    # (which read as washed out against our custom light background).
+    local claude_settings="$HOME/.claude/settings.json"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$claude_settings" ]]; then
+        local claude_theme="dark-ansi"
+        [[ "$new_mode" == "light" ]] && claude_theme="light-ansi"
+        local tmp_settings
+        tmp_settings="$(mktemp "${claude_settings}.XXXXXX")"
+        if jq --arg theme "$claude_theme" '.theme = $theme' "$claude_settings" > "$tmp_settings"; then
+            mv "$tmp_settings" "$claude_settings"
+        else
+            rm -f "$tmp_settings"
+        fi
+    fi
+
     echo "[~] Theme switched to: $new_mode"
     echo "    Ghostty: reloaded via SIGUSR2"
     if [[ -n "$WEZTERM_CONFIG_FILE" ]]; then
         echo "    WezTerm: config reloaded"
     fi
     echo "    Starship: will apply on next shell restart"
+    if [[ -n "$claude_theme" ]]; then
+        echo "    Claude Code: theme set to $claude_theme (applies to new sessions)"
+    fi
     echo "    Run 'exec zsh' to reload shell with new theme"
 }
 
