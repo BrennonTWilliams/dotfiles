@@ -425,8 +425,13 @@ toggle-theme() {
         ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/gruvbox-rainbow.toml" "$_STARSHIP_ACTIVE_LINK"
     fi
 
-    # Reload tmux if running inside a tmux session
+    # Reload tmux if running inside a tmux session. Push the new mode into the
+    # tmux global environment first: the theme's if-shell conditional runs in the
+    # tmux *server*, which never sees the `export THEME_MODE` above (that only
+    # touches the current client shell). Without this, source-file re-evaluates
+    # the conditional against a stale value and the tabs keep the old theme.
     if [[ -n "$TMUX" ]]; then
+        tmux setenv -g THEME_MODE "$new_mode"
         tmux source-file ~/.tmux.conf 2>/dev/null
     fi
 
