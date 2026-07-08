@@ -287,3 +287,6 @@ starship/backups/
 .ll/ll-sync-state.json
 .ll/ll-continue-prompt.md
 .ll/history.db
+.ll/ll-edit-batch-state.json
+.ll/ll-edit-batch-state.json.lock
+starship/.ll/
