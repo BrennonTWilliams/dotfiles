@@ -266,8 +266,14 @@ selection-word-chars = / \t.?=&@#~+%:;,!()[]{}<>"'
 # Advanced Configuration
 # ============================================
 
-# Shell command for new terminals
-command = /bin/zsh -l -c "if ! tmux has-session -t main 2>/dev/null; then exec tmux new-session -s main; else exec tmux new-session; fi"
+# Shell command for new terminals.
+# On relaunch after quitting Ghostty, the tmux server survives as a daemon with
+# `main` intact — so reattach `main` (no client attached) instead of spawning a
+# fresh session, which is what left us in an older/empty session before. A second
+# window opened while `main` is already attached gets its own separate session.
+# No server / no `main` at all → create it, and tmux-continuum auto-restores the
+# newest saved layout into it.
+command = /bin/zsh -l -c "if tmux has-session -t main 2>/dev/null; then if tmux list-clients -t main 2>/dev/null | grep -q .; then exec tmux new-session; else exec tmux attach -t main; fi; else exec tmux new-session -s main; fi"
 
 # Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
 quick-terminal-position = bottom
