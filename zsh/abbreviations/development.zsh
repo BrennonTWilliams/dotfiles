@@ -43,3 +43,4 @@ abbr -S kkp='printf "\x1b[<u"'
 abbr -S tsize='tput cols; tput lines'
 abbr -S clearss="precmd_functions=(); PROMPT='%~ ❯ '; RPROMPT=''; PROMPT_EOL_MARK=''; clear"
 abbr -S recent='ll-issues list --status done --sort completed --desc --limit 10'
+abbr -S ascrec='asciinema rec --idle-time-limit 2 '
