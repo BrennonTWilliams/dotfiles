@@ -35,6 +35,8 @@ abbr -S zclsj='zed .claude/settings.local.json'
 
 # CLI Tools
 abbr -S g='glow'
+abbr -S gw='gloww'
+abbr -S gp='glowp'
 abbr -S npmrd='npm run dev'
 abbr -S npmr='npm run dev'
 
