@@ -34,3 +34,6 @@ abbr -S sm='starship-mode'
 
 # Theme mode toggle (light/dark — Ghostty, tmux, Starship)
 abbr -S tt='toggle-theme'
+
+# System monitors toggle (tmux CPU/RAM, starship memory)
+abbr -S tsm='toggle-sys-monitors'
