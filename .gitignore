@@ -290,3 +290,4 @@ starship/backups/
 .ll/ll-edit-batch-state.json
 .ll/ll-edit-batch-state.json.lock
 starship/.ll/
+zsh/.ll/
