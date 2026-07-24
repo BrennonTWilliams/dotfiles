@@ -15,6 +15,7 @@
 _glow_term_cols() {
     local cols
     cols=${${(s: :)$(stty size </dev/tty 2>/dev/null)}[2]}
+    [[ $cols == <1-> ]] || cols=$(tput cols 2>/dev/null)
     [[ $cols == <1-> ]] || cols=${COLUMNS:-80}
     print -r -- "$cols"
 }
