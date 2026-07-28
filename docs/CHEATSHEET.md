@@ -170,3 +170,19 @@ Highlights short hints over all visible text; press the hint's letter to yank it
 
 Window tab format:  [icon] index:name  (Z = zoomed)
 ```
+
+---
+
+## Terminal.app
+
+Terminal.app can be themed to match this Ghostty + tmux palette and font:
+
+| Action | Command |
+|---|---|
+| Import profiles, set dark default | `tp` (`terminal-profile-install`) |
+| Import profiles, set light default | `terminal-profile-install light` |
+| Regenerate from the Ghostty themes | `scripts/generate-terminal-profile.sh` |
+
+Nerd Font glyphs render correctly, bare and inside tmux. See
+[TERMINAL_APP_SETUP.md](TERMINAL_APP_SETUP.md) for the real limitations
+(256 colors, no automatic light/dark, ASCII-safe Starship prompt by choice).

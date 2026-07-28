@@ -484,7 +484,11 @@ unset PROMPT_COMMAND
 # If you want a custom config path, set it explicitly in .zshrc.local
 unset STARSHIP_CONFIG 2>/dev/null
 
-# Force terminal-safe config in Apple Terminal.app (no Nerd Font support).
+# Force terminal-safe config in Apple Terminal.app.
+# This is a deliberate preference, NOT a capability limit: once the
+# terminal-app/ profile is installed, Terminal.app renders the full Nerd Font
+# glyph set correctly (IosevkaTermNF covers every PUA codepoint at single cell
+# width, bare and inside tmux). See docs/TERMINAL_APP_SETUP.md.
 # Uses env var rather than symlink so Ghostty/Tmux sessions are unaffected.
 # Terminal.app sets TERM_PROGRAM=Apple_Terminal outside of tmux.
 # For tmux-inside-Terminal.app, run 'starship-terminal' manually.

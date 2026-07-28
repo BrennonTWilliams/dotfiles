@@ -36,6 +36,9 @@ alias sv='starship-verbose'
 alias st='starship-terminal'
 alias sm='starship-mode'
 
+# Terminal.app theming (macOS only; the function no-ops elsewhere)
+alias tp='terminal-profile-install'
+
 # Development
 alias serve='python3 -m http.server'
 alias ports='netstat -tulanp'

@@ -32,6 +32,7 @@ readonly TEST_MODULES=(
     "test_package_validation.sh:Package Validation Testing"
     "test_ghostty_config_validation.sh:Ghostty Configuration Validation"
     "test_tmux_config_validation.sh:Tmux Configuration Validation"
+    "test_terminal_profile.sh:Terminal.app Profile Validation"
 )
 
 # Global counters

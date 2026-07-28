@@ -122,3 +122,8 @@ abbr -S update-macos='sudo softwareupdate -l && echo "Run: sudo softwareupdate -
 abbr -S update-macos-all='sudo softwareupdate -i -a'
 abbr -S clear-logs='echo "Use: sudo log files --clear or journalctl --vacuum-time=1d"'
 abbr -S system-cleanup='echo "Running macOS maintenance..."; brew cleanup; brew doctor; sudo softwareupdate -i -a'
+
+# ==============================================================================
+# Terminal.app Theming
+# ==============================================================================
+abbr -S tp='terminal-profile-install'

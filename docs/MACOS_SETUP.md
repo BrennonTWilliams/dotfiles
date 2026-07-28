@@ -656,6 +656,10 @@ sudo chown -R $(whoami) /opt/homebrew  # ARM64
 
 ## 📚 Additional Resources
 
+### Dotfiles Documentation
+- [TERMINAL_APP_SETUP.md](TERMINAL_APP_SETUP.md) - theme Terminal.app to match the Ghostty + tmux palette and font
+- [CHEATSHEET.md](CHEATSHEET.md) - Ghostty + tmux keybindings
+
 ### Development Documentation
 - [Apple Developer Documentation](https://developer.apple.com/documentation/)
 - [Homebrew Documentation](https://docs.brew.sh/)

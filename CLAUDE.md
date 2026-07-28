@@ -5,7 +5,8 @@ GNU Stow-based dotfiles manager supporting macOS and Linux. Each top-level direc
 
 ## Directory Conventions
 - **Stow packages**: Each top-level dir (bash/, zsh/, git/, neovim/, tmux/, etc.) is a GNU Stow package
-- **Non-packages**: `scripts/`, `tests/`, `docs/` are not Stow packages
+- **Non-packages**: `scripts/`, `tests/`, `docs/`, `terminal-app/` are not Stow packages
+- **`terminal-app/`**: generated Terminal.app `.terminal` profiles; imported into Terminal's preferences, never symlinked. Regenerate with `scripts/generate-terminal-profile.sh` -- do not hand-edit
 - **Symlink method**: GNU Stow with `--target=$HOME`; `.stowrc` lives in `git/`
 - **Local overrides**: Files with `.local` suffix are gitignored and machine-specific (e.g., `.zshrc.local`)
 
