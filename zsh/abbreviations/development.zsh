@@ -10,6 +10,7 @@ abbr -gS '2>'='2>&1 | tee debug.log'
 abbr -S cpb='cat  | pbcopy'
 
 # AI Tools (--force needed to override /usr/bin/cc)
+abbr -S cl='claude -p'
 abbr -S --force --quiet cc='claude --dangerously-skip-permissions'
 abbr -S --force ccc='claude --dangerously-skip-permissions -c'
 abbr -S --force ccr='claude --dangerously-skip-permissions -r'
