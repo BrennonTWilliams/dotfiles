@@ -462,7 +462,7 @@ deleted = "×"
 # custom.git_commit and custom.memory shell out on every prompt render;
 # terminal/compact modes already disable them (see their overrides files) - match that here.
 custom.git_commit.disabled = true
-custom.memory.disabled = true
+custom.memory.disabled = false
 
 # All other modules use default settings from shared modules
 # This file can be expanded for any standard-mode specific customizations
