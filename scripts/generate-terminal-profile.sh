@@ -43,6 +43,28 @@ declare -a PROFILE_MAP=(
 # Fallback font when the configured family is not installed on this machine
 FALLBACK_FONT_PS_NAME="Menlo-Regular"
 
+# Font family for Terminal.app. This deliberately does NOT track the Ghostty
+# font-family: Ghostty rasterizes box-drawing characters itself, stretching them
+# to the full cell, so tmux pane borders join regardless of the font's glyphs.
+# Terminal.app draws the font's own glyph inside its line box, and measured on a
+# 2x display at 16pt, Terminal lays out a 48px line box for IosevkaTermNF's 41px
+# U+2502 glyph - a hard 7px black gap at every cell boundary. Hack's box-drawing
+# glyphs overdraw past their cell (104% of the font line box), which measures as
+# one unbroken run vertically and horizontally in the same test.
+#
+# Pass --font "IosevkaTerm Nerd Font" for exact Ghostty parity at the cost of
+# broken pane borders, or --font ghostty to follow the Ghostty config.
+TERMINAL_FONT_FAMILY="Hack Nerd Font Mono"
+
+# Line/character spacing multipliers (Terminal.app Text tab).
+#
+# Left at 1.0 because spacing cannot fix broken box-drawing: Terminal.app clamps
+# its line height at ~42px @2x/16pt, so 0.86, 0.84 and 0.82 all measure the same
+# 42px pitch and a gap survives against a 41px glyph. Font choice is the lever,
+# not spacing. Exposed anyway for taste.
+LINE_SPACING="1.0"
+CHAR_SPACING="1.0"
+
 DRY_RUN=false
 
 # ==============================================================================
@@ -56,9 +78,19 @@ Usage: generate-terminal-profile.sh [OPTIONS]
 Generates Terminal.app profiles from the Ghostty gruvbox themes.
 
 Options:
-  --output-dir DIR   Write .terminal files to DIR (default: <dotfiles>/terminal-app)
-  --dry-run          Show what would be generated without writing files
-  -h, --help         Show this help message
+  --output-dir DIR      Write .terminal files to DIR (default: <dotfiles>/terminal-app)
+  --font FAMILY         Font family for Terminal.app (default: Hack Nerd Font
+                        Mono). Its box-drawing glyphs overdraw their cell, so
+                        tmux pane borders render contiguous the way Ghostty's
+                        own box-drawing rasterizer does. Pass 'ghostty' to use
+                        the family from the Ghostty config instead - exact font
+                        parity, but pane borders break into dashes.
+  --line-spacing NUM    Line height multiplier (default: 1.0). Terminal.app
+                        clamps its minimum line height, so this cannot repair
+                        broken box-drawing; use --font for that.
+  --char-spacing NUM    Character width multiplier (default: 1.0)
+  --dry-run             Show what would be generated without writing files
+  -h, --help            Show this help message
 
 The generated profiles are imported with 'terminal-profile-install' (abbr: tp)
 or by running: open "<dotfiles>/terminal-app/Gruvbox Dark Custom.terminal"
@@ -132,13 +164,17 @@ generate_profile() {
     local output_file="$3"
     local font_ps_name="$4"
     local font_size="$5"
+    local line_spacing="$6"
+    local char_spacing="$7"
 
-    /usr/bin/python3 - "$theme_file" "$profile_name" "$output_file" "$font_ps_name" "$font_size" <<'PYTHON'
+    /usr/bin/python3 - "$theme_file" "$profile_name" "$output_file" "$font_ps_name" \
+        "$font_size" "$line_spacing" "$char_spacing" <<'PYTHON'
 import plistlib
 import re
 import sys
 
-theme_file, profile_name, output_file, font_ps_name, font_size = sys.argv[1:6]
+(theme_file, profile_name, output_file, font_ps_name, font_size,
+ line_spacing, char_spacing) = sys.argv[1:8]
 
 # Ghostty palette index -> Terminal.app profile key
 ANSI_KEYS = [
@@ -250,6 +286,11 @@ profile = {
     "ProfileCurrentVersion": 2.07,
     "Font": archived_font(font_ps_name, font_size),
     "FontAntialias": True,
+    # Terminal.app cannot stretch box-drawing glyphs to the cell the way
+    # Ghostty does, so line spacing is squeezed instead to keep tmux pane
+    # borders contiguous.
+    "FontHeightSpacing": float(line_spacing),
+    "FontWidthSpacing": float(char_spacing),
     "columnCount": 120,
     "rowCount": 40,
 }
@@ -280,6 +321,18 @@ main() {
                 OUTPUT_DIR="$2"
                 shift 2
                 ;;
+            --font)
+                TERMINAL_FONT_FAMILY="$2"
+                shift 2
+                ;;
+            --line-spacing)
+                LINE_SPACING="$2"
+                shift 2
+                ;;
+            --char-spacing)
+                CHAR_SPACING="$2"
+                shift 2
+                ;;
             --dry-run)
                 DRY_RUN=true
                 shift
@@ -305,14 +358,25 @@ main() {
     [ -f "$GHOSTTY_CONFIG" ] || error "Ghostty config not found: $GHOSTTY_CONFIG"
     [ -d "$THEMES_DIR" ] || error "Ghostty themes directory not found: $THEMES_DIR"
 
-    local font_family font_size font_ps_name
-    font_family="$(ghostty_setting 'font-family')"
+    local ghostty_font font_family font_size font_ps_name
+    ghostty_font="$(ghostty_setting 'font-family')"
     font_size="$(ghostty_setting 'font-size')"
-    [ -n "$font_family" ] || error "Could not read font-family from $GHOSTTY_CONFIG"
+    [ -n "$ghostty_font" ] || error "Could not read font-family from $GHOSTTY_CONFIG"
     [ -n "$font_size" ] || font_size="16"
 
-    info "Font family from Ghostty config: $font_family"
+    # Font size always tracks Ghostty; family is chosen for box-drawing
+    # continuity (see TERMINAL_FONT_FAMILY above).
+    if [ "$TERMINAL_FONT_FAMILY" = "ghostty" ]; then
+        font_family="$ghostty_font"
+        warn "Following the Ghostty font ('$font_family') - tmux pane borders"
+        warn "will show gaps in Terminal.app; see terminal-app/README.md"
+    else
+        font_family="$TERMINAL_FONT_FAMILY"
+    fi
+
     info "Font size from Ghostty config: $font_size"
+    info "Terminal font family: $font_family (Ghostty uses: $ghostty_font)"
+    info "Line spacing: $LINE_SPACING (char spacing: $CHAR_SPACING)"
 
     font_ps_name="$(resolve_postscript_name "$font_family")"
     if [ -z "$font_ps_name" ]; then
@@ -344,7 +408,7 @@ main() {
         fi
 
         generate_profile "$theme_file" "$profile_name" "$output_file" \
-            "$font_ps_name" "$font_size"
+            "$font_ps_name" "$font_size" "$LINE_SPACING" "$CHAR_SPACING"
         success "$theme_name -> $output_file"
     done
 
