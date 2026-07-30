@@ -582,3 +582,5 @@ lmstudio() {
         echo "$response" | perl -0777 -pe 's/<think[^>]*>.*?<\/think>//gs' | sed '/^$/d'
     fi
 }
+# kimi-code
+export PATH="/Users/brennon/.kimi-code/bin:$PATH"
