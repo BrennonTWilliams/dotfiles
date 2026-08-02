@@ -289,5 +289,7 @@ starship/backups/
 .ll/history.db
 .ll/ll-edit-batch-state.json
 .ll/ll-edit-batch-state.json.lock
+.ll/ll-doc-drift-state.json
+.ll/ll-doc-drift-state.json.lock
 starship/.ll/
 zsh/.ll/
