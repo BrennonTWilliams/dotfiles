@@ -38,6 +38,7 @@ abbr -S zlip='zed "$(ll-issues path )"'
 abbr -S zclsj='zed .claude/settings.local.json'
 
 # CLI Tools
+abbr -S md='mdcat'
 abbr -S g='gloww'
 abbr -S glp='glowp'
 abbr -S npmrd='npm run dev'
