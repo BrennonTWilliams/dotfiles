@@ -7,7 +7,10 @@
     "base_dir": ".issues"
   },
   "scan": {
-    "focus_dirs": ["src/", "lib/"],
+    "focus_dirs": [
+      "src/",
+      "lib/"
+    ],
     "exclude_patterns": [
       "**/node_modules/**",
       "**/__pycache__/**",
@@ -15,6 +18,11 @@
       "**/vendor/**",
       "**/dist/**",
       "**/build/**"
+    ]
+  },
+  "events": {
+    "transports": [
+      "socket"
     ]
   }
 }
