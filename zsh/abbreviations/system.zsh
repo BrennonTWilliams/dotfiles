@@ -25,12 +25,15 @@ abbr -S breath='zenta now --quick'
 abbr -S breathe='zenta now'
 abbr -S reflect='zenta reflect'
 
-# Starship mode switching
-abbr -S sc='starship-compact'
-abbr -S ss='starship-standard'
-abbr -S sv='starship-verbose'
-abbr -S st='starship-terminal'
-abbr -S sm='starship-mode'
+# Starship mode switching (whole-word only — no `-S` so these don't
+# collide with `sc` in `escape`/`desc`, `ss` in netstat, etc.)
+abbr sc='starship-compact'
+abbr ss='starship-standard'
+abbr sv='starship-verbose'
+abbr st='starship-terminal'
+abbr sm='starship-mode'
+abbr sg='starship-gruvbox-rainbow'
+abbr sgl='starship-gruvbox-light'
 
 # Theme mode toggle (light/dark — Ghostty, tmux, Starship)
 abbr -S tt='toggle-theme'

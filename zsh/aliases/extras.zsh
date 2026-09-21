@@ -35,6 +35,8 @@ alias ss='starship-standard'
 alias sv='starship-verbose'
 alias st='starship-terminal'
 alias sm='starship-mode'
+alias sg='starship-gruvbox-rainbow'
+alias sgl='starship-gruvbox-light'
 
 # Terminal.app theming (macOS only; the function no-ops elsewhere)
 alias tp='terminal-profile-install'
