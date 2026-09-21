@@ -196,6 +196,11 @@ case "$(detect_os 2>/dev/null || echo 'unknown')" in
     "macos")
         # Library path for microsandbox (macOS only)
         export DYLD_LIBRARY_PATH="$(resolve_platform_path "local_lib" 2>/dev/null || echo "$HOME/.local/lib"):$DYLD_LIBRARY_PATH"
+
+        # Homebrew native libs (pango/cairo/glib) for cffi dlopen, e.g. WeasyPrint
+        # under miniforge Python, which otherwise only searches miniforge3/lib and
+        # /usr/lib. FALLBACK so it applies only when the normal search fails.
+        export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:${DYLD_FALLBACK_LIBRARY_PATH:-/usr/local/lib:/usr/lib}"
         ;;
     "linux")
         # Add Linux-specific configuration here if needed
@@ -584,3 +589,10 @@ lmstudio() {
 }
 # kimi-code
 export PATH="/Users/brennon/.kimi-code/bin:$PATH"
+
+# Qwen Code PATH block begin
+export PATH='/Users/brennon/.local/bin':$PATH
+# Qwen Code PATH block end
+
+# bun completions
+[ -s "/var/folders/dg/j0h3vvbj20n6gd7077j8v5qr0000gn/T/tmp.Heoda5IjZc/_bun" ] && source "/var/folders/dg/j0h3vvbj20n6gd7077j8v5qr0000gn/T/tmp.Heoda5IjZc/_bun"
