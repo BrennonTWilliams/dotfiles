@@ -21,8 +21,6 @@ ms-vscode.vscode-markdown          # Markdown preview and editing
 bierner.markdown-mermaid           # Mermaid diagram support
 
 # AI and Code Assistance
-GitHub.copilot                     # GitHub Copilot AI assistant
-GitHub.copilot-chat                # GitHub Copilot Chat
 continue.continue                  # Continue AI assistant
 
 # Themes and Icons

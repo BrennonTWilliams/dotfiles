@@ -167,6 +167,9 @@ setup_vscode() {
 
         # Ensure VS Code settings directory exists and setup symlinks
         local vscode_config_dir="$HOME/.config/Code/User"
+        if [[ "$(uname)" == "Darwin" ]]; then
+            vscode_config_dir="$HOME/Library/Application Support/Code/User"
+        fi
         local vscode_stow_dir="$HOME/.vscode"
 
         # Create the VS Code config directory if it doesn't exist
