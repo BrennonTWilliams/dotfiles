@@ -28,7 +28,7 @@ readonly BACKUP_DIR="$TEST_ROOT/backup"
 readonly LOG_FILE="$TEST_ROOT/integration_test.log"
 
 # Configuration
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly INSTALL_SCRIPT="$DOTFILES_DIR/install.sh"
 
 # Setup logging
@@ -752,8 +752,8 @@ main() {
 
     # Copy report to dotfiles directory
     if [[ -f "$TEST_ROOT/integration_test_report.md" ]]; then
-        cp "$TEST_ROOT/integration_test_report.md" "$DOTFILES_DIR/integration_test_report.md"
-        log_success "Report copied to: $DOTFILES_DIR/integration_test_report.md"
+        cp "$TEST_ROOT/integration_test_report.md" "$DOTFILES_DIR/tests/test_results/integration_test_report.md"
+        log_success "Report copied to: $DOTFILES_DIR/tests/test_results/integration_test_report.md"
     fi
 
     echo ""

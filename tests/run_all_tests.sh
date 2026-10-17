@@ -244,8 +244,12 @@ EOF
         echo "### $module_name" >> "$REPORT_FILE"
 
         if [[ -f "$log_file" ]]; then
-            local suite_passed=$(grep "Passed:" "$log_file" | sed 's/\x1b\[[0-9;]*m//g' | tail -1 | awk '{print $2}' || echo "0")
-            local suite_failed=$(grep "Failed:" "$log_file" | sed 's/\x1b\[[0-9;]*m//g' | tail -1 | awk '{print $2}' || echo "0")
+            # Only match "Passed: <number>" so lines like "Failed: file ..." are ignored
+            local suite_passed suite_failed
+            suite_passed=$(sed 's/\x1b\[[0-9;]*m//g' "$log_file" | grep -oE "Passed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            suite_failed=$(sed 's/\x1b\[[0-9;]*m//g' "$log_file" | grep -oE "Failed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            suite_passed=${suite_passed:-0}
+            suite_failed=${suite_failed:-0}
             local suite_total=$((suite_passed + suite_failed))
 
             echo "- **Tests Run:** $suite_total" >> "$REPORT_FILE"

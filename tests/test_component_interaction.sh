@@ -16,7 +16,7 @@ readonly NC='\033[0m'
 # Test configuration
 readonly TEST_ROOT="${TMPDIR:-/tmp}/component_interaction_test_$$"
 readonly TEST_HOME="$TEST_ROOT/home"
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Test counters
 TESTS_TOTAL=0

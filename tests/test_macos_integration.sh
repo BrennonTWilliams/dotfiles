@@ -28,7 +28,7 @@ readonly BACKUP_DIR="$TEST_ROOT/backup"
 readonly LOG_FILE="$TEST_ROOT/macos_integration_test.log"
 
 # Configuration
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly INSTALL_SCRIPT="$DOTFILES_DIR/install.sh"
 
 # Create log directory
@@ -405,11 +405,11 @@ test_macos_package_installation() {
     # Test 5a: Package validation integration
     log_info "Testing package validation integration..."
 
-    if [[ -f "$DOTFILES_DIR/test_package_validation.sh" ]]; then
+    if [[ -f "$DOTFILES_DIR/tests/test_package_validation.sh" ]]; then
         log_info "✓ Package validation script available"
 
         # Test that validation script can run without errors (syntax check)
-        if bash -n "$DOTFILES_DIR/test_package_validation.sh" 2>/dev/null; then
+        if bash -n "$DOTFILES_DIR/tests/test_package_validation.sh" 2>/dev/null; then
             log_info "✓ Package validation script syntax is valid"
         else
             test_fail "macOS Package Installation Testing" "Package validation script has syntax errors"

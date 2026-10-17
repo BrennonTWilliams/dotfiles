@@ -18,10 +18,10 @@ TESTS_SKIPPED=0
 VALIDATION_WARNINGS=0
 
 # Configuration
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly PACKAGES_MACOS="$DOTFILES_DIR/packages-macos.txt"
 readonly PACKAGES_LINUX="$DOTFILES_DIR/packages-linux.txt"  # if exists
-readonly VALIDATION_REPORT="$DOTFILES_DIR/test_results/package_validation_report_$(date +%Y%m%d_%H%M%S).md"
+readonly VALIDATION_REPORT="$DOTFILES_DIR/tests/test_results/package_validation_report_$(date +%Y%m%d_%H%M%S).md"
 
 # Special tap requirements (from package file comments)
 # Format: package_name:tap_url

@@ -17,7 +17,7 @@ readonly NC='\033[0m'
 readonly TEST_ROOT="${TMPDIR:-/tmp}/user_workflow_test_$$"
 readonly TEST_HOME="$TEST_ROOT/home"
 readonly TEST_PROJECT="$TEST_ROOT/test_project"
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Test counters
 TESTS_TOTAL=0
