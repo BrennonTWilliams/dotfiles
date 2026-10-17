@@ -37,7 +37,7 @@ cp "$PLIST_FILE" "$LAUNCHD_DIR/"
 chmod 644 "$LAUNCHD_DIR/$SERVICE_NAME.plist"
 
 # Unload existing service (if running)
-if launchctl list | grep -q "$SERVICE_NAME"; then
+if launchctl list "$SERVICE_NAME" >/dev/null 2>&1; then
     info "Unloading existing Uniclip service..."
     launchctl unload "$LAUNCHD_DIR/$SERVICE_NAME.plist" || true
 fi
@@ -52,7 +52,7 @@ launchctl start "$SERVICE_NAME"
 
 # Verify the service is running
 sleep 2
-if launchctl list | grep -q "$SERVICE_NAME"; then
+if launchctl list "$SERVICE_NAME" >/dev/null 2>&1; then
     success "Uniclip service installed and started successfully!"
     info "Service status:"
     launchctl list | grep "$SERVICE_NAME"
