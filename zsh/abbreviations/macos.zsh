@@ -53,6 +53,13 @@ abbr -S lock='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resou
 abbr -S screensaver='open -a ScreenSaverEngine'
 
 # ==============================================================================
+# Keep Awake (caffeinate)
+# ==============================================================================
+# -d display, -i idle, -m disk, -s system (AC only); &! detaches from the shell
+abbr -S caf='caffeinate -dims >/dev/null 2>&1 &!'
+abbr -S cafx='pkill -x caffeinate'
+
+# ==============================================================================
 # Clipboard
 # ==============================================================================
 abbr -S clipboard='pbpaste'
