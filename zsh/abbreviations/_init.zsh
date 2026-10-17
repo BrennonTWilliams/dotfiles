@@ -35,8 +35,32 @@ if [[ -z "$abbr_path" ]]; then
     return 0
 fi
 
+# Give this shell a private zsh-job-queue dir. zsh-abbr's bundled job queue
+# otherwise funnels every shell's startup through one shared dir
+# ($TMPDIR/zsh-job-queue/zsh-abbr) and stalls 30s behind any job left by a
+# shell killed mid-startup (e.g. tmux-resurrect replacing panes). The dir
+# is keyed by PID and removed after init (zf_rm: builtin, no fork).
+zmodload -F zsh/files b:zf_rm
+JOB_QUEUE_TMPDIR="${${TMPDIR:-/tmp}%/}/zsh-job-queue-$$"
+zf_rm -rf -- "$JOB_QUEUE_TMPDIR"
+autoload -Uz add-zsh-hook
+_dotfiles_abbr_queue_cleanup() { zf_rm -rf -- "$JOB_QUEUE_TMPDIR" }
+add-zsh-hook zshexit _dotfiles_abbr_queue_cleanup
+
 # Load zsh-abbr
 source "$abbr_path"
+
+# zsh-abbr 6.x runs `job-queue pop` -- an `rm` fork -- after every `abbr`
+# call, even `abbr -S` calls that never queued a job (empty job id). With
+# ~160 abbreviations that is ~0.3s of startup. Skip only that no-op case.
+if (( $+functions[job-queue__zsh-abbr] )); then
+    functions[_dotfiles_job_queue_orig]=$functions[job-queue__zsh-abbr]
+    job-queue__zsh-abbr() {
+        [[ $1 == pop && -z $3 ]] && return 0
+        _dotfiles_job_queue_orig "$@"
+    }
+fi
+zf_rm -rf -- "$JOB_QUEUE_TMPDIR"
 
 # ==============================================================================
 # Load Abbreviation Category Files
