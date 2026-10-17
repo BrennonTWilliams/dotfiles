@@ -119,12 +119,12 @@ cask "wezterm"
 cask "iina"
 cask "inkscape"
 cask "libreoffice"
+cask "perplexity"
 cask "qlmarkdown"
 cask "rectangle"
 mas "BBEdit", id: 404009241
 mas "LottieFiles", id: 1531085233
-mas "Numbers", id: 409203825
-mas "Perplexity", id: 6714467650
+mas "Numbers", id: 361304891
 mas "reMarkable", id: 1276493162
 mas "Showdown", id: 6504288864
 mas "Spokenly", id: 6740315592
