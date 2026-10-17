@@ -342,7 +342,7 @@ install_missing_dependencies() {
 
     # Count dependencies to install
     if [ "$pkg_mgr_missing" = true ]; then
-        ((total_to_install++)) || true
+        total_to_install=$((total_to_install + 1)) || true
     fi
     total_to_install=$((total_to_install + ${#critical_missing[@]}))
 
@@ -352,7 +352,7 @@ install_missing_dependencies() {
 
     # Install package manager if missing
     if [ "$pkg_mgr_missing" = true ]; then
-        ((install_count++)) || true
+        install_count=$((install_count + 1)) || true
         echo "[$install_count/$total_to_install] Installing Homebrew..."
         if ! install_homebrew; then
             error "Failed to install Homebrew - cannot continue"
@@ -364,7 +364,7 @@ install_missing_dependencies() {
     # Install critical dependencies
     for dep_info in "${critical_missing[@]}"; do
         IFS=':' read -r dep desc <<< "$dep_info"
-        ((install_count++)) || true
+        install_count=$((install_count + 1)) || true
         echo "[$install_count/$total_to_install] Installing $dep..."
         install_dependency "$dep" "$desc" || warn "Failed to install $dep"
     done
@@ -373,7 +373,7 @@ install_missing_dependencies() {
     if [ "$scope" = "all" ]; then
         for dep_info in "${optional_missing[@]}"; do
             IFS=':' read -r dep desc <<< "$dep_info"
-            ((install_count++)) || true
+            install_count=$((install_count + 1)) || true
             echo "[$install_count/$total_to_install] Installing $dep..."
             install_dependency "$dep" "$desc" || warn "Failed to install $dep (optional)"
         done

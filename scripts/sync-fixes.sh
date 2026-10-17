@@ -147,7 +147,7 @@ fix_git_config() {
     # Check if already a symlink
     if [[ -L "$gitconfig" ]] && [[ -L "$gitignore" ]]; then
         info "Git config already symlinked, skipping"
-        ((FIXES_SKIPPED++)) || true
+        FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         return 0
     fi
 
@@ -173,10 +173,10 @@ fix_git_config() {
     cd "$DOTFILES_DIR"
     if stow --restow git; then
         success "Git configuration symlinked"
-        ((FIXES_APPLIED++)) || true
+        FIXES_APPLIED=$((FIXES_APPLIED + 1)) || true
     else
         error "Failed to stow git package"
-        ((FIXES_FAILED++)) || true
+        FIXES_FAILED=$((FIXES_FAILED + 1)) || true
         return 1
     fi
 }
@@ -189,7 +189,7 @@ fix_bash_profile() {
     # Check if already a symlink
     if [[ -L "$bash_profile" ]]; then
         info "Bash profile already symlinked, skipping"
-        ((FIXES_SKIPPED++)) || true
+        FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         return 0
     fi
 
@@ -209,10 +209,10 @@ fix_bash_profile() {
     cd "$DOTFILES_DIR"
     if stow --restow bash; then
         success "Bash profile symlinked"
-        ((FIXES_APPLIED++)) || true
+        FIXES_APPLIED=$((FIXES_APPLIED + 1)) || true
     else
         error "Failed to stow bash package"
-        ((FIXES_FAILED++)) || true
+        FIXES_FAILED=$((FIXES_FAILED + 1)) || true
         return 1
     fi
 }
@@ -222,7 +222,7 @@ fix_missing_packages() {
 
     if ! command -v brew >/dev/null 2>&1; then
         warn "Homebrew not installed, skipping package installation"
-        ((FIXES_SKIPPED++)) || true
+        FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         return 0
     fi
 
@@ -241,7 +241,7 @@ fix_missing_packages() {
                 info "Installing $pkg..."
                 if brew install "$pkg"; then
                     success "Installed $pkg"
-                    ((installed_count++)) || true
+                    installed_count=$((installed_count + 1)) || true
                 else
                     warn "Failed to install $pkg"
                 fi
@@ -260,7 +260,7 @@ fix_missing_packages() {
                 info "Installing $pkg (cask)..."
                 if brew install --cask "$pkg"; then
                     success "Installed $pkg"
-                    ((installed_count++)) || true
+                    installed_count=$((installed_count + 1)) || true
                 else
                     warn "Failed to install $pkg"
                 fi
@@ -271,10 +271,10 @@ fix_missing_packages() {
     if [[ "$DRY_RUN" != true ]]; then
         if [[ $installed_count -gt 0 ]]; then
             success "Installed $installed_count packages"
-            ((FIXES_APPLIED++)) || true
+            FIXES_APPLIED=$((FIXES_APPLIED + 1)) || true
         else
             info "All packages already installed"
-            ((FIXES_SKIPPED++)) || true
+            FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         fi
     fi
 }
@@ -288,7 +288,7 @@ fix_ghostty_completion() {
     # Check if already exists
     if [[ -f "$completion_file" ]] || [[ -L "$completion_file" ]]; then
         info "Ghostty completion already exists, skipping"
-        ((FIXES_SKIPPED++)) || true
+        FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         return 0
     fi
 
@@ -305,10 +305,10 @@ fix_ghostty_completion() {
     cd "$DOTFILES_DIR"
     if stow --restow ghostty; then
         success "Ghostty completion installed"
-        ((FIXES_APPLIED++)) || true
+        FIXES_APPLIED=$((FIXES_APPLIED + 1)) || true
     else
         error "Failed to stow ghostty package"
-        ((FIXES_FAILED++)) || true
+        FIXES_FAILED=$((FIXES_FAILED + 1)) || true
         return 1
     fi
 }
@@ -321,7 +321,7 @@ fix_npm_config() {
     # Check if already a symlink
     if [[ -L "$npmrc" ]]; then
         info "NPM config already symlinked, skipping"
-        ((FIXES_SKIPPED++)) || true
+        FIXES_SKIPPED=$((FIXES_SKIPPED + 1)) || true
         return 0
     fi
 
@@ -340,10 +340,10 @@ fix_npm_config() {
     cd "$DOTFILES_DIR"
     if stow --restow npm; then
         success "NPM config symlinked"
-        ((FIXES_APPLIED++)) || true
+        FIXES_APPLIED=$((FIXES_APPLIED + 1)) || true
     else
         error "Failed to stow npm package"
-        ((FIXES_FAILED++)) || true
+        FIXES_FAILED=$((FIXES_FAILED + 1)) || true
         return 1
     fi
 }

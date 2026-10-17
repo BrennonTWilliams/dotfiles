@@ -63,7 +63,7 @@ preview_package_install() {
     local pkg="$1"
     local version="$2"
     echo -e "  ${GREEN}⬡${NC} ${BOLD}$pkg${NC} ${CYAN}($version)${NC} - would install"
-    ((PREVIEW_PKG_INSTALL++))
+    PREVIEW_PKG_INSTALL=$((PREVIEW_PKG_INSTALL + 1))
 }
 
 preview_package_upgrade() {
@@ -71,7 +71,7 @@ preview_package_upgrade() {
     local current="$2"
     local new="$3"
     echo -e "  ${YELLOW}⬆${NC} ${BOLD}$pkg${NC} ${CYAN}($current → $new)${NC} - would upgrade"
-    ((PREVIEW_PKG_UPGRADE++))
+    PREVIEW_PKG_UPGRADE=$((PREVIEW_PKG_UPGRADE + 1))
 }
 
 preview_package_skip() {
@@ -80,7 +80,7 @@ preview_package_skip() {
     if [ "$VERBOSE" = true ]; then
         echo -e "  ${GREEN}✓${NC} ${BOLD}$pkg${NC} ${CYAN}($version)${NC} - already installed"
     fi
-    ((PREVIEW_PKG_SKIP++))
+    PREVIEW_PKG_SKIP=$((PREVIEW_PKG_SKIP + 1))
 }
 
 preview_symlink() {
@@ -89,20 +89,20 @@ preview_symlink() {
     if [ "$VERBOSE" = true ]; then
         echo -e "    ${CYAN}→${NC} $target ${CYAN}⇒${NC} $source"
     fi
-    ((PREVIEW_SYMLINKS++))
+    PREVIEW_SYMLINKS=$((PREVIEW_SYMLINKS + 1))
 }
 
 preview_conflict() {
     local file="$1"
     echo -e "  ${YELLOW}⚠${NC} Conflict: ${BOLD}$file${NC} (would be backed up)"
-    ((PREVIEW_CONFLICTS++))
-    ((PREVIEW_BACKUPS++))
+    PREVIEW_CONFLICTS=$((PREVIEW_CONFLICTS + 1))
+    PREVIEW_BACKUPS=$((PREVIEW_BACKUPS + 1))
 }
 
 preview_shell_change() {
     local change="$1"
     echo -e "  ${BLUE}◆${NC} $change"
-    ((PREVIEW_SHELL_CHANGES++))
+    PREVIEW_SHELL_CHANGES=$((PREVIEW_SHELL_CHANGES + 1))
 }
 
 # ============================================================================
@@ -235,7 +235,7 @@ preview_stow_package() {
                 local target="${BASH_REMATCH[1]}"
                 local source="${BASH_REMATCH[2]}"
                 preview_symlink "$source" "$target"
-                ((link_count++))
+                link_count=$((link_count + 1))
             fi
         done <<< "$stow_output"
 
@@ -278,7 +278,7 @@ preview_shell_setup() {
     if [ "$SHELL" != "$(which zsh 2>/dev/null)" ]; then
         preview_shell_change "Change default shell to zsh"
         preview_action "chsh -s $(which zsh 2>/dev/null || echo '/bin/zsh')"
-        ((changes++))
+        changes=$((changes + 1))
     else
         if [ "$VERBOSE" = true ]; then
             info "Default shell is already zsh"
@@ -293,7 +293,7 @@ preview_shell_setup() {
         else
             preview_action "curl -sS https://starship.rs/install.sh | sh"
         fi
-        ((changes++))
+        changes=$((changes + 1))
     else
         if [ "$VERBOSE" = true ]; then
             info "Starship is already installed ($(get_installed_version starship))"
@@ -304,7 +304,7 @@ preview_shell_setup() {
     if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
         preview_shell_change "Install tmux plugin manager (TPM)"
         preview_action "git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm"
-        ((changes++))
+        changes=$((changes + 1))
     else
         if [ "$VERBOSE" = true ]; then
             info "Tmux plugin manager is already installed"

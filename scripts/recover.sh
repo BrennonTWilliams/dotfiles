@@ -145,7 +145,7 @@ list_backups() {
         echo "    Size: $dir_size"
         echo
 
-        ((count++))
+        count=$((count + 1))
     done
 
     return 0
@@ -201,10 +201,10 @@ verify_backup() {
     # Check each file
     while IFS= read -r -d '' file; do
         if [ -r "$file" ]; then
-            ((readable_files++))
+            readable_files=$((readable_files + 1))
         else
             warn "Cannot read file: $file"
-            ((issues++))
+            issues=$((issues + 1))
         fi
     done < <(find "$backup_dir" -type f -print0 2>/dev/null)
 
@@ -241,7 +241,7 @@ create_safety_backup() {
             mkdir -p "$backup_parent"
 
             if cp -r "$file" "$backup_path" 2>/dev/null; then
-                ((backed_up++))
+                backed_up=$((backed_up + 1))
             fi
         fi
     done <<< "$files_to_backup"
@@ -320,7 +320,7 @@ restore_from_backup() {
 
         if [ "$DRY_RUN" = true ]; then
             echo "Would restore: $file"
-            ((restored++))
+            restored=$((restored + 1))
             continue
         fi
 
@@ -334,10 +334,10 @@ restore_from_backup() {
 
         # Copy file from backup
         if cp -r "$source" "$target" 2>/dev/null; then
-            ((restored++))
+            restored=$((restored + 1))
         else
             warn "Failed to restore: $file"
-            ((failed++))
+            failed=$((failed + 1))
         fi
     done
 
@@ -383,7 +383,7 @@ interactive_restore() {
         local file_count=$(find "$backup_dir" -type f 2>/dev/null | wc -l)
 
         echo -e "${CYAN}[$count]${NC} $formatted_date ($file_count files)"
-        ((count++))
+        count=$((count + 1))
     done
 
     echo
@@ -414,7 +414,7 @@ interactive_restore() {
         local relative_path="${file#$selected_backup/}"
         files+=("$relative_path")
         echo -e "${CYAN}[$file_count]${NC} $relative_path"
-        ((file_count++))
+        file_count=$((file_count + 1))
     done < <(find "$selected_backup" -type f -print0 2>/dev/null | sort -z)
 
     echo

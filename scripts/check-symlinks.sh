@@ -45,19 +45,19 @@ print_status() {
     case "$status" in
         ok)
             echo -e "  ${GREEN}[OK]${NC} $message"
-            ((PASS++))
+            PASS=$((PASS + 1))
             ;;
         missing)
             echo -e "  ${RED}[MISSING]${NC} $message"
-            ((FAIL++))
+            FAIL=$((FAIL + 1))
             ;;
         file)
             echo -e "  ${YELLOW}[FILE]${NC} $message ${YELLOW}(not a symlink)${NC}"
-            ((WARN++))
+            WARN=$((WARN + 1))
             ;;
         wrong)
             echo -e "  ${RED}[WRONG]${NC} $message"
-            ((FAIL++))
+            FAIL=$((FAIL + 1))
             ;;
     esac
 }

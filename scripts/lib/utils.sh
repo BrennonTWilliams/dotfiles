@@ -285,7 +285,7 @@ backup_if_exists() {
         if [ -e "$backup_path" ]; then
             local counter=1
             while [ -e "$backup_path.$counter" ]; do
-                ((counter++))
+                counter=$((counter + 1))
             done
             backup_path="$backup_path.$counter"
         fi
@@ -503,7 +503,7 @@ stow_package() {
         # Check for conflicting files and back them up
         find "$package" -type f -not -path '*/\.*' | while read -r file; do
             local target_file="$target_dir/${file#$package/}"
-            backup_if_exists "$target_file" "$backup_dir"
+            backup_if_exists "$target_file" "$backup_dir" || true  # returns 1 when nothing to back up
         done
     fi
 

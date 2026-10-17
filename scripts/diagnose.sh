@@ -167,7 +167,7 @@ test_dotfiles_structure() {
             local pkg=$(basename "$dir")
             if [ "$pkg" != "scripts" ] && [ "$pkg" != ".git" ]; then
                 info "Found package: $pkg"
-                ((package_count++))
+                package_count=$((package_count + 1))
             fi
         fi
     done
@@ -184,11 +184,11 @@ main() {
     local failed_tests=0
 
     # Run all tests
-    test_arithmetic || ((failed_tests++))
-    test_shell_compatibility || ((failed_tests++))
-    test_file_operations || ((failed_tests++))
-    test_backup_function || ((failed_tests++))
-    test_dotfiles_structure || ((failed_tests++))
+    test_arithmetic || failed_tests=$((failed_tests + 1))
+    test_shell_compatibility || failed_tests=$((failed_tests + 1))
+    test_file_operations || failed_tests=$((failed_tests + 1))
+    test_backup_function || failed_tests=$((failed_tests + 1))
+    test_dotfiles_structure || failed_tests=$((failed_tests + 1))
 
     # Summary
     section "Diagnostic Summary"

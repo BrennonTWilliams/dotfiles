@@ -216,7 +216,7 @@ setup_starship() {
     # Copy starship config if it exists in dotfiles
     if [ -f "$DOTFILES_DIR/starship/starship.toml" ]; then
         info "Installing Starship configuration..."
-        backup_if_exists "$starship_config_dir/starship.toml" "$HOME/.dotfiles_backup"
+        backup_if_exists "$starship_config_dir/starship.toml" "$HOME/.dotfiles_backup" || true
         cp "$DOTFILES_DIR/starship/starship.toml" "$starship_config_dir/"
         success "Starship configuration installed"
     fi
