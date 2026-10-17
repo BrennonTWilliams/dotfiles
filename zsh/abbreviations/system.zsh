@@ -3,7 +3,7 @@
 # ==============================================================================
 
 abbr -S h='history'
-abbr -S c='clear'
+abbr -S c='clear; tmux clear-history 2>/dev/null'
 
 # Neovim keybindings help
 abbr -S nk='nvim-keys'
