@@ -151,29 +151,60 @@ detect_conflicts() {
     local conflicts=()
 
     # Run stow in dry-run mode to detect conflicts
-    local stow_output
-    stow_output=$(stow -n -v -d "$DOTFILES_DIR" -t "$target_dir" "$package" 2>&1)
-    local stow_status=$?
+    # (|| keeps set -e from exiting here: a non-zero stow status means conflicts)
+    local stow_output stow_status=0
+    stow_output=$(stow -n -v -d "$DOTFILES_DIR" -t "$target_dir" "$package" 2>&1) || stow_status=$?
 
-    # Parse stow output for conflicts
+    # Parse stow output for conflicts. Stow 2.x reports them as either:
+    #   * cannot stow <src> over existing target <target> since ...
+    #   * existing target is <reason>: <target>[ => <link destination>]
+    # Only <target> (relative to target_dir) is a conflict. The link destination
+    # points into the dotfiles repo and must never be treated as a conflict.
     if [ $stow_status -ne 0 ]; then
         while IFS= read -r line; do
-            # Match "existing target is" pattern
-            if [[ "$line" =~ existing\ target\ is.*:\ (.+) ]]; then
-                local conflict_file="${BASH_REMATCH[1]}"
-                # Convert relative path to absolute
-                if [[ ! "$conflict_file" =~ ^/ ]]; then
-                    conflict_file="$target_dir/$conflict_file"
-                fi
-                conflicts+=("$conflict_file")
+            local conflict_file=""
+            if [[ "$line" =~ over\ existing\ target\ (.+)\ since ]]; then
+                conflict_file="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ existing\ target\ is[^:]*:\ (.+)$ ]]; then
+                conflict_file="${BASH_REMATCH[1]}"
+                conflict_file="${conflict_file%% => *}"
             fi
+            [ -z "$conflict_file" ] && continue
+            # Convert relative path to absolute
+            if [[ ! "$conflict_file" =~ ^/ ]]; then
+                conflict_file="$target_dir/$conflict_file"
+            fi
+            # Stow can report the same conflict twice (CONFLICT line + summary)
+            local seen=false existing
+            for existing in ${conflicts[@]+"${conflicts[@]}"}; do
+                [ "$existing" = "$conflict_file" ] && seen=true && break
+            done
+            [ "$seen" = false ] && conflicts+=("$conflict_file")
         done <<< "$stow_output"
     fi
 
     CONFLICTS_DETECTED=${#conflicts[@]}
 
-    # Return conflict list
-    echo "${conflicts[@]}"
+    # Return conflict list, one path per line (paths may contain spaces).
+    # The length check avoids "unbound variable" on empty arrays in bash 3.2.
+    [ ${#conflicts[@]} -gt 0 ] && printf '%s\n' "${conflicts[@]}"
+    return 0
+}
+
+# True if path is inside target_dir and not inside the dotfiles repo.
+# Guards destructive conflict handling (rm/mv) against bad paths.
+is_safe_conflict_path() {
+    local path="$1"
+    local target_dir="$2"
+    local parent target_real repo_real
+    parent="$(cd "$(dirname "$path")" 2>/dev/null && pwd -P)" || return 1
+    target_real="$(cd "$target_dir" 2>/dev/null && pwd -P)" || return 1
+    repo_real="$(cd "$DOTFILES_DIR" 2>/dev/null && pwd -P)" || return 1
+    case "$parent/" in
+        "$repo_real"/*) return 1 ;;
+        "$target_real"/*) return 0 ;;
+    esac
+    return 1
 }
 
 # Get file info for display
@@ -403,7 +434,7 @@ backup_with_conflict_note() {
     if [ -e "$backup_path" ]; then
         local counter=1
         while [ -e "$backup_path.$counter" ]; do
-            ((counter++))
+            counter=$((counter + 1))
         done
         backup_path="$backup_path.$counter"
     fi
@@ -474,7 +505,7 @@ resolve_conflict_interactive() {
             1)
                 # Keep existing
                 info "Keeping existing file"
-                ((CONFLICTS_SKIPPED++))
+                CONFLICTS_SKIPPED=$((CONFLICTS_SKIPPED + 1))
                 return 0
                 ;;
             2)
@@ -485,11 +516,11 @@ resolve_conflict_interactive() {
                 if [ -n "$backup_path" ]; then
                     rm -f "$existing_file"
                     success "File backed up to: $backup_path"
-                    ((CONFLICTS_RESOLVED++))
+                    CONFLICTS_RESOLVED=$((CONFLICTS_RESOLVED + 1))
                     return 0
                 else
                     error "Backup failed"
-                    ((CONFLICTS_FAILED++))
+                    CONFLICTS_FAILED=$((CONFLICTS_FAILED + 1))
                     return 1
                 fi
                 ;;
@@ -517,7 +548,7 @@ resolve_conflict_interactive() {
                         mv "$temp_merged" "$existing_file"
                         success "Files merged successfully"
                         success "Original backed up to: $backup_path"
-                        ((CONFLICTS_RESOLVED++))
+                        CONFLICTS_RESOLVED=$((CONFLICTS_RESOLVED + 1))
                         return 0
                     else
                         warn "Merge completed but may require manual review"
@@ -540,18 +571,18 @@ resolve_conflict_interactive() {
                 # Find unique .orig name
                 while [ -e "$orig_file" ]; do
                     orig_file="${existing_file}.orig.$counter"
-                    ((counter++))
+                    counter=$((counter + 1))
                 done
 
                 mv "$existing_file" "$orig_file"
                 success "Existing file renamed to: $orig_file"
-                ((CONFLICTS_RESOLVED++))
+                CONFLICTS_RESOLVED=$((CONFLICTS_RESOLVED + 1))
                 return 0
                 ;;
             6)
                 # Decide later
                 warn "Skipping this conflict"
-                ((CONFLICTS_SKIPPED++))
+                CONFLICTS_SKIPPED=$((CONFLICTS_SKIPPED + 1))
                 return 0
                 ;;
             *)
@@ -577,7 +608,7 @@ resolve_conflict_auto() {
             if [ "$VERBOSE" = true ]; then
                 info "Auto-resolve: Keeping existing file: $existing_file"
             fi
-            ((CONFLICTS_SKIPPED++))
+            CONFLICTS_SKIPPED=$((CONFLICTS_SKIPPED + 1))
             return 0
             ;;
         overwrite)
@@ -587,10 +618,10 @@ resolve_conflict_auto() {
             local backup_path=$(backup_with_conflict_note "$existing_file" "$backup_dir" "auto-overwritten")
             if [ -n "$backup_path" ]; then
                 rm -f "$existing_file"
-                ((CONFLICTS_RESOLVED++))
+                CONFLICTS_RESOLVED=$((CONFLICTS_RESOLVED + 1))
                 return 0
             else
-                ((CONFLICTS_FAILED++))
+                CONFLICTS_FAILED=$((CONFLICTS_FAILED + 1))
                 return 1
             fi
             ;;
@@ -602,20 +633,20 @@ resolve_conflict_auto() {
             local counter=1
             while [ -e "$orig_file" ]; do
                 orig_file="${existing_file}.orig.$counter"
-                ((counter++))
+                counter=$((counter + 1))
             done
             mv "$existing_file" "$orig_file"
-            ((CONFLICTS_RESOLVED++))
+            CONFLICTS_RESOLVED=$((CONFLICTS_RESOLVED + 1))
             return 0
             ;;
         fail-on-conflict)
             echo -e "${RED}[ERROR]${NC} Conflict detected: $existing_file" >&2
-            ((CONFLICTS_FAILED++))
+            CONFLICTS_FAILED=$((CONFLICTS_FAILED + 1))
             return 1
             ;;
         *)
             error "Unknown auto-resolve strategy: $strategy"
-            ((CONFLICTS_FAILED++))
+            CONFLICTS_FAILED=$((CONFLICTS_FAILED + 1))
             return 1
             ;;
     esac
@@ -631,8 +662,13 @@ resolve_package_conflicts() {
     local target_dir="${2:-$HOME}"
     local backup_dir="${3:-$BACKUP_DIR}"
 
-    # Detect conflicts
-    local conflicts=($(detect_conflicts "$package" "$target_dir"))
+    # Detect conflicts (one path per line; read line-by-line so paths are not
+    # word-split - bash 3.2 has no mapfile)
+    local conflicts=()
+    local conflict_line
+    while IFS= read -r conflict_line; do
+        [ -n "$conflict_line" ] && conflicts+=("$conflict_line")
+    done < <(detect_conflicts "$package" "$target_dir")
 
     if [ ${#conflicts[@]} -eq 0 ]; then
         if [ "$VERBOSE" = true ]; then
@@ -648,14 +684,21 @@ resolve_package_conflicts() {
     # Resolve each conflict
     local conflict_num=1
     for conflict_file in "${conflicts[@]}"; do
+        if ! is_safe_conflict_path "$conflict_file" "$target_dir"; then
+            warn "Refusing to touch path outside $target_dir or inside the dotfiles repo: $conflict_file (skipping)"
+            CONFLICTS_SKIPPED=$((CONFLICTS_SKIPPED + 1))
+            conflict_num=$((conflict_num + 1))
+            continue
+        fi
+
         # Get corresponding new file from package
         local relative_path="${conflict_file#$target_dir/}"
         local new_file="$DOTFILES_DIR/$package/$relative_path"
 
         if [ ! -f "$new_file" ]; then
             warn "New file not found: $new_file (skipping)"
-            ((CONFLICTS_SKIPPED++))
-            ((conflict_num++))
+            CONFLICTS_SKIPPED=$((CONFLICTS_SKIPPED + 1))
+            conflict_num=$((conflict_num + 1))
             continue
         fi
 
@@ -666,7 +709,7 @@ resolve_package_conflicts() {
             resolve_conflict_auto "$conflict_file" "$new_file" "$backup_dir"
         fi
 
-        ((conflict_num++))
+        conflict_num=$((conflict_num + 1))
     done
 
     # Summary
@@ -694,6 +737,7 @@ resolve_package_conflicts() {
 
 # Export functions for use in other scripts
 export -f detect_conflicts
+export -f is_safe_conflict_path
 export -f resolve_conflict_interactive
 export -f resolve_conflict_auto
 export -f resolve_package_conflicts
