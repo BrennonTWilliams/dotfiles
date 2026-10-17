@@ -5,7 +5,6 @@
 # Development Tools
 ms-vscode.vscode-typescript-next    # TypeScript support
 ms-python.python                    # Python support
-ms-vscode.vscode-json               # JSON support and validation
 
 # Git and Version Control
 eamodio.gitlens                    # Enhanced Git capabilities
@@ -14,10 +13,9 @@ donjayamanne.githistory            # Git history viewer
 codezombiech.gitignore             # .gitignore language support
 
 # Language Support
-ms-vscode.vscode-eslint            # ESLint integration
+dbaeumer.vscode-eslint             # ESLint integration
 esbenp.prettier-vscode             # Prettier code formatter
 bradlc.vscode-tailwindcss          # Tailwind CSS support
-ms-vscode.vscode-markdown          # Markdown preview and editing
 bierner.markdown-mermaid           # Mermaid diagram support
 
 # AI and Code Assistance
@@ -32,10 +30,10 @@ dracula-theme.theme-dracula        # Dracula theme option
 Gruntfuggly.todo-tree              # Todo list manager
 ms-vscode.test-adapter-converter   # Test runner integration
 humao.rest-client                  # HTTP client for API testing
-ms-vscode.hexdump                  # Hex viewer for binary files
+ms-vscode.hexeditor                # Hex editor for binary files
 
 # Web Development
-ms-vscode.vscode-html-preview      # HTML live preview
+ms-vscode.live-server              # HTML live preview
 ritwickdey.LiveServer              # Live server for web development
 formulahendry.auto-rename-tag      # Auto rename paired HTML/XML tags
 
