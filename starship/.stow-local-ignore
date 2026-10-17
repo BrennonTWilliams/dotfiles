@@ -1,0 +1,8 @@
+# Stow ignore file for starship package
+# Build inputs for .config/starship/*.toml; only .config is linked into $HOME
+^/formats
+^/modes
+^/modules
+^/build-configs\.sh
+^/nerd-fonts-complete-reference\.txt
+README.*

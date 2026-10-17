@@ -1,0 +1,6 @@
+# Stow ignore file for zsh package
+# .zshrc sources these from the repo directly; do not link them into $HOME
+^/functions
+^/aliases
+^/abbreviations
+README.*

@@ -60,6 +60,12 @@ export AUTO_RESOLVE_STRATEGY
 get_available_packages() {
     local packages=()
     for dir in */; do
+        # vscode is linked to the OS-specific settings path by setup-new-configs.sh
+        [ "$dir" = "vscode/" ] && continue
+        # foot and sway are Linux-only (Wayland)
+        if [ "$(uname -s)" = "Darwin" ]; then
+            case "$dir" in foot/|sway/) continue ;; esac
+        fi
         if [ -d "$dir" ]; then
             # Check for any dotfile or dotdir (excluding . and ..)
             # Using find for reliable cross-shell detection

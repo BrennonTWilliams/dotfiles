@@ -1,1 +1,4 @@
+# Stow ignore file for wezterm package
 README\.md
+# Template for ~/.wezterm.local.lua; copy it by hand, do not link it
+^/config\.local\.template
