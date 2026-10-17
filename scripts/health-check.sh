@@ -104,27 +104,21 @@ check_shell_environment() {
 check_path_resolution() {
     header "Path Resolution System"
 
-    # Source the cross-platform utilities if available
+    # resolve_platform_path is zsh-only, so call it through zsh
     local cross_platform_file="$HOME/.zsh_cross_platform"
     if [[ -f "$cross_platform_file" ]]; then
-        # Temporarily source functions for testing
-        source "$cross_platform_file"
-
         local path_types=("dotfiles" "conda_root"
                         "conda_bin" "conda_profile" "starship_config" "npm_global_bin")
 
         for path_type in "${path_types[@]}"; do
             check_start "Path resolution for: $path_type"
-            if command -v resolve_platform_path >/dev/null 2>&1; then
-                local resolved_path
-                resolved_path=$(resolve_platform_path "$path_type" 2>/dev/null || echo "")
-                if [[ -n "$resolved_path" ]]; then
-                    success "Resolved $path_type → $resolved_path"
-                else
-                    error "Failed to resolve $path_type"
-                fi
+            local resolved_path
+            resolved_path=$(zsh -c 'source "$1" && resolve_platform_path "$2"' _ \
+                "$cross_platform_file" "$path_type" 2>/dev/null || echo "")
+            if [[ -n "$resolved_path" ]]; then
+                success "Resolved $path_type → $resolved_path"
             else
-                error "resolve_platform_path function not available"
+                error "Failed to resolve $path_type"
             fi
         done
     else
@@ -136,7 +130,7 @@ check_core_tools() {
     header "Core Development Tools"
 
     local core_tools=("git" "curl" "wget" "tmux" "starship")
-    local optional_tools=("neovim" "ripgrep" "fzf" "fd" "jq")
+    local optional_tools=("nvim" "rg" "fzf" "fd" "jq")
 
     for tool in "${core_tools[@]}"; do
         check_start "$tool"
@@ -217,8 +211,7 @@ check_platform_specific() {
             fi
 
             check_start "macOS-specific aliases"
-            local zshrc_file="$HOME/.zshrc"
-            if [[ -f "$zshrc_file" ]] && grep -q "show-files\|hide-files" "$zshrc_file"; then
+            if grep -q "show-files\|hide-files" "$HOME/.zsh_cross_platform" 2>/dev/null; then
                 success "macOS-specific aliases found"
             else
                 warn "macOS-specific aliases not found"
@@ -252,33 +245,45 @@ check_platform_specific() {
 check_dotfiles_symlinks() {
     header "Dotfiles Symlink Structure"
 
-    local dotfiles_dirs=("zsh" "tmux" "starship" "ghostty" "wezterm" "vscode" "git")
+    local repo_dir
+    repo_dir="$(cd "$SCRIPT_DIR/.." && pwd -P)"
+
+    local vscode_settings="$HOME/.config/Code/User/settings.json"
+    [[ "$(detect_os)" == "macos" ]] && \
+        vscode_settings="$HOME/Library/Application Support/Code/User/settings.json"
+
+    # target|expected source in repo (a trailing / accepts any file in that dir,
+    # e.g. whichever starship mode is active)
     local expected_configs=(
-        "$HOME/.zshrc:zsh/.zshrc"
-        "$HOME/.tmux.conf:tmux/.tmux.conf"
-        "$HOME/.config/starship.toml:starship/starship.toml"
-        "$HOME/.config/ghostty/config:ghostty/.config/ghostty/config"
-        "$HOME/.wezterm.lua:wezterm/.wezterm.lua"
-        "$HOME/.config/Code/User/settings.json:vscode/settings.json"
-        "$HOME/.gitconfig:git/.gitconfig"
+        "$HOME/.zshrc|zsh/.zshrc"
+        "$HOME/.tmux.conf|tmux/.tmux.conf"
+        "$HOME/.config/starship.toml|starship/.config/starship/"
+        "$HOME/.config/ghostty/config|ghostty/.config/ghostty/config"
+        "$HOME/.wezterm.lua|wezterm/.wezterm.lua"
+        "$vscode_settings|vscode/settings.json"
+        "$HOME/.gitconfig|git/.gitconfig"
     )
 
     for config_pair in "${expected_configs[@]}"; do
-        local target_path="${config_pair%%:*}"
-        local source_path="${config_pair##*:}"
+        local target_path="${config_pair%%|*}"
+        local source_path="${config_pair##*|}"
 
         check_start "Symlink: $(basename "$target_path")"
-        if [[ -L "$target_path" ]]; then
-            local resolved_link=$(readlink "$target_path")
-            if [[ "$resolved_link" == *"$source_path"* ]]; then
-                success "Symlink points to correct file"
-            else
-                warn "Symlink exists but points to unexpected location: $resolved_link"
-            fi
-        elif [[ -f "$target_path" ]]; then
-            warn "File exists but is not a symlink: $target_path"
-        else
+        if [[ ! -e "$target_path" ]]; then
             warn "File not found: $target_path"
+            continue
+        fi
+
+        # realpath follows a link on the file or on any parent directory,
+        # which covers stow folding (e.g. ~/.config/ghostty -> repo)
+        local resolved
+        resolved="$(realpath "$target_path")"
+        if [[ "$resolved" == "$repo_dir/$source_path"* ]]; then
+            success "Links to repo: ${resolved#"$repo_dir"/}"
+        elif [[ -L "$target_path" ]]; then
+            warn "Symlink points to unexpected location: $resolved"
+        else
+            warn "File exists but is not linked to the repo: $target_path"
         fi
     done
 }
@@ -327,7 +332,7 @@ check_performance() {
 
     check_start "Shell startup time"
     local startup_time
-    startup_time=$(zsh -i -c 'echo $EPOCHREALTIME' 2>/dev/null || echo "0")
+    startup_time=$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME; zsh -i -c exit >/dev/null 2>&1; printf "%.2f" $(( EPOCHREALTIME - s ))' 2>/dev/null || echo "0")
     if [[ "$startup_time" != "0" ]] && [[ "${startup_time%.*}" -lt 2 ]]; then
         success "Shell startup time: ${startup_time}s"
     else
@@ -346,11 +351,8 @@ check_performance() {
 
     check_start "Path resolution performance"
     if [[ -f "$HOME/.zsh_cross_platform" ]]; then
-        local start_time=$(date +%s%N)
-        source "$HOME/.zsh_cross_platform"
-        resolve_platform_path "dotfiles" >/dev/null 2>&1 || true
-        local end_time=$(date +%s%N)
-        local duration=$(( (end_time - start_time) / 1000000 )) # Convert to milliseconds
+        local duration
+        duration=$(zsh -c 'zmodload zsh/datetime; s=$EPOCHREALTIME; source "$1"; resolve_platform_path dotfiles >/dev/null 2>&1; printf "%.0f" $(( (EPOCHREALTIME - s) * 1000 ))' _ "$HOME/.zsh_cross_platform" 2>/dev/null || echo 999)
 
         if [[ $duration -lt 100 ]]; then
             success "Path resolution: ${duration}ms"
