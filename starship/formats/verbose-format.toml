@@ -5,10 +5,10 @@
 
 # Verbose format string - multi-line layout with all modules
 format = """
-[┌─────────────────────>](bold green)$custom.github_username$hostname$shlvl$directory$git_branch$git_status$git_commit$package$golang$python$nodejs$rust$java
-[│](bold green)$docker_context$cmake$container$kubernetes$terraform$nix_shell$custom.terminal
-[│](bold green)$custom.macos$custom.linux$custom.sway$custom.tmux$custom.ghostty$custom.foot$custom.aws_profile
-[│](bold green)$battery$time$custom.memory$localip
+[┌─────────────────────>](bold green)${custom.github_username}$hostname$shlvl$directory$git_branch$git_status$git_commit$package$golang$python$nodejs$rust$java
+[│](bold green)$docker_context$cmake$container$kubernetes$terraform$nix_shell${custom.terminal}
+[│](bold green)${custom.macos}${custom.linux}${custom.sway}${custom.tmux}${custom.ghostty}${custom.foot}${custom.aws_profile}
+[│](bold green)$battery$time${custom.memory}$localip
 [└─>](bold green)$status$character"""
 
 # Blank line between prompts

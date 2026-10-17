@@ -102,6 +102,58 @@ filter_module_file() {
     ' "$file" > "$temp_file"
 }
 
+# Dotted override lines (`custom.<name>.<key> = <value>`) cannot simply be
+# appended: after a [table] header TOML would nest them under that table
+# (e.g. [localip].custom...), and a [custom.<name>] header would make
+# filter_module_file drop every custom module. Instead, strip them from the
+# appended overrides and merge each into its [custom.<name>] table.
+DOTTED_OVERRIDE_RE='^[[:space:]]*custom\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+[[:space:]]*='
+
+apply_dotted_overrides() {
+    local config_file="$1"
+    local override_file="$2"
+    local merged
+    merged=$(mktemp)
+    awk -v ofile="$override_file" '
+    BEGIN {
+        while ((getline line < ofile) > 0) {
+            if (line ~ /^[[:space:]]*custom\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+[[:space:]]*=/) {
+                sub(/^[[:space:]]*custom\./, "", line)
+                eq = index(line, "=")
+                lhs = substr(line, 1, eq - 1); gsub(/[[:space:]]+$/, "", lhs)
+                val = substr(line, eq + 1); gsub(/^[[:space:]]+/, "", val)
+                dot = index(lhs, ".")
+                name = substr(lhs, 1, dot - 1); key = substr(lhs, dot + 1)
+                tbl = "custom." name
+                pending[tbl] = pending[tbl] key " = " val "\n"
+                keys[tbl "|" key] = 1
+            }
+        }
+        close(ofile)
+        current = ""
+    }
+    /^[[:space:]]*\[/ {
+        line = $0
+        gsub(/^[[:space:]]*\[/, "", line); gsub(/\].*$/, "", line)
+        current = line
+        print
+        if (current in pending) { printf "%s", pending[current] }
+        next
+    }
+    {
+        if (current in pending) {
+            k = $0
+            if (k ~ /^[[:space:]]*[A-Za-z0-9_-]+[[:space:]]*=/) {
+                gsub(/^[[:space:]]+/, "", k); sub(/[[:space:]]*=.*/, "", k)
+                if ((current "|" k) in keys) next
+            }
+        }
+        print
+    }
+    ' "$config_file" > "$merged"
+    mv "$merged" "$config_file"
+}
+
 # Function to build a single configuration
 build_config() {
     local mode="$1"
@@ -179,8 +231,9 @@ EOF
     # Add mode-specific overrides
     if [[ -f "$override_file" ]]; then
         log_info "  Adding ${mode} mode overrides..."
-        cat "$override_file" >> "$temp_file"
+        grep -Ev "$DOTTED_OVERRIDE_RE" "$override_file" >> "$temp_file" || true
         echo "" >> "$temp_file"
+        apply_dotted_overrides "$temp_file" "$override_file"
     else
         log_warning "  Override file not found: $override_file"
     fi

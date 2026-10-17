@@ -60,7 +60,8 @@ disabled = true
 disabled = true
 
 # Custom modules - disable all for compact mode
-# Using dotted key syntax to avoid duplicate table declarations
+# Dotted keys: build-configs.sh merges each `custom.<name>.<key> = <value>`
+# line into the matching [custom.<name>] table of the generated config.
 custom.terminal.disabled = true
 custom.macos.disabled = true
 custom.linux.disabled = true

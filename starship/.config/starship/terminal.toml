@@ -58,6 +58,7 @@ vimcmd_visual_symbol = "[❮](bold yellow)"
 
 # Custom terminal detection
 [custom.terminal]
+disabled = true
 command = "echo $TERM"
 when = "true"
 format = "[$output]($style) "
@@ -65,6 +66,7 @@ style = "bold yellow"
 
 # macOS-specific modules (only show on macOS)
 [custom.macos]
+disabled = true
 command = "uname"
 when = "[[ $(uname) == 'Darwin' ]]"
 format = "[$output]($style) "
@@ -72,6 +74,7 @@ style = "bold dimmed white"
 
 # Linux-specific modules (only show on Linux)
 [custom.linux]
+disabled = true
 command = "uname -o"
 when = "[[ $(uname) == 'Linux' ]]"
 format = "[$output]($style) "
@@ -79,6 +82,7 @@ style = "bold dimmed white"
 
 # Sway-specific indicator (only show in Sway)
 [custom.sway]
+disabled = true
 command = "echo $SWAYSOCK"
 when = "[[ -n $SWAYSOCK ]]"
 format = "[󰕲 Sway]($style) "
@@ -86,6 +90,7 @@ style = "bold magenta"
 
 # Show if in a tmux session
 [custom.tmux]
+disabled = true
 command = "echo $TMUX"
 when = "[[ -n $TMUX ]]"
 format = "[󰆍 tmux]($style) "
@@ -93,6 +98,7 @@ style = "bold blue"
 
 # Show if running in Ghostty (macOS)
 [custom.ghostty]
+disabled = true
 command = "echo $GHOSTTY_RESOURCES"
 when = "[[ -n $GHOSTTY_RESOURCES ]]"
 format = "[󰊠 Ghostty]($style) "
@@ -100,6 +106,7 @@ style = "bold green"
 
 # Show if running in Foot (Linux Wayland)
 [custom.foot]
+disabled = true
 command = "echo $FOOT_TERMINAL_ID"
 when = "[[ -n $FOOT_TERMINAL_ID ]]"
 format = "[󰆍 Foot]($style) "
@@ -107,6 +114,7 @@ style = "bold green"
 
 # Show current git commit hash
 [custom.git_commit]
+disabled = true
 command = "git rev-parse --short HEAD 2>/dev/null"
 when = "git rev-parse --git-dir > /dev/null 2>&1"
 format = "[($output)]($style) "
@@ -114,6 +122,7 @@ style = "bold dimmed white"
 
 # Show AWS profile if active
 [custom.aws_profile]
+disabled = true
 command = "echo $AWS_PROFILE"
 when = "[[ -n $AWS_PROFILE ]]"
 format = "[󰌾 AWS: $output]($style) "
@@ -126,6 +135,7 @@ style = "bold yellow"
 
 # Battery indicator (for laptops)
 [custom.memory]
+disabled = true
 command = """
 case $(uname) in
   Darwin)
@@ -214,11 +224,11 @@ echo "$USER"
 when = "true"
 format = "[$output]($style)"
 style = "bold blue"
-show_always = false
 description = "Displays GitHub first name or git config first name (cached for 1 hour)"
 
 # GitHub repository status indicator (enhanced)
 [custom.github_status]
+disabled = true
 command = """
 #!/bin/bash
 if command -v gh &> /dev/null && git rev-parse --git-dir &> /dev/null; then
@@ -361,18 +371,8 @@ disabled = true
 disabled = true
 
 # Custom modules - disable all for terminal mode
-# Using dotted key syntax to avoid duplicate table declarations
-custom.terminal.disabled = true
-custom.macos.disabled = true
-custom.linux.disabled = true
-custom.sway.disabled = true
-custom.tmux.disabled = true
-custom.ghostty.disabled = true
-custom.foot.disabled = true
-custom.git_commit.disabled = true
-custom.aws_profile.disabled = true
-custom.memory.disabled = true
-custom.github_status.disabled = true
+# Dotted keys: build-configs.sh merges each `custom.<name>.<key> = <value>`
+# line into the matching [custom.<name>] table of the generated config.
 
 
 # ===================================
