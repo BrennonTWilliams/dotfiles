@@ -22,14 +22,19 @@ fi
 # Platform Detection
 # ==============================================================================
 
-# Detect operating system
-detect_os() {
-    case "$(uname -s)" in
-        Darwin*)    echo "macos" ;;
-        Linux*)     echo "linux" ;;
-        CYGWIN*|MINGW*|MSYS*) echo "windows" ;;
-        *)          echo "unknown" ;;
+# Detect operating system (uses $OSTYPE: no fork, safe to call often)
+_dotfiles_os_from_ostype() {
+    case "$OSTYPE" in
+        darwin*)                    REPLY="macos" ;;
+        linux*)                     REPLY="linux" ;;
+        cygwin*|msys*|mingw*|win*)  REPLY="windows" ;;
+        *)                          REPLY="unknown" ;;
     esac
+}
+detect_os() {
+    local REPLY
+    _dotfiles_os_from_ostype
+    echo "$REPLY"
 }
 
 # Detect Linux distribution
@@ -105,10 +110,10 @@ get_username() {
         return
     fi
 
-    if command -v whoami >/dev/null 2>&1; then
-        _CACHED_USERNAME=$(whoami)
-    elif [[ -n "$USER" ]]; then
+    if [[ -n "$USER" ]]; then
         _CACHED_USERNAME="$USER"
+    elif command -v whoami >/dev/null 2>&1; then
+        _CACHED_USERNAME=$(whoami)
     elif [[ -n "$USERNAME" ]]; then
         _CACHED_USERNAME="$USERNAME"
     else
@@ -124,7 +129,9 @@ _get_cached_os() {
         return
     fi
 
-    _CACHED_OS=$(detect_os)
+    local REPLY
+    _dotfiles_os_from_ostype
+    _CACHED_OS="$REPLY"
     echo "$_CACHED_OS"
 }
 
@@ -135,7 +142,7 @@ _get_cached_home() {
         return
     fi
 
-    _CACHED_USER_HOME=$(get_user_home)
+    _CACHED_USER_HOME="$HOME"
     echo "$_CACHED_USER_HOME"
 }
 
@@ -149,10 +156,15 @@ resolve_platform_path() {
         return
     fi
 
-    # Resolve the path (only happens once per path_type)
-    local username="$(get_username)"
-    local user_home="$(_get_cached_home)"
-    local os="$(_get_cached_os)"
+    # Resolve the path (only happens once per path_type).
+    # Fill the caches in this shell first, then read them directly: calling the
+    # getters via $(...) would fork a subshell and lose the cached value.
+    get_username >/dev/null
+    _get_cached_home >/dev/null
+    _get_cached_os >/dev/null
+    local username="$_CACHED_USERNAME"
+    local user_home="$_CACHED_USER_HOME"
+    local os="$_CACHED_OS"
     local resolved_path=""
 
     case "$path_type" in
@@ -173,11 +185,13 @@ resolve_platform_path() {
             esac
             ;;
         "conda_bin")
-            local conda_root="$(resolve_platform_path "conda_root")"
+            resolve_platform_path "conda_root" >/dev/null
+            local conda_root="${_PLATFORM_PATH_CACHE[conda_root]}"
             resolved_path="$conda_root/bin"
             ;;
         "conda_profile")
-            local conda_root="$(resolve_platform_path "conda_root")"
+            resolve_platform_path "conda_root" >/dev/null
+            local conda_root="${_PLATFORM_PATH_CACHE[conda_root]}"
             resolved_path="$conda_root/etc/profile.d/conda.sh"
             ;;
         "docker_completions")
@@ -191,7 +205,8 @@ resolve_platform_path() {
             resolved_path="$user_home/.npm-global"
             ;;
         "npm_global_bin")
-            resolved_path="$(resolve_platform_path "npm_global")/bin"
+            resolve_platform_path "npm_global" >/dev/null
+            resolved_path="${_PLATFORM_PATH_CACHE[npm_global]}/bin"
             ;;
         "local_lib")
             case "$os" in
@@ -283,9 +298,9 @@ _init_path_cache() {
 _init_path_cache
 
 # Set commonly used environment variables (these will now use cached values)
-export DOTFILES_DIR="$(resolve_platform_path "dotfiles")"
-export CONDA_ROOT="$(resolve_platform_path "conda_root")"
-export CONDA_BIN="$(resolve_platform_path "conda_bin")"
+export DOTFILES_DIR="${_PLATFORM_PATH_CACHE[dotfiles]}"
+export CONDA_ROOT="${_PLATFORM_PATH_CACHE[conda_root]}"
+export CONDA_BIN="${_PLATFORM_PATH_CACHE[conda_bin]}"
 
 # ==============================================================================
 # Cross-Platform Command Abstractions
@@ -901,7 +916,7 @@ dev_status() {
 setup_platform_aliases
 
 # Export environment variables for scripts
-export PLATFORM_OS=$(detect_os)
+export PLATFORM_OS="$_CACHED_OS"
 export PLATFORM_DESKTOP=$(detect_desktop_env)
 export PLATFORM_TERMINAL=$(detect_terminal)
 

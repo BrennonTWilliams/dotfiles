@@ -59,7 +59,11 @@ _tab_title_emit() {
     short="${parts[-2]}/${parts[-1]}"
   fi
   print -n "\e]2;${icon} ${short}\a"
-  [[ -n "$TMUX" ]] && tmux set-option -p @pane_icon "$icon" 2>/dev/null
+  # Update tmux's per-pane icon only when it changes: each call forks a tmux
+  # client (~4ms), and this runs before and after every command.
+  if [[ -n "$TMUX" && "$icon" != "${_TAB_LAST_PANE_ICON-}" ]]; then
+    tmux set-option -p @pane_icon "$icon" 2>/dev/null && typeset -g _TAB_LAST_PANE_ICON="$icon"
+  fi
 }
 
 # Called before a command runs — icon derives from the executable name.

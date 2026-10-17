@@ -4,46 +4,60 @@
 # ==============================================================================
 # PATH Configuration (Consolidated from .zprofile and .zshrc)
 # ==============================================================================
-# All PATH modifications are centralized here to prevent duplication and
-# ensure consistent environment across all shell types (login, interactive, etc.)
+# All PATH modifications are centralized in _dotfiles_setup_path so they can be
+# re-applied from .zprofile: on macOS, /etc/zprofile runs path_helper AFTER this
+# file and moves the system dirs ahead of Homebrew. Re-running this function
+# puts our dirs back in front.
 
-# Homebrew setup - must be early as other tools may depend on it
-# Check for both Apple Silicon and Intel locations
-if [ -x "/opt/homebrew/bin/brew" ]; then
-  # Apple Silicon Mac
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-elif [ -x "/usr/local/bin/brew" ]; then
-  # Intel Mac
-  eval "$(/usr/local/bin/brew shellenv)"
-elif command -v brew >/dev/null 2>&1; then
-  # If brew is in PATH but not in the standard locations
-  eval "$(brew shellenv)"
-fi
+# Keep PATH/FPATH entries unique (first occurrence wins), so re-running the
+# setup or nesting shells never piles up duplicates.
+typeset -U path fpath
 
-# Pyenv configuration
-export PYENV_ROOT="$HOME/.pyenv"
-if [ -d "$PYENV_ROOT/bin" ]; then
-    PATH="$PYENV_ROOT/bin:$PATH"
-fi
-
-# NPM Global Packages Path
-# Add npm global packages to PATH if the directory exists
-if [ -d "$HOME/.npm-global" ]; then
-    PATH="$HOME/.npm-global/bin:$PATH"
-fi
-
-# User local binaries
-if [ -d "$HOME/.local/bin" ]; then
-    PATH="$HOME/.local/bin:$PATH"
-fi
-
-# JetBrains Toolbox (macOS only)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    JETBRAINS_PATH="$HOME/Library/Application Support/JetBrains/Toolbox/scripts"
-    if [ -d "$JETBRAINS_PATH" ]; then
-        PATH="$JETBRAINS_PATH:$PATH"
+_dotfiles_setup_path() {
+    # Homebrew - must be early as other tools may depend on it
+    if [[ -x /opt/homebrew/bin/brew ]]; then
+        # Apple Silicon: static equivalent of `brew shellenv` (saves a fork)
+        export HOMEBREW_PREFIX=/opt/homebrew
+        export HOMEBREW_CELLAR=/opt/homebrew/Cellar
+        export HOMEBREW_REPOSITORY=/opt/homebrew
+        path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+        fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+        [[ :${INFOPATH:-}: == *:/opt/homebrew/share/info:* ]] || \
+            export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
+    elif [[ -x /usr/local/bin/brew ]]; then
+        # Intel Mac
+        eval "$(/usr/local/bin/brew shellenv)"
+    elif [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+        # Linuxbrew
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    elif (( $+commands[brew] )); then
+        eval "$(brew shellenv)"
     fi
-fi
 
-export PATH
-[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+    # Pyenv, JetBrains Toolbox, npm globals, kimi-code, user binaries.
+    # Prepended in order, so the last existing entry ends up first
+    # (~/.local/bin wins).
+    export PYENV_ROOT="$HOME/.pyenv"
+    local d
+    for d in \
+        "$PYENV_ROOT/bin" \
+        "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" \
+        "$HOME/.npm-global/bin" \
+        "$HOME/.kimi-code/bin" \
+        "$HOME/.local/bin"
+    do
+        [[ -d $d ]] && path=("$d" $path)
+    done
+
+    # Appended (lowest priority)
+    [[ -d /Applications/Obsidian.app/Contents/MacOS ]] && path+=(/Applications/Obsidian.app/Contents/MacOS)
+    [[ -d ${GOPATH:-$HOME/go}/bin ]] && path+=("${GOPATH:-$HOME/go}/bin")
+
+    export PATH
+}
+_dotfiles_setup_path
+
+[[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+
+# Machine-specific environment overrides (e.g. DOTFILES_ABBR_MODE)
+[[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"

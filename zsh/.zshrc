@@ -3,6 +3,54 @@
 # including prompt setup, aliases, interactive functions, and command completion.
 
 # ==============================================================================
+# Starship Prompt Integration (runs first)
+# ==============================================================================
+# Initialized before anything else so that a slow or interrupted startup (for
+# example Ctrl-C while plugins load) still leaves the shell with the Starship
+# prompt. `starship init` only registers hooks; it does not depend on the rest
+# of this file.
+
+# Starship paths, resolved through the stowed ~/.zshrc symlink:
+# <repo>/zsh/.zshrc -> <repo>/starship
+typeset -g _STARSHIP_ACTIVE_LINK="$HOME/.config/starship.toml"
+if [[ -L ~/.zshrc ]]; then
+    typeset -g _DOTFILES_STARSHIP_DIR="${${:-$HOME/.zshrc}:A:h:h}/starship"
+else
+    typeset -g _DOTFILES_STARSHIP_DIR="${0:A:h:h}/starship"
+fi
+
+# Create the active config symlink on first setup, or repair it if it points
+# at a file that no longer exists (starship would silently fall back to its
+# built-in defaults).
+[[ ! -e "$_STARSHIP_ACTIVE_LINK" ]] && \
+    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_ACTIVE_LINK"
+
+# Clear any existing prompt configurations to prevent conflicts
+unset PROMPT
+unset RPROMPT
+unset PROMPT_COMMAND
+
+# Ensure STARSHIP_CONFIG is not set to empty string (breaks config discovery)
+# If you want a custom config path, set it explicitly in .zshrc.local
+unset STARSHIP_CONFIG 2>/dev/null
+
+# Force terminal-safe config in Apple Terminal.app.
+# This is a deliberate preference, NOT a capability limit: once the
+# terminal-app/ profile is installed, Terminal.app renders the full Nerd Font
+# glyph set correctly (IosevkaTermNF covers every PUA codepoint at single cell
+# width, bare and inside tmux). See docs/TERMINAL_APP_SETUP.md.
+# Uses env var rather than symlink so Ghostty/Tmux sessions are unaffected.
+# Terminal.app sets TERM_PROGRAM=Apple_Terminal outside of tmux.
+# For tmux-inside-Terminal.app, run 'starship-terminal' manually.
+if [[ "$TERM_PROGRAM" == "Apple_Terminal" ]]; then
+    export STARSHIP_CONFIG="$_DOTFILES_STARSHIP_DIR/.config/starship/terminal.toml"
+fi
+
+if (( $+commands[starship] )); then
+    eval "$(starship init zsh)"
+fi
+
+# ==============================================================================
 # Cross-Platform Integration
 # ==============================================================================
 
@@ -34,9 +82,10 @@ fi
 #
 # Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="alias"
 
-# Resolve DOTFILES_ZSH from symlink (${0:A:h} doesn't work for sourced files)
+# Resolve DOTFILES_ZSH from symlink (${0:A:h} doesn't work for sourced files).
+# :A follows the symlink, whether it is relative or absolute.
 if [[ -L ~/.zshrc ]]; then
-    DOTFILES_ZSH="$HOME/$(dirname "$(readlink ~/.zshrc)")"
+    DOTFILES_ZSH="${${:-$HOME/.zshrc}:A:h}"
 else
     DOTFILES_ZSH="${0:A:h}"
 fi
@@ -123,12 +172,7 @@ __conda_lazy_init() {
     unfunction conda 2>/dev/null
 
     # Resolve conda paths (with fallback)
-    local conda_bin
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        conda_bin="$(resolve_platform_path "conda_bin")"
-    else
-        conda_bin="${HOME}/miniforge3/bin"
-    fi
+    local conda_bin="${CONDA_BIN:-${HOME}/miniforge3/bin}"
 
     [[ ! -d "$conda_bin" ]] && return 1
 
@@ -152,19 +196,16 @@ conda() {
     conda "$@"
 }
 
-# Add conda bin to PATH for tools that need it before lazy-init
-{
-    local conda_bin
-    if command -v resolve_platform_path >/dev/null 2>&1; then
-        conda_bin="$(resolve_platform_path "conda_bin")"
-    else
-        conda_bin="${HOME}/miniforge3/bin"
-    fi
-    [[ -d "$conda_bin" ]] && export PATH="$conda_bin:$PATH"
-}
-
-# Ensure npm global bin takes precedence over conda-installed equivalents (e.g. playwright)
-[[ -d "$HOME/.npm-global/bin" ]] && export PATH="$HOME/.npm-global/bin:$PATH"
+# Add conda bin to PATH for tools that need it before lazy-init.
+# Then re-prepend npm globals, kimi-code and ~/.local/bin so they still take
+# precedence over conda-installed equivalents (e.g. playwright).
+if [[ -d "${CONDA_BIN:-${HOME}/miniforge3/bin}" ]]; then
+    path=("${CONDA_BIN:-${HOME}/miniforge3/bin}" $path)
+    for _d in "$HOME/.npm-global/bin" "$HOME/.kimi-code/bin" "$HOME/.local/bin"; do
+        [[ -d $_d ]] && path=("$_d" $path)
+    done
+    unset _d
+fi
 # <<< conda initialize (lazy-loaded) <<<
 
 # ==============================================================================
@@ -175,12 +216,7 @@ conda() {
 fpath=(${HOME}/.local/share/zsh/site-functions $fpath)
 
 # Docker CLI completions (added by Docker Desktop)
-if command -v resolve_platform_path >/dev/null 2>&1; then
-    local docker_completions="$(resolve_platform_path "docker_completions")"
-    fpath=($docker_completions $fpath)
-else
-    fpath=(${HOME}/.docker/completions $fpath)
-fi
+[[ -d ${HOME}/.docker/completions ]] && fpath=(${HOME}/.docker/completions $fpath)
 
 autoload -Uz compinit
 compinit
@@ -192,31 +228,39 @@ compinit
 # Only application-specific paths are added here
 
 # Platform-specific configuration (non-PATH)
-case "$(detect_os 2>/dev/null || echo 'unknown')" in
-    "macos")
-        # Library path for microsandbox (macOS only)
-        export DYLD_LIBRARY_PATH="$(resolve_platform_path "local_lib" 2>/dev/null || echo "$HOME/.local/lib"):$DYLD_LIBRARY_PATH"
+case "$OSTYPE" in
+    darwin*)
+        # Library path for microsandbox (macOS only). Only when the dir exists,
+        # never twice, and without a trailing empty entry.
+        if [[ -d "$HOME/.local/lib" && ":${DYLD_LIBRARY_PATH:-}:" != *":$HOME/.local/lib:"* ]]; then
+            export DYLD_LIBRARY_PATH="$HOME/.local/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+        fi
 
         # Homebrew native libs (pango/cairo/glib) for cffi dlopen, e.g. WeasyPrint
         # under miniforge Python, which otherwise only searches miniforge3/lib and
         # /usr/lib. FALLBACK so it applies only when the normal search fails.
-        export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:${DYLD_FALLBACK_LIBRARY_PATH:-/usr/local/lib:/usr/lib}"
+        if [[ ":${DYLD_FALLBACK_LIBRARY_PATH:-}:" != *":/opt/homebrew/lib:"* ]]; then
+            export DYLD_FALLBACK_LIBRARY_PATH="/opt/homebrew/lib:${DYLD_FALLBACK_LIBRARY_PATH:-/usr/local/lib:/usr/lib}"
+        fi
         ;;
-    "linux")
+    linux*)
         # Add Linux-specific configuration here if needed
         ;;
 esac
 
-# Set up fzf key bindings and fuzzy completion
-if command -v fzf >/dev/null 2>&1; then
-    if fzf --zsh &>/dev/null; then
-        source <(fzf --zsh)
+# Set up fzf key bindings and fuzzy completion.
+# Only with a terminal attached: fzf's script toggles the `zle` option, which
+# prints "can't change option: zle" in `zsh -i -c` runs without a tty.
+if [[ -t 0 ]] && (( $+commands[fzf] )); then
+    if _fzf_init="$(fzf --zsh 2>/dev/null)"; then
+        eval "$_fzf_init"
     else
         # Older fzf versions (< 0.48.0) use file-based integration
         local fzf_share="${FZF_BASE:-/usr/share/doc/fzf/examples}"
         [[ -f "$fzf_share/key-bindings.zsh" ]] && source "$fzf_share/key-bindings.zsh"
         [[ -f "$fzf_share/completion.zsh" ]] && source "$fzf_share/completion.zsh"
     fi
+    unset _fzf_init
 fi
 
 # >>> zoxide - smarter cd command >>>
@@ -322,14 +366,8 @@ fi
 # Starship Display Mode Functions
 # ==============================================================================
 
-# Cache starship paths once (using symlink resolution for accuracy)
-typeset -g _STARSHIP_ACTIVE_LINK="$HOME/.config/starship.toml"
-if [[ -L ~/.zshrc ]]; then
-    # Resolve from symlink - go up from zsh/ to dotfiles root, then to starship/
-    typeset -g _DOTFILES_STARSHIP_DIR="$HOME/$(dirname "$(dirname "$(readlink ~/.zshrc)")")/starship"
-else
-    typeset -g _DOTFILES_STARSHIP_DIR="${0:A:h:h}/starship"
-fi
+# Starship paths (_STARSHIP_ACTIVE_LINK, _DOTFILES_STARSHIP_DIR) are set in the
+# Starship Prompt Integration block at the top of this file.
 
 # Helper to switch starship mode
 _starship_set_mode() {
@@ -369,10 +407,6 @@ starship-mode() {
     fi
 }
 
-# Initialize Starship symlink in standard mode on first setup
-[[ ! -L "$_STARSHIP_ACTIVE_LINK" ]] && \
-    ln -sf "$_DOTFILES_STARSHIP_DIR/.config/starship/standard.toml" "$_STARSHIP_ACTIVE_LINK"
-
 # ==============================================================================
 # Theme Mode (dark/light toggle)
 # ==============================================================================
@@ -411,14 +445,18 @@ toggle-theme() {
     echo "$new_mode" > ~/.config/theme-mode
     export THEME_MODE="$new_mode"
 
-    # Switch Ghostty theme (write to config.local which ghostty auto-reloads)
+    # Switch Ghostty theme (config.local, which ghostty reloads). Only the
+    # `theme = ...` line is replaced; other local overrides are kept.
     local ghostty_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty"
     if [[ -d "$ghostty_config_dir" ]]; then
-        if [[ "$new_mode" == "light" ]]; then
-            echo "theme = gruvbox-light-custom" > "$ghostty_config_dir/config.local"
-        else
-            echo "theme = gruvbox-dark-custom" > "$ghostty_config_dir/config.local"
-        fi
+        local ghostty_local="$ghostty_config_dir/config.local"
+        local theme_line="theme = gruvbox-dark-custom"
+        [[ "$new_mode" == "light" ]] && theme_line="theme = gruvbox-light-custom"
+        setopt local_options extended_glob
+        local -a local_lines=()
+        [[ -s "$ghostty_local" ]] && local_lines=("${(@f)$(<"$ghostty_local")}")
+        local_lines=("${(@)local_lines:#[[:space:]]#theme[[:space:]]#=*}")
+        print -rl -- "${local_lines[@]}" "$theme_line" >| "$ghostty_local"
         # Signal Ghostty to reload config (SIGUSR2 triggers reload)
         killall -USR2 ghostty 2>/dev/null || true
     fi
@@ -474,44 +512,11 @@ toggle-theme() {
 }
 
 # ==============================================================================
-# Starship Prompt Integration
-# ==============================================================================
-
-# Starship is the primary prompt system
-# Custom prompt functions have been removed for better performance
-
-# Clear any existing prompt configurations to prevent conflicts
-unset PROMPT
-unset RPROMPT
-unset PROMPT_COMMAND
-
-# Ensure STARSHIP_CONFIG is not set to empty string (breaks config discovery)
-# If you want a custom config path, set it explicitly in .zshrc.local
-unset STARSHIP_CONFIG 2>/dev/null
-
-# Force terminal-safe config in Apple Terminal.app.
-# This is a deliberate preference, NOT a capability limit: once the
-# terminal-app/ profile is installed, Terminal.app renders the full Nerd Font
-# glyph set correctly (IosevkaTermNF covers every PUA codepoint at single cell
-# width, bare and inside tmux). See docs/TERMINAL_APP_SETUP.md.
-# Uses env var rather than symlink so Ghostty/Tmux sessions are unaffected.
-# Terminal.app sets TERM_PROGRAM=Apple_Terminal outside of tmux.
-# For tmux-inside-Terminal.app, run 'starship-terminal' manually.
-if [[ "$TERM_PROGRAM" == "Apple_Terminal" ]]; then
-    export STARSHIP_CONFIG="$_DOTFILES_STARSHIP_DIR/.config/starship/terminal.toml"
-fi
-
-# Initialize Starship
-eval "$(starship init zsh)"
-
-# ==============================================================================
 # Local Overrides
 # ==============================================================================
 # Source machine-specific configuration last to allow overriding any setting
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-if command -v go >/dev/null 2>&1; then
-    export PATH="$PATH:$(go env GOPATH)/bin"
-fi
+# Go binaries (${GOPATH:-~/go}/bin) are added to PATH in .zshenv
 export NODE_OPTIONS="--max-old-space-size=8192"
 
 # ==============================================================================
@@ -587,12 +592,3 @@ lmstudio() {
         echo "$response" | perl -0777 -pe 's/<think[^>]*>.*?<\/think>//gs' | sed '/^$/d'
     fi
 }
-# kimi-code
-export PATH="/Users/brennon/.kimi-code/bin:$PATH"
-
-# Qwen Code PATH block begin
-export PATH='/Users/brennon/.local/bin':$PATH
-# Qwen Code PATH block end
-
-# bun completions
-[ -s "/var/folders/dg/j0h3vvbj20n6gd7077j8v5qr0000gn/T/tmp.Heoda5IjZc/_bun" ] && source "/var/folders/dg/j0h3vvbj20n6gd7077j8v5qr0000gn/T/tmp.Heoda5IjZc/_bun"

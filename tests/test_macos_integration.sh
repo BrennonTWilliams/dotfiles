@@ -149,7 +149,8 @@ test_wave1_regression() {
         fi
 
         # Test that .zshenv properly prioritizes user paths
-        if grep -q "bin:\$PATH" "$TEST_HOME/.zshenv"; then
+        # Accepts "dir/bin:$PATH" strings or zsh array prepends: path=("$d" $path)
+        if grep -qE 'bin:\$PATH|path=\("[^"]+" \$path\)' "$TEST_HOME/.zshenv"; then
             log_info "✓ PATH prioritization pattern found in .zshenv"
         else
             test_fail "Wave 1 Regression Tests" "PATH prioritization pattern not found"
@@ -296,7 +297,7 @@ test_macos_shell_configuration() {
         fi
 
         # Test that user paths are prioritized
-        if grep -q "\$PATH" "$TEST_HOME/.zshenv" && grep -q "bin:" "$TEST_HOME/.zshenv"; then
+        if grep -qE 'bin:\$PATH|path=\("[^"]+" \$path\)' "$TEST_HOME/.zshenv"; then
             log_info "✓ PATH prioritization configuration found"
         else
             test_fail "macOS Shell Configuration" "PATH prioritization configuration not found"

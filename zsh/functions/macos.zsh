@@ -92,7 +92,7 @@ terminal-profile-install() {
     # Resolve the dotfiles root the same way .zshrc resolves _DOTFILES_STARSHIP_DIR
     local dotfiles_dir
     if [[ -L ~/.zshrc ]]; then
-        dotfiles_dir="$HOME/$(dirname "$(dirname "$(readlink ~/.zshrc)")")"
+        dotfiles_dir="${${:-$HOME/.zshrc}:A:h:h}"
     else
         dotfiles_dir="${${(%):-%x}:A:h:h:h}"
     fi

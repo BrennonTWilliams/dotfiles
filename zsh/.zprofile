@@ -2,53 +2,65 @@
 # Use this file for commands and settings that should run on login,
 # but not every time a new shell is opened.
 #
-# The standard load order is: .zshenv → .zprofile → .zshrc
+# The standard load order is: .zshenv → /etc/zprofile → .zprofile → .zshrc
 # .zprofile is loaded only in login shells, not for every new terminal.
 #
-# NOTE: PATH modifications have been moved to .zshenv to prevent duplication
+# NOTE: PATH modifications live in .zshenv (_dotfiles_setup_path)
+
+# ==============================================================================
+# Restore PATH order after path_helper
+# ==============================================================================
+# macOS /etc/zprofile runs path_helper, which moves /usr/bin, /bin, etc. ahead
+# of Homebrew and our user dirs. Re-apply our PATH setup so they win again.
+if [[ "$OSTYPE" == darwin* ]] && (( $+functions[_dotfiles_setup_path] )); then
+    _dotfiles_setup_path
+fi
 
 # ==============================================================================
 # BRENENTECH Logo Display
 # ==============================================================================
-# Logo display moved to .zshrc (runs for all interactive shells, not just login)
-# See .zshrc lines 19-25
+# Logo display lives in .zshrc (runs for all interactive shells, not just login)
 
 # Python Environment Setup
-# Configure pyenv if installed (PATH already set in .zshenv)
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init -)"
+# Configure pyenv if installed (PATH already set in .zshenv).
+# --no-rehash skips a ~75ms `pyenv rehash` on every login shell; run
+# `pyenv rehash` yourself after installing a Python or a package with scripts.
+if (( $+commands[pyenv] )); then
+    eval "$(pyenv init - --no-rehash zsh)"
 fi
 
-# SSH Agent for Dev Containers
-# This sets up SSH agent for development containers and remote sessions
-if [ -z "$SSH_AUTH_SOCK" ] || ! [ -e "$SSH_AUTH_SOCK" ]; then
-   # Ensure .ssh directory exists
-   if ! [ -d "$HOME/.ssh" ]; then
-       mkdir -p "$HOME/.ssh"
-       chmod 700 "$HOME/.ssh"
-   fi
+# SSH Agent for Dev Containers / Linux sessions
+# macOS provides SSH_AUTH_SOCK via launchd, so this only runs elsewhere.
+# `ssh-add -l` exits 2 when it cannot reach an agent.
+_dotfiles_agent_unreachable() {
+    [[ -z "$SSH_AUTH_SOCK" ]] && return 0
+    ssh-add -l >/dev/null 2>&1
+    (( $? == 2 ))
+}
+if [[ "$OSTYPE" != darwin* ]] && (( $+commands[ssh-agent] )) && _dotfiles_agent_unreachable; then
+    # Ensure .ssh directory exists
+    if [[ ! -d "$HOME/.ssh" ]]; then
+        mkdir -p "$HOME/.ssh"
+        chmod 700 "$HOME/.ssh"
+    fi
 
-   # Check for a currently running instance of the agent
-   if ! pgrep -f 'ssh-agent -s' > /dev/null 2>&1; then
-        # Launch a new instance of the agent
-        ssh-agent -s &> "$HOME/.ssh/ssh-agent"
-   fi
+    # Reuse the agent from a previous login if it is still alive
+    [[ -f "$HOME/.ssh/ssh-agent" ]] && eval "$(<"$HOME/.ssh/ssh-agent")" >/dev/null
 
-   # Only try to load agent if the file exists
-   if [ -f "$HOME/.ssh/ssh-agent" ]; then
-       eval `cat "$HOME/.ssh/ssh-agent"` > /dev/null
-       # Only add keys if we have any
-       if ls "$HOME/.ssh"/id_* 1> /dev/null 2>&1; then
-           ssh-add > /dev/null 2>&1
-       fi
-   fi
+    if _dotfiles_agent_unreachable; then
+        # Launch a new agent and remember how to reach it
+        (umask 077; ssh-agent -s >| "$HOME/.ssh/ssh-agent")
+        eval "$(<"$HOME/.ssh/ssh-agent")" >/dev/null
+        # Load keys only when a terminal is attached (ssh-add may prompt for
+        # a passphrase) and only if keys exist
+        if [[ -t 0 ]] && ls "$HOME/.ssh"/id_* >/dev/null 2>&1; then
+            ssh-add >/dev/null 2>&1
+        fi
+    fi
 fi
+unfunction _dotfiles_agent_unreachable 2>/dev/null
 
 # Load local overrides
-if [ -f "$HOME/.zprofile.local" ]; then
+if [[ -f "$HOME/.zprofile.local" ]]; then
     source "$HOME/.zprofile.local"
-fi
-# Obsidian CLI (macOS only)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    export PATH="$PATH:/Applications/Obsidian.app/Contents/MacOS"
 fi
