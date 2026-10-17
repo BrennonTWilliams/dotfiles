@@ -121,7 +121,7 @@ test_escape_time_zero() {
 }
 
 test_detach_on_destroy_configured() {
-    grep -q "^set -g detach-on-destroy off" "$TMUX_CONF"
+    grep -q "^set -g detach-on-destroy on" "$TMUX_CONF"
 }
 
 test_ghostty_passthrough() {

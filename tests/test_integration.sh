@@ -32,6 +32,7 @@ readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly INSTALL_SCRIPT="$DOTFILES_DIR/install.sh"
 
 # Setup logging
+mkdir -p "$TEST_ROOT"
 exec 1> >(tee -a "$LOG_FILE")
 exec 2> >(tee -a "$LOG_FILE" >&2)
 
@@ -91,10 +92,13 @@ test_skip() {
 
 # Cleanup function
 cleanup() {
+    # Keep the script's exit code so a crash is not reported as a pass
+    local rc=$?
     log_info "Cleaning up test environment..."
     if [[ -d "$TEST_ROOT" ]]; then
         rm -rf "$TEST_ROOT"
     fi
+    exit "$rc"
 }
 
 # Setup test environment
@@ -111,7 +115,7 @@ setup_test_environment() {
     mkdir -p "$FAKE_HOME/Library"/{Application\ Support,Preferences,Logs,Caches}
 
     # Mock system directories
-    mkdir -p "$TEST_ROOT"/usr/{local,bin}
+    mkdir -p "$TEST_ROOT"/usr/{local/bin,bin}
     mkdir -p "$TEST_ROOT"/opt/{homebrew,local}
 
     # Set up mock Homebrew
@@ -126,7 +130,7 @@ elif [[ "$1" == "install" ]]; then
     mkdir -p "'$TEST_ROOT'/opt/homebrew/Cellar/$2"
     mkdir -p "'$TEST_ROOT'/opt/homebrew/bin"
     echo "#!/bin/bash" > "'$TEST_ROOT'/opt/homebrew/bin/$2"
-    echo "echo '$2 is working'" >> "'$TEST_ROOT'/opt/homebrew/bin/$2"
+    echo "echo $2 is working" >> "'$TEST_ROOT'/opt/homebrew/bin/$2"
     chmod +x "'$TEST_ROOT'/opt/homebrew/bin/$2"
     echo "🍺 $2 installed successfully"
 elif [[ "$1" == "list" ]]; then
@@ -191,7 +195,7 @@ test_fresh_system_installation() {
     # Test actual installation in simulated environment
     export PATH="$TEST_ROOT/opt/homebrew/bin:$TEST_ROOT/usr/local/bin:$PATH"
 
-    if HOME="$FAKE_HOME" "$INSTALL_SCRIPT" --config-only --force > "$TEST_ROOT/install.log" 2>&1; then
+    if HOME="$FAKE_HOME" "$INSTALL_SCRIPT" --dotfiles --no-interactive --auto-resolve=overwrite > "$TEST_ROOT/install.log" 2>&1; then
         log_info "✓ Configuration installation completed"
 
         # Check if config files were created
@@ -206,7 +210,7 @@ test_fresh_system_installation() {
         done
 
         # Check backup directory
-        if [[ -d "$FAKE_HOME/.dotfiles_backup" ]]; then
+        if ls -d "$FAKE_HOME"/.dotfiles_backup_* >/dev/null 2>&1; then
             log_info "✓ Backup directory created"
         else
             log_warning "Backup directory not found (may be expected if no existing files)"
@@ -229,7 +233,7 @@ test_shell_configuration_integration() {
     # Test .zshenv loading
     if [[ -f "$FAKE_HOME/.zshenv" ]]; then
         # Source the configuration in a subshell to test
-        if (source "$FAKE_HOME/.zshenv" && echo "$PATH" | grep -q "opt/homebrew"); then
+        if (set +euo pipefail; source "$FAKE_HOME/.zshenv"; echo "$PATH" | grep -q "opt/homebrew"); then
             log_info "✓ .zshenv loads and sets PATH correctly"
         else
             test_fail "Shell Configuration Integration" ".zshenv PATH not set correctly"
@@ -237,7 +241,7 @@ test_shell_configuration_integration() {
         fi
 
         # Test Claude Code PATH
-        if (source "$FAKE_HOME/.zshenv" && echo "$PATH" | grep -q "\.local/bin"); then
+        if (set +euo pipefail; source "$FAKE_HOME/.zshenv"; echo "$PATH" | grep -q "\.local/bin"); then
             log_info "✓ Claude Code PATH configured correctly"
         else
             test_fail "Shell Configuration Integration" "Claude Code PATH not set correctly"
@@ -251,8 +255,8 @@ test_shell_configuration_integration() {
     # Test .bashrc loading
     if [[ -f "$FAKE_HOME/.bashrc" ]]; then
         # Check for key bash configurations
-        if grep -q "export PS1" "$FAKE_HOME/.bashrc"; then
-            log_info "✓ .bashrc contains PS1 configuration"
+        if grep -q "export PS1\|starship init bash" "$FAKE_HOME/.bashrc"; then
+            log_info "✓ .bashrc sets a prompt (PS1 or starship)"
         else
             test_fail "Shell Configuration Integration" ".bashrc missing PS1 configuration"
             return 1
@@ -270,7 +274,8 @@ test_shell_configuration_integration() {
     fi
 
     # Test alias functionality
-    if (source "$FAKE_HOME/.bashrc" && type ll > /dev/null 2>&1); then
+    # bash is the minimal fallback (zsh is primary), so check that any alias is defined
+    if (set +euo pipefail; source "$FAKE_HOME/.bashrc"; [[ -n "$(alias)" ]]); then
         log_info "✓ Bash aliases are functional"
     else
         test_fail "Shell Configuration Integration" "Bash aliases not functional"
@@ -314,9 +319,13 @@ test_component_interaction() {
         log_warning "ZSH configuration not symlinked"
     fi
 
-    # Test PATH priority and ordering
-    if (source "$FAKE_HOME/.zshenv" && echo "$PATH" | tr ':' '\n' | head -1 | grep -q "homebrew"); then
-        log_info "✓ Homebrew PATH has highest priority"
+    # Test PATH priority and ordering. User dirs (~/.local/bin, pyenv, npm) are
+    # prepended after Homebrew on purpose, so check Homebrew beats system /usr/bin.
+    if (set +euo pipefail; source "$FAKE_HOME/.zshenv"
+        brew_idx=$(echo "$PATH" | tr ':' '\n' | grep -n "homebrew" | head -1 | cut -d: -f1)
+        sys_idx=$(echo "$PATH" | tr ':' '\n' | grep -nx "/usr/bin" | head -1 | cut -d: -f1)
+        [[ -n "$brew_idx" && ( -z "$sys_idx" || "$brew_idx" -lt "$sys_idx" ) ]]); then
+        log_info "✓ Homebrew PATH comes before system /usr/bin"
     else
         test_fail "Component Interaction Testing" "Homebrew PATH not prioritized correctly"
         return 1
@@ -342,10 +351,11 @@ test_user_experience_flows() {
 
         # Simulate bash startup sequence
         if [[ -f "$HOME/.bashrc" ]]; then
+            set +euo pipefail  # rc files are not written for strict mode
             source "$HOME/.bashrc"
 
-            # Test basic functionality
-            if type ll > /dev/null 2>&1; then
+            # Test basic functionality (bash is the minimal fallback; any alias will do)
+            if [[ -n "$(alias)" ]]; then
                 exit 0
             else
                 exit 1
@@ -362,6 +372,7 @@ test_user_experience_flows() {
 
         # Simulate zsh startup sequence
         if [[ -f "$HOME/.zshenv" ]]; then
+            set +euo pipefail  # rc files are not written for strict mode
             source "$HOME/.zshenv"
 
             # Test PATH is set
@@ -451,7 +462,7 @@ test_system_validation() {
 
     # Test for path conflicts
     local path_conflicts=0
-    if (source "$FAKE_HOME/.zshenv" && echo "$PATH" | tr ':' '\n' | sort | uniq -d | grep -q "."); then
+    if (set +euo pipefail; source "$FAKE_HOME/.zshenv"; echo "$PATH" | tr ':' '\n' | sort | uniq -d | grep -q "."); then
         log_warning "Duplicate PATH entries detected"
         path_conflicts=$((path_conflicts + 1))
     else
@@ -473,9 +484,11 @@ test_system_validation() {
 
     # Performance test - shell startup time
     local startup_time
+    # The time keyword reports on the enclosing group's stderr; TIMEFORMAT=%R
+    # prints just the elapsed seconds
     startup_time=$(
-        (time bash -c 'source "'$FAKE_HOME/.bashrc'"' 2>&1) | grep real | awk '{print $2}' | sed 's/[ms]//'
-    )
+        { TIMEFORMAT=%R; time bash -c 'source "$1"' _ "$FAKE_HOME/.bashrc" >/dev/null 2>&1; } 2>&1
+    ) || true
     if [[ -n "$startup_time" ]]; then
         log_info "✓ Bash startup time: ${startup_time}s"
     fi
@@ -489,16 +502,21 @@ test_backup_rollback() {
 
     export HOME="$FAKE_HOME"
 
-    # Create some existing files to test backup
+    # Create some existing files to test backup. Earlier tests stowed these as
+    # symlinks into the repo, so remove them first; writing through the links
+    # would overwrite the real dotfiles in the repo.
     mkdir -p "$FAKE_HOME/.config"
+    rm -f "$FAKE_HOME/.zshenv" "$FAKE_HOME/.bashrc" "$FAKE_HOME/.tmux.conf"
     echo "old zshenv" > "$FAKE_HOME/.zshenv"
     echo "old bashrc" > "$FAKE_HOME/.bashrc"
     echo "old tmux conf" > "$FAKE_HOME/.tmux.conf"
 
     # Run installation to test backup creation
-    if HOME="$FAKE_HOME" "$INSTALL_SCRIPT" --config-only --force > "$TEST_ROOT/backup_test.log" 2>&1; then
-        # Check if backup directory was created
-        if [[ -d "$FAKE_HOME/.dotfiles_backup" ]]; then
+    if HOME="$FAKE_HOME" "$INSTALL_SCRIPT" --dotfiles --no-interactive --auto-resolve=overwrite > "$TEST_ROOT/backup_test.log" 2>&1; then
+        # install.sh backs up to ~/.dotfiles_backup_<timestamp>/<name>.backup
+        local backup_dir
+        backup_dir=$(ls -d "$FAKE_HOME"/.dotfiles_backup_* 2>/dev/null | tail -1 || true)
+        if [[ -n "$backup_dir" && -d "$backup_dir" ]]; then
             log_info "✓ Backup directory created"
 
             # Check if old files were backed up
@@ -506,7 +524,7 @@ test_backup_rollback() {
             local backup_count=0
 
             for file in "${backup_files[@]}"; do
-                if [[ -f "$FAKE_HOME/.dotfiles_backup/$file" ]]; then
+                if [[ -f "$backup_dir/$file.backup" ]]; then
                     backup_count=$((backup_count + 1))
                     log_info "✓ $file backed up"
                 fi
@@ -523,8 +541,8 @@ test_backup_rollback() {
         fi
 
         # Test rollback functionality
-        if [[ -f "$FAKE_HOME/.dotfiles_backup/.zshenv" ]]; then
-            cp "$FAKE_HOME/.dotfiles_backup/.zshenv" "$FAKE_HOME/.zshenv.restore"
+        if [[ -f "$backup_dir/.zshenv.backup" ]]; then
+            cp "$backup_dir/.zshenv.backup" "$FAKE_HOME/.zshenv.restore"
             if [[ "$(cat "$FAKE_HOME/.zshenv.restore")" == "old zshenv" ]]; then
                 log_info "✓ Backup restoration works"
                 rm "$FAKE_HOME/.zshenv.restore"

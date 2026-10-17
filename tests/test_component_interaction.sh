@@ -175,22 +175,28 @@ test_alias_conflicts() {
             return 1
         fi
 
-        # Test alias definitions (not functionality, since many are commented out)
+        # Test alias definitions (not functionality, since many are commented out).
+        # Zsh is primary, so the common aliases live in the zsh files, not .bashrc.
         local alias_definitions=0
         local test_aliases=("ll" "la" "l")
+        local alias_sources=("$TEST_HOME/.bashrc" "$DOTFILES_DIR/zsh/.zsh_cross_platform")
+        local f
+        for f in "$DOTFILES_DIR"/zsh/aliases/*.zsh; do
+            [[ -f "$f" ]] && alias_sources+=("$f")
+        done
 
         for alias_name in "${test_aliases[@]}"; do
-            if grep -q "alias.*$alias_name" "$TEST_HOME/.bashrc"; then
+            if grep -qE "alias +$alias_name=" "${alias_sources[@]}"; then
                 alias_definitions=$((alias_definitions + 1))
                 log_info "✓ Alias definition '$alias_name' found"
             fi
         done
 
         if [[ $alias_definitions -ge 1 ]]; then
-            log_pass "Alias definitions present ($alias_definitions/$# test aliases found)"
+            log_pass "Alias definitions present ($alias_definitions/${#test_aliases[@]} test aliases found)"
             TESTS_PASSED=$((TESTS_PASSED + 1))
         else
-            log_fail "No alias definitions found ($alias_definitions/$# test aliases)"
+            log_fail "No alias definitions found ($alias_definitions/${#test_aliases[@]} test aliases)"
             TESTS_FAILED=$((TESTS_FAILED + 1))
             return 1
         fi

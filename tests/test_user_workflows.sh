@@ -61,7 +61,8 @@ test_developer_workflow() {
 
     # Test 1: Directory navigation and file operations
     cd "$TEST_PROJECT"
-    if (source "$TEST_HOME/.bashrc" && ls -la >/dev/null 2>&1); then
+    # Shell rc files are not written for strict mode, so relax it while sourcing
+    if (set +euo pipefail; source "$TEST_HOME/.bashrc"; ls -la >/dev/null 2>&1); then
         log_info "✓ Directory operations work"
         workflow_score=$((workflow_score + 1))
     fi
@@ -82,7 +83,7 @@ test_developer_workflow() {
 
     # Test 3: Environment setup for development
     if [[ -f "$TEST_HOME/.zshenv" ]]; then
-        if (source "$TEST_HOME/.zshenv" && echo "$PATH" | grep -q "homebrew"); then
+        if (set +euo pipefail; source "$TEST_HOME/.zshenv"; echo "$PATH" | grep -q "homebrew"); then
             log_info "✓ Development environment PATH configured"
             workflow_score=$((workflow_score + 1))
         fi
@@ -90,7 +91,7 @@ test_developer_workflow() {
 
     # Test 4: Environment setup validation
     if [[ -f "$TEST_HOME/.bashrc" ]]; then
-        if (source "$TEST_HOME/.bashrc" && [[ -n "${PS1:-}" ]] && [[ -n "${PATH:-}" ]]); then
+        if (set +euo pipefail; source "$TEST_HOME/.bashrc"; [[ -n "${PS1:-}" ]] && [[ -n "${PATH:-}" ]]); then
             log_info "✓ Shell environment properly configured"
             workflow_score=$((workflow_score + 1))
         fi
@@ -149,7 +150,7 @@ echo "brew: command not found (simulated)"' > "$TEST_ROOT/bin/brew"
 
     # Test 4: Path management
     if [[ -f "$TEST_HOME/.zshenv" ]]; then
-        if (source "$TEST_HOME/.zshenv" && echo "$PATH" | tr ':' '\n' | grep -q "bin"); then
+        if (set +euo pipefail; source "$TEST_HOME/.zshenv"; echo "$PATH" | tr ':' '\n' | grep -q "bin"); then
             log_info "✓ System binary paths configured"
             workflow_score=$((workflow_score + 1))
         fi
@@ -235,7 +236,7 @@ test_new_user_onboarding() {
     fi
 
     # Test 3: Dry run capability
-    if "$DOTFILES_DIR/install.sh" --dry-run --config-only >/dev/null 2>&1; then
+    if "$DOTFILES_DIR/install.sh" --dry-run --dotfiles >/dev/null 2>&1; then
         log_info "✓ Dry run mode available for safe testing"
         onboarding_score=$((onboarding_score + 1))
     fi
@@ -276,9 +277,12 @@ test_error_recovery_workflow() {
     local recovery_score=0
 
     # Test 1: Backup creation during installation
+    # Remove first: if this is a symlink into the repo, writing through it
+    # would overwrite the real dotfile
+    rm -f "$TEST_HOME/.bashrc"
     echo "old_config" > "$TEST_HOME/.bashrc"
 
-    if "$DOTFILES_DIR/install.sh" --config-only --force >/dev/null 2>&1; then
+    if "$DOTFILES_DIR/install.sh" --dotfiles --no-interactive --auto-resolve=overwrite >/dev/null 2>&1; then
         if [[ -d "$TEST_HOME/.dotfiles_backup" ]]; then
             log_info "✓ Backup directory created during installation"
             recovery_score=$((recovery_score + 1))

@@ -103,8 +103,12 @@ run_test_module() {
             PASSED_SUITES=$((PASSED_SUITES + 1))
 
             # Extract test counts from log (strip color codes)
-            local module_passed=$(grep "Passed:" "$log_file" | sed 's/\x1b\[[0-9;]*m//g' | tail -1 | awk '{print $2}' || echo "0")
-            local module_failed=$(grep "Failed:" "$log_file" | sed 's/\x1b\[[0-9;]*m//g' | tail -1 | awk '{print $2}' || echo "0")
+            # Only match "Passed: <number>" so lines like "Failed: file ..." are ignored
+            local module_passed module_failed
+            module_passed=$(perl -pe 's/\e\[[0-9;]*m//g' "$log_file" | grep -aoE "Passed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            module_failed=$(perl -pe 's/\e\[[0-9;]*m//g' "$log_file" | grep -aoE "Failed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            module_passed=${module_passed:-0}
+            module_failed=${module_failed:-0}
             local module_total=$((module_passed + module_failed))
 
             TOTAL_TESTS=$((TOTAL_TESTS + module_total))
@@ -246,8 +250,8 @@ EOF
         if [[ -f "$log_file" ]]; then
             # Only match "Passed: <number>" so lines like "Failed: file ..." are ignored
             local suite_passed suite_failed
-            suite_passed=$(sed 's/\x1b\[[0-9;]*m//g' "$log_file" | grep -oE "Passed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
-            suite_failed=$(sed 's/\x1b\[[0-9;]*m//g' "$log_file" | grep -oE "Failed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            suite_passed=$(perl -pe 's/\e\[[0-9;]*m//g' "$log_file" | grep -aoE "Passed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
+            suite_failed=$(perl -pe 's/\e\[[0-9;]*m//g' "$log_file" | grep -aoE "Failed: *[0-9]+" | tail -1 | grep -oE "[0-9]+" || true)
             suite_passed=${suite_passed:-0}
             suite_failed=${suite_failed:-0}
             local suite_total=$((suite_passed + suite_failed))

@@ -52,7 +52,11 @@ test_ghostty_config_exists() {
 }
 
 test_ghostty_config_is_symlink() {
-    [[ -L "$GHOSTTY_CONFIG_FILE" ]]
+    # Stow may link the file or fold the whole ~/.config/ghostty directory,
+    # so check where the path resolves rather than the file itself
+    local repo_dir
+    repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+    [[ "$(realpath "$GHOSTTY_CONFIG_FILE")" == "$repo_dir/ghostty/.config/ghostty/config" ]]
 }
 
 # Uses Ghostty's built-in validator; returns 0 on a clean config
@@ -101,10 +105,10 @@ test_keybinding_no_conflicts() {
 }
 
 test_no_duplicate_settings() {
-    # keybind and env are intentionally multi-value; exclude them
+    # keybind, env, font-family (fallbacks) and font-codepoint-map are multi-value; exclude them
     local duplicates
     duplicates=$(grep -E "^[a-z][a-z-]+ =" "$GHOSTTY_CONFIG_FILE" \
-        | grep -v "^keybind \|^env " \
+        | grep -vE "^(keybind|env|font-family|font-codepoint-map) " \
         | sed 's/ =.*//' \
         | sort | uniq -d)
     [[ -z "$duplicates" ]]

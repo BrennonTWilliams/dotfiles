@@ -150,7 +150,7 @@ validate_package_syntax() {
         local package_name=$(echo "$line" | cut -d'#' -f1 | xargs)  # remove inline comments and trim whitespace
 
         # Check for invalid characters
-        if [[ ! "$package_name" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+        if [[ ! "$package_name" =~ ^[a-zA-Z0-9._@+-]+(/[a-zA-Z0-9._@+-]+)*$ ]]; then
             log_error "Line $line_number: Invalid package name format: '$package_name'"
             syntax_errors=$((syntax_errors + 1))
             continue

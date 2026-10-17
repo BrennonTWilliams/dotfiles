@@ -103,8 +103,8 @@ main() {
             # Test 2: Check file has basic bash configuration
             grep -q "HISTSIZE\|HISTFILESIZE" "$HOME/.bashrc" && \
 
-            # Test 3: Check file has PS1 configuration
-            grep -q "PS1" "$HOME/.bashrc"
+            # Test 3: Check file sets a prompt (PS1 or starship)
+            grep -q "PS1\|starship init bash" "$HOME/.bashrc"
         '
     else
         log_fail "Bash configuration not found in dotfiles"
@@ -126,8 +126,8 @@ main() {
             # Test 2: Check file has Homebrew configuration
             grep -q "homebrew\|brew" "$HOME/.zshenv" && \
 
-            # Test 3: Check file has NVM configuration
-            grep -q "NVM_DIR" "$HOME/.zshenv"
+            # Test 3: Check file has pyenv configuration
+            grep -q "PYENV_ROOT" "$HOME/.zshenv"
         '
     else
         log_fail "ZSH configuration not found in dotfiles"
