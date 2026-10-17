@@ -33,11 +33,13 @@ This gruvbox theme snippet brings your terminal's warm, earthy color palette int
 
 ```bash
 # From the dotfiles directory
-ln -sf ~/AIProjects/ai-workspaces/dotfiles/obsidian/snippets/gruvbox-theme.css \
+ln -sf ~/AIProjects/dotfiles/obsidian/snippets/gruvbox-theme.css \
        ~/AIProjects/MC-vault/.obsidian/snippets/gruvbox-theme.css
 ```
 
 This creates a symbolic link from your dotfiles to your Obsidian vault, so edits to the dotfiles version automatically apply to Obsidian.
+
+For iCloud vaults (`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/<vault>`), copy the file instead. A symlink points at this Mac's dotfiles checkout and breaks on other devices. Re-copy after editing the snippet.
 
 ### 2. Enable in Obsidian
 
@@ -285,7 +287,7 @@ This theme is version controlled as part of your dotfiles repository. Any change
 To commit changes:
 
 ```bash
-cd ~/AIProjects/ai-workspaces/dotfiles
+cd ~/AIProjects/dotfiles
 git add obsidian/
 git commit -m "Update Obsidian gruvbox theme"
 git push
