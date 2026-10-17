@@ -273,7 +273,7 @@ selection-word-chars = / \t.?=&@#~+%:;,!()[]{}<>"'
 # window opened while `main` is already attached gets its own separate session.
 # No server / no `main` at all → create it, and tmux-continuum auto-restores the
 # newest saved layout into it.
-command = /bin/zsh -l -c "if tmux has-session -t main 2>/dev/null; then if tmux list-clients -t main 2>/dev/null | grep -q .; then exec tmux new-session; else exec tmux attach -t main; fi; else exec tmux new-session -s main; fi"
+command = /bin/zsh -l -c "if tmux has-session -t main 2>/dev/null; then if tmux list-clients -t main 2>/dev/null | grep -q .; then exec tmux new-session; else exec tmux attach -t main; fi; else exec tmux new-session -A -s main; fi"
 
 # Quick terminal (system-wide dropdown; triggered by global:super+grave keybind above)
 quick-terminal-position = bottom
