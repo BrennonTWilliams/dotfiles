@@ -258,7 +258,7 @@ setup_npm() {
         if [ -f "$packages_file" ]; then
             echo
             warn "Additional global packages are available in global-packages.txt"
-            warn "Install them with: xargs -a $packages_file npm install -g"
+            warn "Install them with: sed 's/#.*//' $packages_file | xargs npm install -g"
         fi
 
         # Create local NPM config if it doesn't exist

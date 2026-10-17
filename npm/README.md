@@ -26,7 +26,7 @@ This directory contains NPM configuration files and global package lists managed
 3. Install essential global packages:
    ```bash
    # Install all recommended packages
-   xargs -a ~/.dotfiles/npm/global-packages.txt npm install -g
+   sed 's/#.*//' ~/.dotfiles/npm/global-packages.txt | xargs npm install -g
 
    # Or install selectively based on your needs
    npm install -g npm typescript nodemon eslint prettier
