@@ -43,3 +43,6 @@ clinic                      # Node.js performance profiling
 
 # Git
 commitizen                  # Conventional commit prompts (git cz)
+
+# Task management
+task-master-ai              # Task Master CLI (task-master; tm abbreviation)
