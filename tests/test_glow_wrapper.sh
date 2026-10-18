@@ -161,6 +161,41 @@ EOF
     rm -rf "$tmp"
 }
 
+test_wrapper_skips_itself_on_path() {
+    # Stow symlinks the wrapper into ~/.local/bin, which sits ahead of the
+    # real glow on PATH. The wrapper must skip itself instead of exec'ing
+    # itself in a loop. A watchdog kills a hang after 5s.
+    local tmp rc pid
+    tmp="$(mktemp -d)"
+    mkdir -p "$tmp/home/.local/bin" "$tmp/bin"
+    ln -s "$GLOW_BIN" "$tmp/home/.local/bin/glow"
+    cat > "$tmp/bin/glow" <<'EOF'
+#!/usr/bin/env bash
+echo "glow-stub $*"
+EOF
+    chmod +x "$tmp/bin/glow"
+
+    PATH="$tmp/home/.local/bin:$tmp/bin:$PATH" THEME_MODE=dark \
+        "$tmp/home/.local/bin/glow" foo > "$tmp/out" 2>&1 < /dev/null &
+    pid=$!
+    for _ in $(seq 1 50); do
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 0.1
+    done
+    if kill -0 "$pid" 2>/dev/null; then
+        kill -9 "$pid" 2>/dev/null
+        wait "$pid" 2>/dev/null
+        rc=1
+    else
+        wait "$pid"
+        rc=$?
+    fi
+    [[ $rc -eq 0 ]] && grep -q 'glow-stub' "$tmp/out"
+    rc=$?
+    rm -rf "$tmp"
+    return "$rc"
+}
+
 # ==============================================================================
 # Runner
 # ==============================================================================
@@ -178,6 +213,7 @@ run_test "THEME_MODE=light returns light"             test_theme_mode_explicit_l
 run_test "THEME_MODE=dark returns dark"               test_theme_mode_explicit_dark
 run_test "macOS dark fallback without THEME_MODE"     test_theme_mode_fallback_macos_dark
 run_test "wrapper falls back when style dir missing"  test_wrapper_falls_back_when_style_dir_missing
+run_test "wrapper skips itself on PATH"               test_wrapper_skips_itself_on_path
 
 echo
 echo "----------------------------------------"

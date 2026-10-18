@@ -12,9 +12,33 @@
 
 set -euo pipefail
 
-# Resolve the real glow binary first so we fail fast with the usual error
-# if glow is not installed. `command -v` respects $PATH.
-if ! command -v glow >/dev/null 2>&1; then
+# Resolve the real glow binary, skipping this wrapper. ~/.local/bin usually
+# precedes Homebrew on PATH, so a plain `exec glow` would re-run this script
+# forever.
+# Print the fully resolved path of a file, following any chain of symlinks.
+_resolve() {
+    local f="$1" link
+    while [ -L "$f" ]; do
+        link="$(readlink "$f")"
+        case "$link" in
+            /*) f="$link" ;;
+            *)  f="$(dirname "$f")/$link" ;;
+        esac
+    done
+    printf '%s/%s\n' "$(cd "$(dirname "$f")" && pwd -P)" "$(basename "$f")"
+}
+
+SELF="$(_resolve "${BASH_SOURCE[0]}")"
+REAL_GLOW=""
+IFS=: read -r -a _path_dirs <<< "${PATH:-}"
+for _d in "${_path_dirs[@]}"; do
+    [ -n "$_d" ] && [ -f "$_d/glow" ] && [ -x "$_d/glow" ] || continue
+    if [ "$(_resolve "$_d/glow")" != "$SELF" ]; then
+        REAL_GLOW="$_d/glow"
+        break
+    fi
+done
+if [ -z "$REAL_GLOW" ]; then
     echo "glow: command not found (install via brew: brew install glow)" >&2
     exit 127
 fi
@@ -49,7 +73,7 @@ STYLE_DIR="$(cd "$SCRIPT_DIR/../../.config/glow" 2>/dev/null && pwd || true)"
 MODE="$(_glow_theme_mode)"
 
 if [ -n "$STYLE_DIR" ] && [ -f "$STYLE_DIR/gruvbox-${MODE}.json" ]; then
-    exec glow -s "$STYLE_DIR/gruvbox-${MODE}.json" "$@"
+    exec "$REAL_GLOW" -s "$STYLE_DIR/gruvbox-${MODE}.json" "$@"
 fi
 
 # Style file missing -- fall back to glow's built-in auto-detection rather
@@ -59,4 +83,4 @@ if [ -z "$STYLE_DIR" ] || [ ! -d "$STYLE_DIR" ]; then
     echo "glow-wrapper: style directory not found (expected ../../.config/glow relative to ${BASH_SOURCE[0]}); using glow default style" >&2
 fi
 
-exec glow "$@"
+exec "$REAL_GLOW" "$@"
