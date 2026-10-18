@@ -59,5 +59,14 @@ _dotfiles_setup_path
 
 [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 
+# Default editor for git, crontab, less `v`, etc. Neovim when installed,
+# nano otherwise. Override in ~/.zshenv.local.
+if (( $+commands[nvim] )); then
+    export EDITOR=nvim
+else
+    export EDITOR=nano
+fi
+export VISUAL=$EDITOR
+
 # Machine-specific environment overrides (e.g. DOTFILES_ABBR_MODE)
 [[ -f "$HOME/.zshenv.local" ]] && source "$HOME/.zshenv.local"

@@ -11,9 +11,8 @@
 	required = true
 
 [core]
-	# Use VS Code as default editor (uncomment and modify as needed)
-	# editor = code --wait
-	editor = nano
+	# No editor set here: git falls back to $VISUAL / $EDITOR from the shell
+	# config (nvim, or nano when nvim is missing). To pin one: editor = code --wait
 	autocrlf = input
 	safecrlf = warn
 

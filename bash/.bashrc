@@ -5,6 +5,14 @@
 # Added by microsandbox installer
 export PATH="$HOME/.local/bin:$PATH"
 
+# Default editor: Neovim when installed, nano otherwise
+if command -v nvim >/dev/null 2>&1; then
+    export EDITOR=nvim
+else
+    export EDITOR=nano
+fi
+export VISUAL="$EDITOR"
+
 # macOS-only library path
 # Note: DYLD_LIBRARY_PATH is stripped by SIP for system binaries in /usr/bin, /bin, etc.
 # This only affects user-installed programs not protected by SIP
