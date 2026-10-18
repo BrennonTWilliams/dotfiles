@@ -29,6 +29,21 @@ if (( $+commands[pyenv] )); then
     eval "$(pyenv init - --no-rehash zsh)"
 fi
 
+# Keep uv/uvx on Homebrew's copy. pyenv shims sit first on PATH, and pip puts
+# a second uv in the pyenv Python as a dependency of hatch (little-loops dev
+# extras), which would otherwise shadow Homebrew's. A small dir of symlinks
+# ahead of the shims fixes just these two commands.
+if [[ -n ${HOMEBREW_PREFIX:-} && -x $HOMEBREW_PREFIX/bin/uv ]]; then
+    _brew_pins="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/brew-pins"
+    for _c in uv uvx; do
+        if [[ -x $HOMEBREW_PREFIX/bin/$_c && ! -L $_brew_pins/$_c ]]; then
+            mkdir -p "$_brew_pins" && ln -sf "$HOMEBREW_PREFIX/bin/$_c" "$_brew_pins/$_c"
+        fi
+    done
+    path=("$_brew_pins" $path)
+    unset _brew_pins _c
+fi
+
 # SSH Agent for Dev Containers / Linux sessions
 # macOS provides SSH_AUTH_SOCK via launchd, so this only runs elsewhere.
 # `ssh-add -l` exits 2 when it cannot reach an agent.
