@@ -20,11 +20,6 @@ abbr -S tredir='eza -T -D --git-ignore'
 # ls
 abbr -S lsa='ls -a'
 
-# Mindfulness
-abbr -S breath='zenta now --quick'
-abbr -S breathe='zenta now'
-abbr -S reflect='zenta reflect'
-
 # Starship mode switching. Regular abbreviations (session or user scope)
 # only expand as a whole command word; `-S` = session scope, which keeps them
 # out of zsh-abbr's cross-shell job queue and shared user-abbreviations file.

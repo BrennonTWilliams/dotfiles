@@ -11,11 +11,6 @@ alias tre='eza -T'
 # Clipboard sync
 alias clipboard-sync='uniclip ${UNICLIP_SERVER:-localhost:53168}'
 
-# Mindfulness
-alias breath='zenta now --quick'
-alias breathe='zenta now'
-alias reflect='zenta reflect'
-
 # Task Master
 alias tm='task-master'
 alias taskmaster='task-master'
