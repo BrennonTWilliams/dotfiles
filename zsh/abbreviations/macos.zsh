@@ -58,6 +58,7 @@ abbr -S screensaver='open -a ScreenSaverEngine'
 # -d display, -i idle, -m disk, -s system (AC only); &! detaches from the shell
 abbr -S caf='caffeinate -dims >/dev/null 2>&1 &!'
 abbr -S cafx='pkill -x caffeinate'
+abbr -S cafs='pgrep -lx caffeinate || echo "caffeinate: not running"'
 
 # ==============================================================================
 # Clipboard
