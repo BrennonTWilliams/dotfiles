@@ -36,3 +36,7 @@ abbr -S tt='toggle-theme'
 
 # System monitors toggle (tmux CPU/RAM, starship memory)
 abbr -S tsm='toggle-sys-monitors'
+
+# Tailscale VPN
+abbr -S tsup='tailscale up'
+abbr -S tsdown='tailscale down'

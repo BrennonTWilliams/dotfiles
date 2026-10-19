@@ -126,6 +126,7 @@ cask "libreoffice"
 cask "perplexity"
 cask "qlmarkdown"
 cask "rectangle"
+cask "tailscale-app"
 mas "BBEdit", id: 404009241
 mas "LottieFiles", id: 1531085233
 mas "Numbers", id: 361304891
