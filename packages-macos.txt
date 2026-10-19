@@ -44,6 +44,8 @@ olets/tap/zsh-abbr
 # ==============================================================================
 python3
 # Note: pip is automatically included with python3 on macOS, no separate package needed
+numpy
+pillow
 
 # ==============================================================================
 # macOS Window Management & Terminal Alternatives
