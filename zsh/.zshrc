@@ -82,6 +82,30 @@ fi
 #
 # Set in ~/.zshenv.local: export DOTFILES_ABBR_MODE="alias"
 
+# ==============================================================================
+# Line Editor Keymap
+# ==============================================================================
+# EDITOR=nvim (.zshenv) makes zsh silently default to the vi keymap. In vi mode
+# Option+Arrow (ESC b / ESC f) drops into command mode, where Backspace only
+# moves the cursor. Force emacs mode. Must run before zsh-abbr loads, since it
+# binds into whatever keymap `main` points at.
+bindkey -e
+
+# Option+Left/Right: word jump (Ghostty sends ESC b / ESC f; xterm form as fallback)
+bindkey '^[b'     backward-word
+bindkey '^[f'     forward-word
+bindkey '^[[1;3D' backward-word
+bindkey '^[[1;3C' forward-word
+
+# Cmd+Left/Right: line start/end. Ghostty sends ESC O H / ESC O F; tmux
+# re-encodes them as ESC [1~ / ESC [4~. Cover every Home/End encoding.
+bindkey '^[OH'  beginning-of-line
+bindkey '^[OF'  end-of-line
+bindkey '^[[H'  beginning-of-line
+bindkey '^[[F'  end-of-line
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[4~' end-of-line
+
 # Resolve DOTFILES_ZSH from symlink (${0:A:h} doesn't work for sourced files).
 # :A follows the symlink, whether it is relative or absolute.
 if [[ -L ~/.zshrc ]]; then
