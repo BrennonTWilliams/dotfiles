@@ -30,7 +30,7 @@
 | Split down | `Cmd+Shift+D` | `prefix + -` |
 | Navigate pane (nvim-aware) | `Ctrl+h/j/k/l` | `Ctrl+h/j/k/l` |
 | Navigate to last pane | — | `prefix + C-\` |
-| Navigate pane (tmux-only) | `Cmd+Opt+Arrow` | `prefix + h/j/k/l` or `Alt+Arrow` |
+| Navigate pane (tmux-only) | `Cmd+Opt+Arrow` | `prefix + h/j/k/l` or `Ctrl+h/j/k/l` |
 | Resize pane | `Cmd+Shift+Arrow` | `prefix + H/J/K/L` (repeatable) |
 | Zoom / unzoom pane | `Cmd+Shift+Z` | `prefix + z` |
 | Swap pane up / down | — | `prefix + {` / `prefix + }` |
@@ -41,7 +41,7 @@
 
 ## Copy Mode (vi-style)
 
-> `copy-on-select = false` — keyboard selection alone does not copy; use `y` or `Enter`. Mouse drag and double/triple-click do copy directly.
+> Mouse drag and double/triple-click copy to the clipboard and return you to the shell (they stay in copy-mode only if you were scrolled back). Shift+drag uses Ghostty native selection, which also copies on release (`copy-on-select = clipboard`). Keyboard selection in copy-mode copies with `y` or `Enter`.
 
 | Action | Key |
 |---|---|

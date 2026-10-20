@@ -255,8 +255,9 @@ cursor-style-blink = false
 # Selection Configuration
 # ============================================
 
-# Auto-copy selection to clipboard
-copy-on-select = false
+# Copy native selection (Shift+drag, which bypasses tmux mouse capture) to the
+# system clipboard on release -- matches Claude Code and tmux drag-to-copy.
+copy-on-select = clipboard
 
 # Word boundary characters for double-click selection (mirrors tmux word-separators).
 # Dash is intentionally absent so "some-component" is selected as a unit.

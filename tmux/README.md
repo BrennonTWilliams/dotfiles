@@ -30,7 +30,7 @@ The prefix key is changed from `C-b` to `C-a` for easier access.
 | `prefix + \|` | Split pane horizontally |
 | `prefix + -` | Split pane vertically |
 | `prefix + h/j/k/l` | Navigate panes (vim-style) |
-| `Alt + Arrow` | Navigate panes (no prefix needed) |
+| `Ctrl + h/j/k/l` | Navigate panes (no prefix needed; Option+Arrow is left free for word jumps) |
 | `prefix + S` | Toggle pane synchronization |
 
 ### Window Management
