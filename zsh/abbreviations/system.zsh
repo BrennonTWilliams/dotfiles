@@ -40,3 +40,4 @@ abbr -S tsm='toggle-sys-monitors'
 # Tailscale VPN
 abbr -S tsup='tailscale up'
 abbr -S tsdown='tailscale down'
+abbr -S tss='tailscale status'
