@@ -24,9 +24,9 @@ This directory contains Ghostty terminal emulator configuration optimized for ma
 - **Finder integration** - Open terminal from any folder (see [Finder Integration](#finder-integration))
 
 ### ⌨️ Keybinding Strategy
-- **Ghostty-native keybindings** with proven syntax
-- **Ctrl+Shift+C/V** for copy/paste (avoid shell conflicts)
-- **Ctrl+Shift+N/T** for window/tab management
+- **Cmd-based keybindings** send tmux key sequences (prefix `Ctrl+A`), so tabs, splits, and panes are owned by tmux
+- **Native Cmd+C/V** for copy/paste (Ghostty defaults)
+- **Option+Arrow** is left for word jumps in the shell; pane switching uses **Cmd+Opt+Arrow**
 - **Standard tmux keybindings** (Ctrl+A) for session management
 
 ### 🔧 Development Features
@@ -96,10 +96,20 @@ stow ghostty
 ## Keybindings Reference
 
 ### Essential Operations
-- `Ctrl+Shift+C` - Copy to clipboard
-- `Ctrl+Shift+V` - Paste from clipboard
-- `Ctrl+Shift+N` - New window
-- `Ctrl+Shift+T` - New tab
+- `Cmd+C` / `Cmd+V` - Copy / paste (Ghostty defaults)
+- `Cmd+T` - New tmux window (`prefix + c`)
+- `Cmd+W` - Close tmux pane (`prefix + x`)
+- `Cmd+Shift+W` - Close Ghostty window
+- `Cmd+D` / `Cmd+Shift+D` - Split pane right / down (tmux)
+- `Cmd+Opt+Arrow` - Move between tmux panes (no prefix)
+- `Cmd+Shift+Arrow` - Resize tmux pane (repeatable)
+- `Cmd+Shift+Z` - Zoom / unzoom tmux pane
+- `Cmd+Shift+M` - Enter tmux copy-mode
+
+### Selection and Copy
+- **Shift+drag** uses Ghostty's native selection, bypassing tmux mouse capture. `copy-on-select = clipboard` copies it on release.
+- **Plain mouse drag and double/triple-click** inside tmux copy the selection on release and return you to the shell. Selections made while scrolled back stay in copy-mode.
+- Keyboard selection in copy-mode copies with `y` or `Enter` (see [CHEATSHEET](../docs/CHEATSHEET.md)).
 
 ### Font & Display
 - Font size adjustments handled by system gestures
