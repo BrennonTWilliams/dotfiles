@@ -80,6 +80,7 @@ The status bar displays:
 
 - **Left**: Session name, hostname
 - **Right**: CPU and RAM usage (Nerd Font glyphs), time, and date
+- **Caffeinate indicator**: a coffee glyph appears left of the CPU value while a `caffeinate` process is running (`caf` / `cafs` / `cafx`)
 
 ### Gruvbox Theme Colors
 
@@ -145,8 +146,9 @@ The configuration automatically detects the platform:
 
 Copy from tmux works with:
 - `y` key in copy mode
-- Mouse drag selection
+- Mouse drag, or double/triple-click, on a plain pane: copies on release and returns you to the shell. Selections made while scrolled back stay in copy-mode.
 - `Enter` key to copy and exit
+- Shift+drag in Ghostty bypasses tmux mouse capture and uses Ghostty's native selection (`copy-on-select = clipboard`)
 
 ## Customization
 

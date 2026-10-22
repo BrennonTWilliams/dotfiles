@@ -280,7 +280,7 @@ main() {
         echo "  1. Restart your shell or source ~/.zshrc"
         echo "  2. Test Ghostty by running: ghostty"
         echo "  3. Verify shell completion: ghostty <Tab><Tab>"
-        echo "  4. Test tmux integration: use Ctrl+Shift+T keybindings"
+        echo "  4. Test tmux integration: use Cmd+T to open a tmux window"
         exit 0
     else
         echo ""

@@ -578,14 +578,14 @@ echo $TERM_PROGRAM  # Should show "ghostty"
 ghostty <Tab><Tab>  # Should show available options
 
 # 4. Test keybindings
-# Ctrl+Shift+C/V for copy/paste
-# Ctrl+Shift+N/T for new windows/tabs
+# Cmd+C/V for copy/paste
+# Cmd+T for new tmux windows (Cmd-based keys send tmux sequences)
 ```
 
 **Advanced Features**:
 ```bash
 # 1. Test tmux integration
-# Use Ctrl+Shift+T keybindings
+# Use Cmd+T / Cmd+D / Cmd+Opt+Arrow keybindings
 
 # 2. Test working directory inheritance
 cd /tmp && ghostty --new-window
@@ -689,8 +689,8 @@ fc-cache -fv
 ```
 
 ### Default Keybindings
-- `Ctrl+Shift+C/V` - Copy/Paste
-- `Ctrl+Shift+N/T` - New window/tab
+- `Cmd+C/V` - Copy/Paste
+- `Cmd+T` - New tmux window (`prefix + c`); `Cmd+Shift+W` closes the Ghostty window
 - System gestures for font size
 - Standard tmux keybindings (Ctrl+A) within sessions
 - Cmd+Enter for fullscreen (system-level)
